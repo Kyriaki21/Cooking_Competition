@@ -223,6 +223,19 @@ CREATE TABLE `Cooking_Competition`.`Cook` (
   PRIMARY KEY (`idCook`))
 ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE `Cooking_Competition`.`Judge` (
+  `idJudge` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `Cook_idCook` INT UNSIGNED NOT NULL,
+  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`idJudge`),
+  INDEX `fk_Judge1_idx` (`Cook_idCook` ASC) VISIBLE,
+  CONSTRAINT `fk_Judge1`
+    FOREIGN KEY (`Cook_idCook`)
+    REFERENCES `Cooking_Competition`.`Cook` (`idCook`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE  `Cooking_Competition`.`Cook_Cuisine` (
   `Cook_idCook` INT UNSIGNED NOT NULL,
   `Cuisine_idCuisine` INT UNSIGNED NOT NULL,
@@ -242,3 +255,167 @@ CREATE TABLE  `Cooking_Competition`.`Cook_Cuisine` (
     ON DELETE RESTRICT
     ON UPDATE CASCADE)
 ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `Cooking_Competition`.`Season` (
+  `idSeason` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `season_number` INT NOT NULL,
+  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`idSeason`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `Cooking_Competition`.`Episode` (
+  `idEpisode` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `Episode_number` INT NOT NULL,
+  `Season_idSeason` INT UNSIGNED NOT NULL,
+  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`idEpisode`),
+  INDEX `fk_Episode_Season1_idx` (`Season_idSeason` ASC) VISIBLE,
+  CONSTRAINT `fk_Episode_Season1`
+    FOREIGN KEY (`Season_idSeason`)
+    REFERENCES `Cooking_Competition`.`Season` (`idSeason`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `Cooking_Competition`.`Episode_Participant` (
+  `Episode_idEpisode` INT UNSIGNED NOT NULL,
+  `Cook_idCook` INT UNSIGNED NOT NULL,
+  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`Episode_idEpisode`, `Cook_idCook`),
+  INDEX `fk_Episode_Participant_Participant1_idx` (`Cook_idCook` ASC) VISIBLE,
+  INDEX `fk_Episode_Participant_Episode1_idx` (`Episode_idEpisode` ASC) VISIBLE,
+  CONSTRAINT `fk_Episode_Participant_Episode1`
+    FOREIGN KEY (`Episode_idEpisode`)
+    REFERENCES `Cooking_Competition`.`Episode` (`idEpisode`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_Episode_Participant_Participant1`
+    FOREIGN KEY (`Cook_idCook`)
+    REFERENCES `Cooking_Competition`.`Cook` (`idCook`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Procedure structure for procedure `calc_nutritional_values`
+--
+
+DELIMITER //
+
+CREATE PROCEDURE CalculateRecipeNutrition(IN recipe_id INT)
+BEGIN
+    DECLARE total_calories DECIMAL(10,2) DEFAULT 0;
+    DECLARE total_fat DECIMAL(10,2) DEFAULT 0;
+    DECLARE total_protein DECIMAL(10,2) DEFAULT 0;
+    DECLARE total_carbohydrate DECIMAL(10,2) DEFAULT 0;
+    DECLARE total_weight DECIMAL(10,2) DEFAULT 0;
+    DECLARE servings INT;
+	DECLARE done INT DEFAULT FALSE;
+    DECLARE cur CURSOR FOR 
+        SELECT Ingredients_idIngredients, Quantity
+        FROM Recipe_has_Ingredients
+        WHERE Recipe_idRecipe = recipe_id;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    -- Get the total number of servings for the recipe
+    SELECT portions INTO servings
+    FROM Recipe
+    WHERE idRecipe = recipe_id;
+    
+    -- Iterate through ingredients
+    
+    OPEN cur;
+    read_loop: LOOP
+        FETCH cur INTO ingredient_id, quantity;
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+        
+        -- Calculate total weight of ingredient in grams
+        SET total_weight = quantity;
+        
+        -- Calculate calories, fat, protein, and carbohydrate per serving for each ingredient
+        SELECT 
+            (i.calories / 100 * total_weight) / servings AS calories,
+            (i.fat / 100 * total_weight) / servings AS fat,
+            (i.protein / 100 * total_weight) / servings AS protein,
+            (i.carbohydrate / 100 * total_weight) / servings AS carbohydrate
+        INTO 
+            @calories, @fat, @protein, @carbohydrate
+        FROM Ingredients i
+        WHERE i.idIngredients = ingredient_id;
+        
+        -- Sum up total calories, fat, protein, and carbohydrate for the recipe
+        SET total_calories = total_calories + @calories;
+        SET total_fat = total_fat + @fat;
+        SET total_protein = total_protein + @protein;
+        SET total_carbohydrate = total_carbohydrate + @carbohydrate;
+    END LOOP;
+    
+    CLOSE cur;
+
+    -- Update recipe table with calculated nutritional information
+    UPDATE Recipe
+    SET calories_per_serving = total_calories,
+        fat_per_serving = total_fat,
+        protein_per_serving = total_protein,
+        carbohydrate_per_serving = total_carbohydrate
+    WHERE idRecipe = recipe_id;
+    
+END //
+
+DELIMITER ;
+
+--
+-- Procedure for step count step 
+--
+DELIMITER //
+
+CREATE PROCEDURE create_steps(
+    IN Steps_text_input TEXT
+)
+BEGIN
+    DECLARE step_text VARCHAR(255);
+    DECLARE step_number INT DEFAULT 1;
+    DECLARE done BOOLEAN DEFAULT FALSE;
+	DECLARE step_start INT DEFAULT 1;
+    DECLARE step_end INT DEFAULT 1;
+    
+    -- Find the first occurrence of "Step [number]: " in the recipe text
+        SET step_start = LOCATE(CONCAT('Step ', step_number, ': '), Steps_text_input);
+        
+        -- If "Step [number]: " is not found, exit the loop
+        IF step_start = 0 THEN
+            SET done = TRUE;
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'You have not inserted proper steps';
+        END IF;
+        
+    WHILE NOT done DO
+        
+        -- Find the end of the current step (the start of the next step or the end of the text)
+        SET step_end = LOCATE(CONCAT('Step ', step_number + 1, ': '), Steps_text_input);
+        IF step_end = 0 THEN
+            SET step_end = LENGTH(Steps_text_input) + 1;
+        END IF;
+        
+        -- Extract the step text between step_start and step_end
+        SET step_text = SUBSTRING(Steps_text_input, step_start, step_end - step_start);
+        
+        -- Insert the step into the recipe_steps table
+        INSERT INTO Steps (Step_number,Step_description,Recipe_idRecipe)
+        VALUES ((SELECT step_number, step_text,LAST_INSERT_ID()));
+        
+        -- Increment the step number
+        SET step_number = step_number + 1;
+        -- Find the next occurrence of "Step [number]: " in the recipe text
+        SET step_start = LOCATE(CONCAT('Step ', step_number, ': '), Steps_text_input);
+        
+        -- If "Step [number]: " is not found, exit the loop
+        IF step_start = 0 THEN
+            SET done = TRUE;
+        END IF;
+        
+    END WHILE;
+END
+
+DELIMITER ;
