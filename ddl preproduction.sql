@@ -1,4 +1,3 @@
-
 DROP SCHEMA IF EXISTS Cooking_Competition;
 CREATE SCHEMA Cooking_Competition;
 USE Cooking_Competition;
@@ -37,6 +36,19 @@ CREATE TABLE  `Cooking_Competition`.`Equipment` (
   UNIQUE INDEX `equip_name_UNIQUE` (`equip_name` ASC) VISIBLE)
 ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE `Cooking_Competition`.`Cook` (
+  `idCook` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `first_name` VARCHAR(45) NOT NULL,
+  `last_name` VARCHAR(45) NOT NULL,
+  `phone_number` VARCHAR(15) NOT NULL,
+  `birth_date` DATE NOT NULL,
+  `age` INT NOT NULL,
+  `Years_experience` INT NOT NULL,
+  `Status` ENUM('C cook', 'B cook', 'A cook', 'assistant head Chef', 'Chef') NOT NULL,
+  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`idCook`))
+ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE `Cooking_Competition`.`Recipe` (
   `idRecipe` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `title` VARCHAR(200) NOT NULL,
@@ -45,14 +57,25 @@ CREATE TABLE `Cooking_Competition`.`Recipe` (
   `prep_time` TINYINT NOT NULL,
   `cook_time` TINYINT NOT NULL,
   `portions` TINYINT NOT NULL,
+  `total_calories` INT NULL,
+  `total_fat` INT NULL,
+  `total_protein` INT NULL,
+  `total_carbohydrate` INT NULL,
   `Cuisine_id` INT UNSIGNED NOT NULL,
   `Type_Meal_id` INT UNSIGNED NOT NULL,
   `Steps_text` TEXT NOT NULL,
   `syntagi` ENUM('cooking', 'pastry') NOT NULL,
+  `cook_id` INT UNSIGNED NOT NULL, 
   `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`idRecipe`),
   INDEX `fk_Recipe_Cuisine1_idx` (`Cuisine_id` ASC) VISIBLE,
   INDEX `fk_Recipe_Type_Meal1_idx` (`Type_Meal_id` ASC) VISIBLE,
+  INDEX `fk_Recipe_Cook_idx` (`Cook_id` ASC) VISIBLE,
+  CONSTRAINT `fk_Recipe_Cook1`
+    FOREIGN KEY (`Cook_id`)
+    REFERENCES `Cooking_Competition`.`Cook` (`idCook`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
   CONSTRAINT `fk_Recipe_Cuisine1`
     FOREIGN KEY (`Cuisine_id`)
     REFERENCES `Cooking_Competition`.`Cuisine` (`idCuisine`)
@@ -67,6 +90,20 @@ CREATE TABLE `Cooking_Competition`.`Recipe` (
   CONSTRAINT prep_time_check check (prep_time > 0),
   CONSTRAINT portions_check check (portions > 0),
   CONSTRAINT cook_time_check check (cook_time >= 0))
+ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `Cooking_Competition`.`Tips` (
+  `idTips` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `Tip_description` TEXT NOT NULL,
+  `Recipe_idRecipe` INT UNSIGNED NOT NULL,
+  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`idTips`),
+  INDEX `fk_Tips_Recipe1_idx` (`Recipe_idRecipe` ASC) VISIBLE,
+  CONSTRAINT `fk_Tips_Recipe1`
+    FOREIGN KEY (`Recipe_idRecipe`)
+    REFERENCES `Cooking_Competition`.`Recipe` (`idRecipe`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE)
 ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `Cooking_Competition`.`Concept` (
@@ -133,7 +170,6 @@ CREATE TABLE `Cooking_Competition`.`Steps` (
   `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`idSteps`),
   INDEX `fk_Steps_Recipe1_idx` (`Recipe_idRecipe` ASC) VISIBLE,
-  CONSTRAINT Unique_rec_step UNIQUE	(Recipe_idRecipe,idSteps),
   CONSTRAINT `fk_Steps_Recipe1`
     FOREIGN KEY (`Recipe_idRecipe`)
     REFERENCES `Cooking_Competition`.`Recipe` (`idRecipe`)
@@ -170,7 +206,7 @@ CREATE TABLE `Cooking_Competition`.`Ingredients` (
   `calories` SMALLINT NULL,
   `Food_Group_idFood_Group` INT UNSIGNED NOT NULL,
   `Measurement_Type` VARCHAR(45) NOT NULL,
-  `Default_scale` TINYINT NOT NULL,
+  `Default_scale` TINYINT NOT NULL DEFAULT 100,
   `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`idIngredients`),
   INDEX `fk_Ingredients_Food_Group_idx` (`Food_Group_idFood_Group` ASC) VISIBLE,
@@ -210,19 +246,6 @@ CREATE TABLE `Cooking_Competition`.`Recipe_has_Ingredients` (
     ON UPDATE CASCADE)
 ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE `Cooking_Competition`.`Cook` (
-  `idCook` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `first_name` VARCHAR(45) NOT NULL,
-  `last_name` VARCHAR(45) NOT NULL,
-  `phone_number` VARCHAR(15) NOT NULL,
-  `birth_date` DATE NOT NULL,
-  `age` INT NOT NULL,
-  `Years_experience` INT NOT NULL,
-  `Status` ENUM('C cook', 'B cook', 'A cook', 'assistant head Chef', 'Chef') NOT NULL,
-  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`idCook`))
-ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
 CREATE TABLE `Cooking_Competition`.`Judge` (
   `idJudge` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `Cook_idCook` INT UNSIGNED NOT NULL,
@@ -236,7 +259,7 @@ CREATE TABLE `Cooking_Competition`.`Judge` (
     ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE  `Cooking_Competition`.`Cook_Cuisine` (
+CREATE TABLE  `Cooking_Competition`.`Cook_has_Cuisine` (
   `Cook_idCook` INT UNSIGNED NOT NULL,
   `Cuisine_idCuisine` INT UNSIGNED NOT NULL,
   `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -256,32 +279,22 @@ CREATE TABLE  `Cooking_Competition`.`Cook_Cuisine` (
     ON UPDATE CASCADE)
 ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE `Cooking_Competition`.`Season` (
-  `idSeason` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `season_number` INT NOT NULL,
-  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`idSeason`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
 CREATE TABLE `Cooking_Competition`.`Episode` (
   `idEpisode` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `Episode_number` INT NOT NULL,
-  `Season_idSeason` INT UNSIGNED NOT NULL,
+  `Season_number` INT UNSIGNED NOT NULL,
+  `winner_id` INT UNSIGNED NULL,
   `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`idEpisode`),
-  INDEX `fk_Episode_Season1_idx` (`Season_idSeason` ASC) VISIBLE,
-  CONSTRAINT `fk_Episode_Season1`
-    FOREIGN KEY (`Season_idSeason`)
-    REFERENCES `Cooking_Competition`.`Season` (`idSeason`)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE
+  PRIMARY KEY (`idEpisode`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE `Cooking_Competition`.`Episode_Participant` (
+CREATE TABLE `Cooking_Competition`.`Episode_has_Participants` (
+  `Participant_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `Episode_idEpisode` INT UNSIGNED NOT NULL,
   `Cook_idCook` INT UNSIGNED NOT NULL,
   `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`Episode_idEpisode`, `Cook_idCook`),
+  INDEX `fk_Participant_id_idx` (`Participant_id` ASC),
   INDEX `fk_Episode_Participant_Participant1_idx` (`Cook_idCook` ASC) VISIBLE,
   INDEX `fk_Episode_Participant_Episode1_idx` (`Episode_idEpisode` ASC) VISIBLE,
   CONSTRAINT `fk_Episode_Participant_Episode1`
@@ -296,8 +309,51 @@ CREATE TABLE `Cooking_Competition`.`Episode_Participant` (
     ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE `Cooking_Competition`.`Episode_has_Judges` (
+  `Episode_idEpisode` INT UNSIGNED NOT NULL,
+  `Judge_idJudge` INT UNSIGNED NOT NULL,
+  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`Episode_idEpisode`, `Judge_idJudge`),
+  INDEX `fk_Episode_Judge_Judge1_idx` (`Judge_idJudge` ASC) VISIBLE,
+  INDEX `fk_Episode_Judge_Episode1_idx` (`Episode_idEpisode` ASC) VISIBLE,
+  CONSTRAINT `fk_Episode_Judge_Episode1`
+    FOREIGN KEY (`Episode_idEpisode`)
+    REFERENCES `Cooking_Competition`.`Episode` (`idEpisode`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_Episode_Judge_Judge1`
+    FOREIGN KEY (`Judge_idJudge`)
+    REFERENCES `Cooking_Competition`.`Judge` (`idJudge`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `Cooking_Competition`.`Judge_Participant_Scores` (
+  `Episode_idEpisode` INT UNSIGNED NOT NULL,
+  `Judge_idJudge` INT UNSIGNED NOT NULL,
+  `Participant_id` INT UNSIGNED NOT NULL,
+  `Score` TINYINT NOT NULL DEFAULT 0,
+  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`Episode_idEpisode`, `Judge_idJudge`, `Participant_id`),
+  CONSTRAINT `fk_Judge_Participant_Scores_Episode`
+    FOREIGN KEY (`Episode_idEpisode`)
+    REFERENCES `Cooking_Competition`.`Episode` (`idEpisode`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_Judge_Participant_Scores_Judge`
+    FOREIGN KEY (`Judge_idJudge`)
+    REFERENCES `Cooking_Competition`.`Judge` (`idJudge`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_Judge_Participant_Scores_Participant`
+    FOREIGN KEY (`Participant_id`)
+    REFERENCES `Cooking_Competition`.`Episode_has_Participants` (`Participant_id`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 --
--- Procedure structure for procedure `calc_nutritional_values`
+-- Procedure structure for `calc_nutritional_values`
 --
 
 DELIMITER //
@@ -310,23 +366,25 @@ BEGIN
     DECLARE total_carbohydrate DECIMAL(10,2) DEFAULT 0;
     DECLARE total_weight DECIMAL(10,2) DEFAULT 0;
     DECLARE servings INT;
-	DECLARE done INT DEFAULT FALSE;
-    DECLARE cur CURSOR FOR 
-        SELECT Ingredients_idIngredients, Quantity
-        FROM Recipe_has_Ingredients
-        WHERE Recipe_idRecipe = recipe_id;
-    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
-
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE idIngredients INT; -- Declare idIngredients variable here
+    DECLARE quantity INT;
+	DECLARE calories_per_serving DECIMAL(10,2);
+	DECLARE fat_per_serving DECIMAL(10,2);
+	DECLARE protein_per_serving DECIMAL(10,2);
+	DECLARE carbohydrate_per_serving DECIMAL(10,2);
+    
+	SELECT Ingredients_idIngredients, Quantity
+	FROM Recipe_has_Ingredients
+	WHERE Recipe_idRecipe = recipe_id;
+   
     -- Get the total number of servings for the recipe
     SELECT portions INTO servings
     FROM Recipe
     WHERE idRecipe = recipe_id;
     
     -- Iterate through ingredients
-    
-    OPEN cur;
     read_loop: LOOP
-        FETCH cur INTO ingredient_id, quantity;
         IF done THEN
             LEAVE read_loop;
         END IF;
@@ -335,40 +393,42 @@ BEGIN
         SET total_weight = quantity;
         
         -- Calculate calories, fat, protein, and carbohydrate per serving for each ingredient
+        
         SELECT 
             (i.calories / 100 * total_weight) / servings AS calories,
             (i.fat / 100 * total_weight) / servings AS fat,
             (i.protein / 100 * total_weight) / servings AS protein,
             (i.carbohydrate / 100 * total_weight) / servings AS carbohydrate
         INTO 
-            @calories, @fat, @protein, @carbohydrate
+            calories_per_serving, fat_per_serving, protein_per_serving, carbohydrate_per_serving
         FROM Ingredients i
-        WHERE i.idIngredients = ingredient_id;
+        WHERE i.idIngredients = idIngredients;
         
         -- Sum up total calories, fat, protein, and carbohydrate for the recipe
-        SET total_calories = total_calories + @calories;
-        SET total_fat = total_fat + @fat;
-        SET total_protein = total_protein + @protein;
-        SET total_carbohydrate = total_carbohydrate + @carbohydrate;
+        SET total_calories = total_calories + calories_per_serving;
+        SET total_fat = total_fat + fat_per_serving;
+        SET total_protein = total_protein + protein_per_serving;
+        SET total_carbohydrate = total_carbohydrate + carbohydrate_per_serving;
     END LOOP;
     
-    CLOSE cur;
 
     -- Update recipe table with calculated nutritional information
     UPDATE Recipe
-    SET calories_per_serving = total_calories,
-        fat_per_serving = total_fat,
-        protein_per_serving = total_protein,
-        carbohydrate_per_serving = total_carbohydrate
+    SET total_calories = total_calories,
+        total_fat = total_fat,
+        total_protein = total_protein,
+        total_carbohydrate = total_carbohydrate
     WHERE idRecipe = recipe_id;
     
 END //
 
 DELIMITER ;
 
+
 --
 -- Procedure for step count step 
 --
+
 DELIMITER //
 
 CREATE PROCEDURE create_steps(
@@ -418,4 +478,99 @@ BEGIN
     END WHILE;
 END
 
+-- Trigger for INSERT event
+CREATE TRIGGER Steps_Insert
+AFTER INSERT ON Recipe
+FOR EACH ROW 
+BEGIN
+    CALL create_steps(Steps_text_input);
+END;
+
+-- Trigger for UPDATE event
+CREATE TRIGGER Steps_Update
+AFTER UPDATE ON Recipe
+FOR EACH ROW 
+BEGIN
+    IF NEW.Steps_text != OLD.Steps_text THEN
+        CALL create_steps(NEW.Steps_text);
+    END IF;
+END;
+
 DELIMITER ;
+
+--
+-- Procedure for tips in recipes
+--
+
+DELIMITER //
+
+CREATE TRIGGER CheckTipsCount
+BEFORE INSERT ON Tips
+FOR EACH ROW
+BEGIN
+    DECLARE tips_count INT;
+    
+    -- Count the number of tips for the given recipe
+    SELECT COUNT(*) INTO tips_count
+    FROM Tips
+    WHERE Recipe_idRecipe = NEW.Recipe_idRecipe;
+    
+    -- If the count exceeds 3, raise an error
+    IF tips_count >= 3 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'A recipe cannot have more than 3 tips';
+    END IF;
+END//
+
+DELIMITER ;
+
+DELIMITER //
+
+CREATE PROCEDURE CalculateEpisodeWinner(IN episode_id INT)
+BEGIN
+    DECLARE max_score INT;
+    DECLARE winner_id INT;
+    DECLARE max_qualification INT;
+    DECLARE tie_winner_id INT;
+    
+    -- Calculate the maximum score given by the judges
+    SELECT MAX(Score) INTO max_score
+    FROM Episode_has_Participants
+    WHERE Episode_idEpisode = episode_id;
+    
+    -- Find the participant(s) with the maximum score
+    SELECT Cook_idCook INTO winner_id
+    FROM Episode_has_Participants
+    WHERE Episode_idEpisode = episode_id AND Score = max_score
+    LIMIT 1; -- If there's a tie, select only the first participant
+    
+    -- Check if there's a tie
+    IF (SELECT COUNT(*) FROM Episode_has_Participants WHERE Episode_idEpisode = episode_id AND Score = max_score) > 1 THEN
+        -- Find the participant(s) with the highest professional qualification
+        SELECT MAX(Years_experience) INTO max_qualification
+        FROM Cook
+        WHERE idCook IN (SELECT Cook_idCook FROM Episode_has_Participants WHERE Episode_idEpisode = episode_id AND Score = max_score);
+        
+        -- Find the participant(s) with the highest qualification
+        SELECT Cook_idCook INTO tie_winner_id
+        FROM Cook
+        WHERE idCook IN (SELECT Cook_idCook FROM Episode_has_Participants WHERE Episode_idEpisode = episode_id AND Score = max_score)
+        AND Years_experience = max_qualification
+        LIMIT 1; -- If there's still a tie, select only the first participant
+        
+        -- If there's still a tie, select the winner randomly
+        IF (SELECT COUNT(*) FROM Cook WHERE idCook IN (SELECT Cook_idCook FROM Episode_has_Participants WHERE Episode_idEpisode = episode_id AND Score = max_score AND Years_experience = max_qualification)) > 1 THEN
+            SET tie_winner_id = (SELECT Cook_idCook FROM Episode_has_Participants WHERE Episode_idEpisode = episode_id AND Score = max_score AND Years_experience = max_qualification LIMIT 1);
+        END IF;
+        
+        SET winner_id = tie_winner_id;
+    END IF;
+    
+    -- Update the episode table with the winner
+    UPDATE Episode
+    SET Winner_idCook = winner_id
+    WHERE idEpisode = episode_id;
+END //
+
+DELIMITER ;
+
