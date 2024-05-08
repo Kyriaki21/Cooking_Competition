@@ -1,3 +1,4 @@
+ 
   + Steps *** 
 
 Triggers: 
@@ -17,6 +18,6 @@ Procedures:
   + Procedure structure for `calc_nutritional_values` when change portions I want to delete
     the old value of this ingredient and add the new value of ingredient
 
-Tables:
-  + Make the table images
-    Attaching image files to a database without a graphical user interface (GUI) typically involves storing the images directly in the database as binary large objects (BLOBs) or storing references (e.g., file paths or URLs) to the images. 
+views
+
+and/if roles and rights
