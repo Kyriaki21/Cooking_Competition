@@ -2,10 +2,25 @@ DROP SCHEMA IF EXISTS Cooking_Competition;
 CREATE SCHEMA Cooking_Competition;
 USE Cooking_Competition;
 
+CREATE TABLE `Cooking_Competition`.`Image` (
+  `idImage` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `Description` TEXT NOT NULL,
+  `URL` VARCHAR(255) NOT NULL,
+  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`idImage`))
+  ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE `Cooking_Competition`.`Cuisine` (
   `idCuisine` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `Cuisine` VARCHAR(45) NULL,
   `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `Image` INT UNSIGNED NOT NULL,
+   INDEX `fk_Cuisine_Image_idx` (`Image` ASC) VISIBLE,
+  CONSTRAINT `fk_Cuisine_Image`
+    FOREIGN KEY (`Image`)
+    REFERENCES `Cooking_Competition`.`Image` (`idImage`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
   PRIMARY KEY (`idCuisine`))
 ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -13,6 +28,13 @@ CREATE TABLE `Cooking_Competition`.`Type_Meal` (
   `idType_Meal` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `Type_Meal` VARCHAR(45) NULL,
   `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `Image` INT UNSIGNED NOT NULL,
+   INDEX `fk_Type_Meal_Image_idx` (`Image` ASC) VISIBLE,
+  CONSTRAINT `fk_Type_Meal_Image`
+    FOREIGN KEY (`Image`)
+    REFERENCES `Cooking_Competition`.`Image` (`idImage`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
   PRIMARY KEY (`idType_Meal`))
 ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -22,6 +44,13 @@ CREATE TABLE `Cooking_Competition`.`Food_Group` (
   `description_food_group` TEXT NOT NULL,
   `Recipe_Category` VARCHAR(45) NOT NULL,
   `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `Image` INT UNSIGNED NOT NULL,
+   INDEX `fk_Food_Group_Image_idx` (`Image` ASC) VISIBLE,
+  CONSTRAINT `fk_Food_Group_Image`
+    FOREIGN KEY (`Image`)
+    REFERENCES `Cooking_Competition`.`Image` (`idImage`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
   PRIMARY KEY (`idFood_Group`),
   UNIQUE INDEX `name_food_group_UNIQUE` (`name_food_group` ASC) VISIBLE,
   UNIQUE INDEX `Recipe_Category_UNIQUE` (`Recipe_Category` ASC) VISIBLE)
@@ -32,6 +61,13 @@ CREATE TABLE  `Cooking_Competition`.`Equipment` (
   `equip_name` VARCHAR(45) NOT NULL,
   `equip_use` TEXT NOT NULL,
   `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `Image` INT UNSIGNED NOT NULL,
+   INDEX `fk_Equipment_Image_idx` (`Image` ASC) VISIBLE,
+  CONSTRAINT `fk_Equipment_Image`
+    FOREIGN KEY (`Image`)
+    REFERENCES `Cooking_Competition`.`Image` (`idImage`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
   PRIMARY KEY (`idEquipment`),
   UNIQUE INDEX `equip_name_UNIQUE` (`equip_name` ASC) VISIBLE)
 ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -46,6 +82,13 @@ CREATE TABLE `Cooking_Competition`.`Cook` (
   `Years_experience` INT NOT NULL,
   `Status` ENUM('C cook', 'B cook', 'A cook', 'assistant head Chef', 'Chef') NOT NULL,
   `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `Image` INT UNSIGNED NOT NULL,
+   INDEX `fk_Cook_Image_idx` (`Image` ASC) VISIBLE,
+  CONSTRAINT `fk_Cook_Image`
+    FOREIGN KEY (`Image`)
+    REFERENCES `Cooking_Competition`.`Image` (`idImage`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
   PRIMARY KEY (`idCook`))
 ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -67,6 +110,13 @@ CREATE TABLE `Cooking_Competition`.`Recipe` (
   `syntagi` ENUM('cooking', 'pastry') NOT NULL,
   `cook_id` INT UNSIGNED NOT NULL, 
   `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `Image` INT UNSIGNED NOT NULL,
+   INDEX `fk_Recipe_Image_idx` (`Image` ASC) VISIBLE,
+  CONSTRAINT `fk_Recipe_Image`
+    FOREIGN KEY (`Image`)
+    REFERENCES `Cooking_Competition`.`Image` (`idImage`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
   PRIMARY KEY (`idRecipe`),
   INDEX `fk_Recipe_Cuisine1_idx` (`Cuisine_id` ASC) VISIBLE,
   INDEX `fk_Recipe_Type_Meal1_idx` (`Type_Meal_id` ASC) VISIBLE,
@@ -111,6 +161,13 @@ CREATE TABLE `Cooking_Competition`.`Concept` (
   `Concept_name` VARCHAR(255) NOT NULL,
   `Concept_description` TEXT DEFAULT NULL,
   `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `Image` INT UNSIGNED NOT NULL,
+   INDEX `fk_Concept_Image_idx` (`Image` ASC) VISIBLE,
+  CONSTRAINT `fk_Concept_Image`
+    FOREIGN KEY (`Image`)
+    REFERENCES `Cooking_Competition`.`Image` (`idImage`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
   PRIMARY KEY (`idConcept`))
 ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -138,6 +195,13 @@ CREATE TABLE `Cooking_Competition`.`Label` (
   `idLabel` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `Label_name` VARCHAR(45) NULL,
   `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `Image` INT UNSIGNED NOT NULL,
+   INDEX `fk_Label_Image_idx` (`Image` ASC) VISIBLE,
+  CONSTRAINT `fk_Label_Image`
+    FOREIGN KEY (`Image`)
+    REFERENCES `Cooking_Competition`.`Image` (`idImage`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
   PRIMARY KEY (`idLabel`),
   UNIQUE INDEX  `Label_name_UNIQUE` (`Label_name` ASC) VISIBLE)
 ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -180,6 +244,7 @@ ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 CREATE TABLE `Cooking_Competition`.`Recipe_has_Equipment` (
   `Recipe_idRecipe` INT UNSIGNED NOT NULL,
   `Equipment_idEquipment` INT UNSIGNED NOT NULL,
+  `Quantity` TINYINT NOT NULL,
   `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`Recipe_idRecipe`, `Equipment_idEquipment`),
   INDEX `fk_Recipe_has_Equipment_Equipment1_idx` (`Equipment_idEquipment` ASC) VISIBLE,
@@ -208,6 +273,13 @@ CREATE TABLE `Cooking_Competition`.`Ingredients` (
   `Measurement_Type` VARCHAR(45) NOT NULL,
   `Default_scale` TINYINT NOT NULL DEFAULT 100,
   `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `Image` INT UNSIGNED NOT NULL,
+   INDEX `fk_Ingedient_Image_idx` (`Image` ASC) VISIBLE,
+  CONSTRAINT `fk_Ingedient_Image`
+    FOREIGN KEY (`Image`)
+    REFERENCES `Cooking_Competition`.`Image` (`idImage`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
   PRIMARY KEY (`idIngredients`),
   INDEX `fk_Ingredients_Food_Group_idx` (`Food_Group_idFood_Group` ASC) VISIBLE,
   CONSTRAINT `fk_Ingredients_Food_Group`
@@ -573,4 +645,3 @@ BEGIN
 END //
 
 DELIMITER ;
-
