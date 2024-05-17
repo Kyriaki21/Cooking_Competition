@@ -56,42 +56,6 @@ CREATE TABLE `Cooking_Competition`.`Food_Group` (
   UNIQUE INDEX `Recipe_Category_UNIQUE` (`Recipe_Category` ASC)  )
 ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE  `Cooking_Competition`.`Equipment` (
-  `idEquipment` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `equip_name` VARCHAR(45) NOT NULL,
-  `equip_use` TEXT NOT NULL,
-  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `Image` INT UNSIGNED NOT NULL,
-   INDEX `fk_Equipment_Image_idx` (`Image` ASC)  ,
-  CONSTRAINT `fk_Equipment_Image`
-    FOREIGN KEY (`Image`)
-    REFERENCES `Cooking_Competition`.`Image` (`idImage`)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE,
-  PRIMARY KEY (`idEquipment`),
-  UNIQUE INDEX `equip_name_UNIQUE` (`equip_name` ASC)  )
-ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `Cooking_Competition`.`Cook` (
-  `idCook` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `first_name` VARCHAR(45) NOT NULL,
-  `last_name` VARCHAR(45) NOT NULL,
-  `phone_number` VARCHAR(15) NOT NULL,
-  `birth_date` DATE NOT NULL,
-  `age` INT NOT NULL,
-  `Years_experience` INT NOT NULL,
-  `Status` ENUM('C cook', 'B cook', 'A cook', 'assistant head Chef', 'Chef') NOT NULL,
-  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `Image` INT UNSIGNED NOT NULL,
-   INDEX `fk_Cook_Image_idx` (`Image` ASC)  ,
-  CONSTRAINT `fk_Cook_Image`
-    FOREIGN KEY (`Image`)
-    REFERENCES `Cooking_Competition`.`Image` (`idImage`)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE,
-  PRIMARY KEY (`idCook`))
-ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
 CREATE TABLE `Cooking_Competition`.`Recipe` (
   `idRecipe` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `title` VARCHAR(200) NOT NULL,
@@ -148,6 +112,21 @@ CREATE TABLE `Cooking_Competition`.`Tips` (
     ON UPDATE CASCADE)
 ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE `Cooking_Competition`.`Steps` (
+  `idSteps` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `Step_number` TINYINT NOT NULL,
+  `Step_description` TEXT NOT NULL,
+  `Recipe_idRecipe` INT UNSIGNED NOT NULL,
+  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`idSteps`),
+  INDEX `fk_Steps_Recipe1_idx` (`Recipe_idRecipe` ASC)  ,
+  CONSTRAINT `fk_Steps_Recipe1`
+    FOREIGN KEY (`Recipe_idRecipe`)
+    REFERENCES `Cooking_Competition`.`Recipe` (`idRecipe`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE)
+ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE `Cooking_Competition`.`Concept` (
   `idConcept` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `Concept_name` VARCHAR(255) NOT NULL,
@@ -162,25 +141,6 @@ CREATE TABLE `Cooking_Competition`.`Concept` (
     ON UPDATE CASCADE,
   PRIMARY KEY (`idConcept`))
 ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `Cooking_Competition`.`Recipe_has_Cook` (
-  `Recipe_idRecipe` INT UNSIGNED NOT NULL,
-  `Cook_idCook` INT UNSIGNED NOT NULL,
-  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`Recipe_idRecipe`, `Cook_idCook`),
-  INDEX `fk_Recipe_has_Cook_Cook1_idx` (`Cook_idCook` ASC),
-  INDEX `fk_Recipe_has_Cook_Recipe1_idx` (`Recipe_idRecipe` ASC),
-  CONSTRAINT `fk_Recipe_has_Cook_Recipe1`
-    FOREIGN KEY (`Recipe_idRecipe`)
-    REFERENCES `Cooking_Competition`.`Recipe` (`idRecipe`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-  CONSTRAINT `fk_Recipe_has_Cook_Cook1`
-    FOREIGN KEY (`Cook_idCook`)
-    REFERENCES `Cooking_Competition`.`Cook` (`idCook`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE  `Cooking_Competition`.`Recipe_has_Concept` (
   `Recipe_idRecipe` INT UNSIGNED NOT NULL,
@@ -201,6 +161,45 @@ CREATE TABLE  `Cooking_Competition`.`Recipe_has_Concept` (
     ON DELETE RESTRICT
     ON UPDATE CASCADE)
 ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `Cooking_Competition`.`Cook` (
+  `idCook` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `first_name` VARCHAR(45) NOT NULL,
+  `last_name` VARCHAR(45) NOT NULL,
+  `phone_number` VARCHAR(15) NOT NULL,
+  `birth_date` DATE NOT NULL,
+  `age` INT NOT NULL,
+  `Years_experience` INT NOT NULL,
+  `Status` ENUM('C cook', 'B cook', 'A cook', 'assistant head Chef', 'Chef') NOT NULL,
+  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `Image` INT UNSIGNED NOT NULL,
+   INDEX `fk_Cook_Image_idx` (`Image` ASC)  ,
+  CONSTRAINT `fk_Cook_Image`
+    FOREIGN KEY (`Image`)
+    REFERENCES `Cooking_Competition`.`Image` (`idImage`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
+  PRIMARY KEY (`idCook`))
+ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `Cooking_Competition`.`Recipe_has_Cook` (
+  `Recipe_idRecipe` INT UNSIGNED NOT NULL,
+  `Cook_idCook` INT UNSIGNED NOT NULL,
+  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`Recipe_idRecipe`, `Cook_idCook`),
+  INDEX `fk_Recipe_has_Cook_Cook1_idx` (`Cook_idCook` ASC),
+  INDEX `fk_Recipe_has_Cook_Recipe1_idx` (`Recipe_idRecipe` ASC),
+  CONSTRAINT `fk_Recipe_has_Cook_Recipe1`
+    FOREIGN KEY (`Recipe_idRecipe`)
+    REFERENCES `Cooking_Competition`.`Recipe` (`idRecipe`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_Recipe_has_Cook_Cook1`
+    FOREIGN KEY (`Cook_idCook`)
+    REFERENCES `Cooking_Competition`.`Cook` (`idCook`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `Cooking_Competition`.`Label` (
   `idLabel` INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -237,19 +236,20 @@ CREATE TABLE  `Cooking_Competition`.`Recipe_has_Label` (
     ON UPDATE CASCADE)
 ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE `Cooking_Competition`.`Steps` (
-  `idSteps` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `Step_number` TINYINT NOT NULL,
-  `Step_description` TEXT NOT NULL,
-  `Recipe_idRecipe` INT UNSIGNED NOT NULL,
+CREATE TABLE  `Cooking_Competition`.`Equipment` (
+  `idEquipment` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `equip_name` VARCHAR(45) NOT NULL,
+  `equip_use` TEXT NOT NULL,
   `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`idSteps`),
-  INDEX `fk_Steps_Recipe1_idx` (`Recipe_idRecipe` ASC)  ,
-  CONSTRAINT `fk_Steps_Recipe1`
-    FOREIGN KEY (`Recipe_idRecipe`)
-    REFERENCES `Cooking_Competition`.`Recipe` (`idRecipe`)
+  `Image` INT UNSIGNED NOT NULL,
+   INDEX `fk_Equipment_Image_idx` (`Image` ASC)  ,
+  CONSTRAINT `fk_Equipment_Image`
+    FOREIGN KEY (`Image`)
+    REFERENCES `Cooking_Competition`.`Image` (`idImage`)
     ON DELETE RESTRICT
-    ON UPDATE CASCADE)
+    ON UPDATE CASCADE,
+  PRIMARY KEY (`idEquipment`),
+  UNIQUE INDEX `equip_name_UNIQUE` (`equip_name` ASC)  )
 ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `Cooking_Competition`.`Recipe_has_Equipment` (
@@ -405,6 +405,7 @@ CREATE TABLE `Cooking_Competition`.`Episode_has_Judges` (
     ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+
 CREATE TABLE `Cooking_Competition`.`Judge_Participant_Scores` (
   `Episode_idEpisode` INT UNSIGNED NOT NULL,
   `Judge_idJudge` INT UNSIGNED NOT NULL,
@@ -430,79 +431,254 @@ CREATE TABLE `Cooking_Competition`.`Judge_Participant_Scores` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Procedure structure for `calc_nutritional_values`
+-- Procedure to update the recipe's nutritional values
 --
 
 DELIMITER //
 
-CREATE PROCEDURE CalculateRecipeNutrition(IN recipe_id INT)
+CREATE PROCEDURE UpdateRecipeNutrition(
+    IN recipe_id INT, 
+    IN ingredient_id INT, 
+    IN operation CHAR(1) -- 'A' for add, 'S' for subtract
+)
 BEGIN
-    DECLARE total_calories DECIMAL(10,2) DEFAULT 0;
-    DECLARE total_fat DECIMAL(10,2) DEFAULT 0;
-    DECLARE total_protein DECIMAL(10,2) DEFAULT 0;
-    DECLARE total_carbohydrate DECIMAL(10,2) DEFAULT 0;
-    DECLARE total_weight DECIMAL(10,2) DEFAULT 0;
-    DECLARE servings INT;
-    DECLARE done INT DEFAULT FALSE;
-    DECLARE idIngredients INT; -- Declare idIngredients variable here
-    DECLARE quantity INT;
-	DECLARE calories_per_serving DECIMAL(10,2);
-	DECLARE fat_per_serving DECIMAL(10,2);
-	DECLARE protein_per_serving DECIMAL(10,2);
-	DECLARE carbohydrate_per_serving DECIMAL(10,2);
-    
-	SELECT Ingredients_idIngredients, Quantity
-	FROM Recipe_has_Ingredients
-	WHERE Recipe_idRecipe = recipe_id;
-   
+    DECLARE servings INT DEFAULT 1;
+    DECLARE quantity DECIMAL(10,2);
+    DECLARE calories INT;
+    DECLARE fat INT;
+    DECLARE protein INT;
+    DECLARE carbohydrate INT;
+
     -- Get the total number of servings for the recipe
     SELECT portions INTO servings
     FROM Recipe
     WHERE idRecipe = recipe_id;
-    
-    -- Iterate through ingredients
-    read_loop: LOOP
-        IF done THEN
-            LEAVE read_loop;
-        END IF;
-        
-        -- Calculate total weight of ingredient in grams
-        SET total_weight = quantity;
-        
-        -- Calculate calories, fat, protein, and carbohydrate per serving for each ingredient
-        
-        SELECT 
-            (i.calories / 100 * total_weight) / servings AS calories,
-            (i.fat / 100 * total_weight) / servings AS fat,
-            (i.protein / 100 * total_weight) / servings AS protein,
-            (i.carbohydrate / 100 * total_weight) / servings AS carbohydrate
-        INTO 
-            calories_per_serving, fat_per_serving, protein_per_serving, carbohydrate_per_serving
-        FROM Ingredients i
-        WHERE i.idIngredients = idIngredients;
-        
-        -- Sum up total calories, fat, protein, and carbohydrate for the recipe
-        SET total_calories = total_calories + calories_per_serving;
-        SET total_fat = total_fat + fat_per_serving;
-        SET total_protein = total_protein + protein_per_serving;
-        SET total_carbohydrate = total_carbohydrate + carbohydrate_per_serving;
-    END LOOP;
-    
 
-    -- Update recipe table with calculated nutritional information
-    UPDATE Recipe
-    SET total_calories = total_calories,
-        total_fat = total_fat,
-        total_protein = total_protein,
-        total_carbohydrate = total_carbohydrate
-    WHERE idRecipe = recipe_id;
-    
+    -- Get the quantity of the specific ingredient in the recipe
+    SELECT Quantity INTO quantity
+    FROM Recipe_has_Ingredients
+    WHERE Recipe_idRecipe = recipe_id AND Ingredients_idIngredients = ingredient_id;
+
+    -- Calculate the nutritional values for the specific ingredient
+    SELECT 
+        (calories / 100 * quantity) / servings AS ingredient_calories,
+        (fat / 100 * quantity) / servings AS ingredient_fat,
+        (protein / 100 * quantity) / servings AS ingredient_protein,
+        (carbohydrate / 100 * quantity) / servings AS ingredient_carbohydrate
+    INTO 
+        calories, fat, protein, carbohydrate
+    FROM Ingredients
+    WHERE idIngredients = ingredient_id;
+
+    -- Update the recipe's nutritional values
+    IF operation = 'A' THEN
+        UPDATE Recipe
+        SET total_calories = total_calories + calories,
+            total_fat = total_fat + fat,
+            total_protein = total_protein + protein,
+            total_carbohydrate = total_carbohydrate + carbohydrate
+        WHERE idRecipe = recipe_id;
+    ELSEIF operation = 'S' THEN
+        UPDATE Recipe
+        SET total_calories = total_calories - calories,
+            total_fat = total_fat - fat,
+            total_protein = total_protein - protein,
+            total_carbohydrate = total_carbohydrate - carbohydrate
+        WHERE idRecipe = recipe_id;
+    END IF;
+END //
+
+DELIMITER ;
+
+-- Trigger for after inserting an ingredient
+DELIMITER //
+
+CREATE TRIGGER AfterInsertRecipeIngredient
+AFTER INSERT ON Recipe_has_Ingredients
+FOR EACH ROW
+BEGIN
+    CALL UpdateRecipeNutrition(NEW.Recipe_idRecipe, NEW.Ingredients_idIngredients, 'A');
+END //
+
+DELIMITER ;
+
+-- Trigger for after deleting an ingredient
+DELIMITER //
+
+CREATE TRIGGER AfterDeleteRecipeIngredient
+AFTER DELETE ON Recipe_has_Ingredients
+FOR EACH ROW
+BEGIN
+    CALL UpdateRecipeNutrition(OLD.Recipe_idRecipe, OLD.Ingredients_idIngredients, 'S');
+END //
+
+DELIMITER ;
+
+-- Trigger for updating ingredient values
+DELIMITER //
+
+CREATE TRIGGER BeforeUpdateIngredients
+BEFORE UPDATE ON Ingredients
+FOR EACH ROW
+BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE recipe_id INT;
+
+    -- Cursor to iterate over recipes that use this ingredient
+    DECLARE recipe_cursor CURSOR FOR 
+        SELECT DISTINCT Recipe_idRecipe
+        FROM Recipe_has_Ingredients
+        WHERE Ingredients_idIngredients = OLD.idIngredients;
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    -- Check if any of the nutritional values are being updated
+    IF NEW.fat != OLD.fat OR
+       NEW.protein != OLD.protein OR
+       NEW.carbohydrate != OLD.carbohydrate OR
+       NEW.calories != OLD.calories THEN
+
+        OPEN recipe_cursor;
+        
+        read_loop: LOOP
+            FETCH recipe_cursor INTO recipe_id;
+            IF done THEN
+                LEAVE read_loop;
+            END IF;
+
+            -- Subtract old values
+            CALL UpdateRecipeNutrition(recipe_id, OLD.idIngredients, 'S');
+
+            -- Add new values
+            CALL UpdateRecipeNutrition(recipe_id, NEW.idIngredients, 'A');
+        END LOOP;
+
+        CLOSE recipe_cursor;
+    END IF;
 END //
 
 DELIMITER ;
 
 --
--- Procedure for tips in recipes
+-- Trigger for a cook participant
+--
+DELIMITER //
+
+CREATE TRIGGER BeforeInsertParticipant
+BEFORE INSERT ON Episode_has_Participants
+FOR EACH ROW
+BEGIN
+    DECLARE consecutive_count INT DEFAULT 0;
+    DECLARE curr_episode INT;
+    DECLARE curr_season INT;
+    DECLARE done INT DEFAULT FALSE;
+
+    -- Declare cursor to iterate over the last three episodes in descending order
+    DECLARE recent_episodes CURSOR FOR
+        SELECT e.Episode_number, e.Season_number
+        FROM Episode e
+        LEFT JOIN Episode_has_Participants ep ON e.idEpisode = ep.Episode_idEpisode AND ep.Cook_idCook = NEW.Cook_idCook
+        LEFT JOIN Episode_has_Judges ej ON e.idEpisode = ej.Episode_idEpisode AND ej.Judge_idJudge = NEW.Cook_idCook
+        WHERE ep.Cook_idCook IS NOT NULL OR ej.Judge_idJudge IS NOT NULL
+        ORDER BY e.Season_number DESC, e.Episode_number DESC
+        LIMIT 3;
+
+    -- Declare continue handler for cursor
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    -- Open the cursor
+    OPEN recent_episodes;
+
+    -- Fetch episodes and check for consecutive participation
+    read_loop: LOOP
+        FETCH recent_episodes INTO curr_episode, curr_season;
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+
+        -- Check if the current episode is consecutive
+        IF curr_season = (SELECT Season_number FROM Episode WHERE idEpisode = NEW.Episode_idEpisode) AND
+           curr_episode = (SELECT Episode_number FROM Episode WHERE idEpisode = NEW.Episode_idEpisode) - consecutive_count - 1 THEN
+            SET consecutive_count = consecutive_count + 1;
+        ELSE
+            SET consecutive_count = 0;
+        END IF;
+    END LOOP;
+
+    -- Close the cursor
+    CLOSE recent_episodes;
+
+    -- If the cook has participated in the last three consecutive episodes, signal an error
+    IF consecutive_count >= 3 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'The cook cannot participate in more than three consecutive episodes.';
+    END IF;
+END //
+
+DELIMITER ;
+
+--
+-- Trigger for a cook Judge
+--
+
+DELIMITER //
+
+CREATE TRIGGER BeforeInsertJudge
+BEFORE INSERT ON Episode_has_Judges
+FOR EACH ROW
+BEGIN
+    DECLARE consecutive_count INT DEFAULT 0;
+    DECLARE curr_episode INT;
+    DECLARE curr_season INT;
+    DECLARE done INT DEFAULT FALSE;
+
+    -- Declare cursor to iterate over the last three episodes in descending order
+    DECLARE recent_episodes CURSOR FOR
+        SELECT e.Episode_number, e.Season_number
+        FROM Episode e
+        LEFT JOIN Episode_has_Participants ep ON e.idEpisode = ep.Episode_idEpisode AND ep.Cook_idCook = NEW.Judge_idJudge
+        LEFT JOIN Episode_has_Judges ej ON e.idEpisode = ej.Episode_idEpisode AND ej.Judge_idJudge = NEW.Judge_idJudge
+        WHERE ep.Cook_idCook IS NOT NULL OR ej.Judge_idJudge IS NOT NULL
+        ORDER BY e.Season_number DESC, e.Episode_number DESC
+        LIMIT 3;
+
+    -- Declare continue handler for cursor
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    -- Open the cursor
+    OPEN recent_episodes;
+
+    -- Fetch episodes and check for consecutive participation
+    read_loop: LOOP
+        FETCH recent_episodes INTO curr_episode, curr_season;
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+
+        -- Check if the current episode is consecutive
+        IF curr_season = (SELECT Season_number FROM Episode WHERE idEpisode = NEW.Episode_idEpisode) AND
+           curr_episode = (SELECT Episode_number FROM Episode WHERE idEpisode = NEW.Episode_idEpisode) - consecutive_count - 1 THEN
+            SET consecutive_count = consecutive_count + 1;
+        ELSE
+            SET consecutive_count = 0;
+        END IF;
+    END LOOP;
+
+    -- Close the cursor
+    CLOSE recent_episodes;
+
+    -- If the cook has participated in the last three consecutive episodes, signal an error
+    IF consecutive_count >= 3 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'The cook cannot participate in more than three consecutive episodes.';
+    END IF;
+END //
+
+DELIMITER ;
+
+
+--
+-- Trigger to limit the number of tips per recipe
 --
 
 DELIMITER //
@@ -526,6 +702,10 @@ BEGIN
 END//
 
 DELIMITER ;
+
+--
+-- Procedure to calculate the episode winner
+--
 
 DELIMITER //
 
@@ -571,15 +751,19 @@ BEGIN
     
     -- Update the episode table with the winner
     UPDATE Episode
-    SET Winner_idCook = winner_id
+    SET winner_id = winner_id
     WHERE idEpisode = episode_id;
 END //
 
 DELIMITER ;
 
+--
+-- Trigger to ensure steps are inserted in order
+--
+
 DELIMITER //
 
-CREATE TRIGGER Before_Insert_Step
+CREATE TRIGGER BeforeInsertStep
 BEFORE INSERT ON Steps
 FOR EACH ROW
 BEGIN
@@ -600,7 +784,3 @@ BEGIN
 END //
 
 DELIMITER ;
-
-
-
-
