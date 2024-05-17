@@ -184,17 +184,17 @@ INSERT INTO `Cooking_Competition`.`Cook` (`first_name`, `last_name`, `phone_numb
   ('Silvia', 'Monti', '+331876543203', '1998-02-18', 23, 3, 'C cook', 99),
   ('Massimo', 'De Luca', '+333245678904', '1981-09-21', 40, 19, 'Chef', 100);  
   
-INSERT INTO `Cooking_Competition`.`Recipe` (`title`, `description`, `difficulty`, `prep_time`, `cook_time`, `portions`, `total_calories`, `total_fat`, `total_protein`, `total_carbohydrate`,  `Cuisine_id`, `Type_Meal_id`, `Steps_text`, `syntagi`, `Image`)  VALUES
-('Spaghetti Carbonara','Classic Italian pasta dish made with spaghetti, eggs, pancetta, Parmesan cheese, and black pepper.', 3, 20, 20, 4, 700, 25, 30, 50, 5, 7, '1. Cook spaghetti until al dente. 2. Cook pancetta until crispy. 3. Whisk eggs, Parmesan cheese, and black pepper. 4. Toss spaghetti with egg mixture and pancetta.', 'cooking', 5),
-('Chicken Tikka Masala','Indian-inspired dish featuring grilled chicken in a creamy tomato sauce with aromatic spices.', 4, 40, 30, 4, 900, 40, 35, 45, 8, 7, '1. Marinate chicken in yogurt and spices. 2. Grill until charred. 3. Cook onions, garlic, and ginger. 4. Add tomato sauce and spices. 5. Simmer with grilled chicken.', 'cooking', 8),
-('California Roll','Popular Japanese sushi roll filled with crab meat, avocado, cucumber, and sushi rice.', 2, 25, 0, 4, 600, 10, 20, 50, 6, 7, '1. Lay out nori sheet. 2. Spread sushi rice. 3. Add crab meat, avocado, and cucumber. 4. Roll tightly. 5. Slice into bite-sized pieces.', 'cooking', 6),
-('Greek Salad','Traditional Greek salad made with tomatoes, cucumbers, onions, feta cheese, olives, and olive oil.', 1, 10, 0, 2, 300, 20, 10, 25, 9, 6, '1. Chop tomatoes, cucumbers, and onions. 2. Crumble feta cheese. 3. Toss together with olives and olive oil.', 'cooking', 9),
-('Beef Stroganoff','Classic Russian dish featuring sautéed pieces of beef served in a sour cream sauce with mushrooms and onions.', 3, 30, 30, 4, 800, 35, 40, 30, 13, 7, '1. Sauté beef until browned. 2. Cook onions and mushrooms. 3. Combine beef with onions and mushrooms. 4. Add sour cream and simmer until heated through.', 'cooking', 13),
-('Caprese Salad','Classic Italian salad made with fresh tomatoes, mozzarella cheese, basil, olive oil, and balsamic glaze.', 1, 10, 0, 2, 250, 20, 15, 5, 5, 6, '1. Slice tomatoes and mozzarella cheese. 2. Arrange them on a plate. 3. Drizzle with olive oil and balsamic glaze. 4. Garnish with fresh basil leaves.', 'cooking', 30),
-('Vegetable Stir-Fry','Healthy stir-fry made with a variety of fresh vegetables, tofu, soy sauce, and sesame oil.', 2, 15, 15, 4, 300, 15, 10, 25, 9, 7, '1. Chop vegetables and tofu into bite-sized pieces. 2. Heat sesame oil in a pan. 3. Add vegetables and tofu. 4. Stir-fry until vegetables are tender. 5. Season with soy sauce.', 'cooking', 31),
-('Chocolate Chip Cookies','Classic homemade cookies made with butter, sugar, flour, chocolate chips, and vanilla extract.', 2, 15, 10, 12, 200, 10, 3, 30, 3, 9, '1. Preheat oven to 350°F (175°C). 2. Cream butter and sugar. 3. Mix in flour, chocolate chips, and vanilla extract. 4. Drop spoonfuls of dough onto a baking sheet. 5. Bake for 10-12 minutes or until golden brown.', 'baking', 32),
-('Margarita Pizza','Traditional Italian pizza topped with tomato sauce, fresh mozzarella cheese, basil leaves, and olive oil.', 2, 20, 15, 1, 800, 30, 20, 50, 5, 7, '1. Preheat oven to 475°F (245°C). 2. Roll out pizza dough. 3. Spread tomato sauce on the dough. 4. Top with mozzarella cheese and basil leaves. 5. Drizzle with olive oil. 6. Bake for 12-15 minutes or until crust is golden brown.', 'cooking', 33),
-('Chicken Caesar Salad','Classic salad made with romaine lettuce, grilled chicken breast, croutons, Parmesan cheese, and Caesar dressing.', 2, 20, 15, 2, 400, 25, 30, 15, 5, 6, '1. Grill chicken breast until cooked through. 2. Chop romaine lettuce and chicken breast. 3. Toss lettuce with croutons, Parmesan cheese, and Caesar dressing. 4. Top with grilled chicken.', 'cooking', 34);
+INSERT INTO `Cooking_Competition`.`Recipe` (`title`, `description`, `difficulty`, `prep_time`, `cook_time`, `portions`, `Cuisine_id`, `Type_Meal_id`, `syntagi`, `Image`) VALUES
+('Spaghetti Carbonara', 'Classic Italian pasta dish made with spaghetti, eggs, pancetta, Parmesan cheese, and black pepper.', 3, 20, 20, 4, 5, 7, 'cooking', 5),
+('Chicken Tikka Masala', 'Indian-inspired dish featuring grilled chicken in a creamy tomato sauce with aromatic spices.', 4, 40, 30, 4, 8, 7, 'cooking', 8),
+('California Roll', 'Popular Japanese sushi roll filled with crab meat, avocado, cucumber, and sushi rice.', 2, 25, 0, 4, 6, 7, 'cooking', 6),
+('Greek Salad', 'Traditional Greek salad made with tomatoes, cucumbers, onions, feta cheese, olives, and olive oil.', 1, 10, 0, 2, 9, 6, 'cooking', 9),
+('Beef Stroganoff', 'Classic Russian dish featuring sautéed pieces of beef served in a sour cream sauce with mushrooms and onions.', 3, 30, 30, 4, 13, 7, 'cooking', 13),
+('Caprese Salad', 'Classic Italian salad made with fresh tomatoes, mozzarella cheese, basil, olive oil, and balsamic glaze.', 1, 10, 0, 2, 5, 6, 'cooking', 30),
+('Vegetable Stir-Fry', 'Healthy stir-fry made with a variety of fresh vegetables, tofu, soy sauce, and sesame oil.', 2, 15, 15, 4, 9, 7, 'cooking', 31),
+('Chocolate Chip Cookies', 'Classic homemade cookies made with butter, sugar, flour, chocolate chips, and vanilla extract.', 2, 15, 10, 12, 3, 9, 'baking', 32),
+('Margarita Pizza', 'Traditional Italian pizza topped with tomato sauce, fresh mozzarella cheese, basil leaves, and olive oil.', 2, 20, 15, 1, 5, 7, 'cooking', 33),
+('Chicken Caesar Salad', 'Classic salad made with romaine lettuce, grilled chicken breast, croutons, Parmesan cheese, and Caesar dressing.', 2, 20, 15, 2, 5, 6, 'cooking', 34);
 
 INSERT INTO `Cooking_Competition`.`Equipment` (`equip_name`, `equip_use`, `Image`) VALUES
 ('Skillet', 'For cooking', 1),
@@ -205,17 +205,17 @@ INSERT INTO `Cooking_Competition`.`Equipment` (`equip_name`, `equip_use`, `Image
 ('Knife', 'For chopping', 6),
 ('Cutting Board', 'For chopping', 7),
 ('Whisk', 'For mixing', 8),
-('Cooking pot', 'Cook spaghetti, rice, and pasta', 1),
-('Frying pan', 'Cook pancakes, stir-fries, and eggs', 2),
-('Chef knife', 'Chop vegetables, meat, and fruits', 3),
-('Baking sheet', 'Bake cookies, pastries, and roasted vegetables', 5),
-('Rolling pin', 'Roll out dough for pizza, pie crusts, and pasta', 6),
-('Grill Pan', 'Grilling chicken', 6),
-('Skillet', 'Stir-frying vegetables', 8),
-('Blender', 'Blend smoothies, soups, and sauces', 9),
-('Saucepan', 'Heat sauces, soups, and stews', 10),
-('Salad Bowl', 'Mixing salad ingredients', 11),
-('Spatula', 'Flipping cookies', 12);
+('Cooking pot', 'Cook spaghetti, rice, and pasta', 9),
+('Frying pan', 'Cook pancakes, stir-fries, and eggs', 10),
+('Chef knife', 'Chop vegetables, meat, and fruits', 11),
+('Baking sheet', 'Bake cookies, pastries, and roasted vegetables', 12),
+('Rolling pin', 'Roll out dough for pizza, pie crusts, and pasta', 13),
+('Grill Pan', 'Grilling chicken', 14),
+('Skillet', 'Stir-frying vegetables', 15),
+('Blender', 'Blend smoothies, soups, and sauces', 16),
+('Saucepan', 'Heat sauces, soups, and stews', 17),
+('Salad Bowl', 'Mixing salad ingredients', 18),
+('Spatula', 'Flipping cookies', 19);
 
 INSERT INTO `Cooking_Competition`.`Ingredients` (`Ingredient_name`, `fat`, `protein`, `carbohydrate`, `calories`, `Food_Group_idFood_Group`, `Measurement_Type`, `Image`) VALUES 
 ('Spaghetti', 1, 12, 25, 131, 3, 'grams', 1),
@@ -248,29 +248,40 @@ INSERT INTO `Cooking_Competition`.`Ingredients` (`Ingredient_name`, `fat`, `prot
 ('Beef broth', 1, 2, 3, 15, 4, 'ml', 28),
 ('Sour cream', 20, 3, 2, 197, 5, 'grams', 29);
 
-INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (6, 2); 
-INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (7, 3);
-INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (8, 3); 
-INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (9, 3); 
-INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (10, 2); 
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (1, 5), (1, 6), (1, 54);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (2, 5), (2, 49), (2, 41), (2, 42);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (3, 5), (3, 62), (3, 11), (3, 16);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (4, 11), (4, 6), (4, 9), (4, 14);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (5, 5), (5, 50), (5, 64), (5, 37);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (6, 11), (6, 6), (6, 14), (6, 15);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (7, 5), (7, 11), (7, 15), (7, 16);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (8, 7), (8, 8), (8, 39), (8, 36);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (9, 5), (9, 57), (9, 11), (9, 42);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (10, 6), (10, 11), (10, 49), (10, 15); 
 
-INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (1, 1, 1), (1, 6, 1), (1, 7, 1); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (1, 1, 1), (1, 6, 1), (1, 7, 1), (1, 8, 1), (1, 9, 1); 
 INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (2, 2, 1), (2, 4, 1), (2, 6, 1), (2, 7, 1); 
 INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (3, 3, 1), (3, 6, 1), (3, 7, 1); 
-INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (4, 6, 1), (9, 7, 1); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (4, 6, 1), (4, 7, 1), (4, 11, 1); 
 INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (5, 1, 1), (5, 4, 1), (5, 6, 1), (5, 7, 1); 
-INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (6, 6, 1), (6, 7, 1), (6, 18, 1);
-INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (7, 6, 1), (7, 7, 1), (7, 17, 1), (7, 1, 1), (7, 8, 1); 
-INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (8, 6, 1), (8, 7, 1), (8, 3, 1), (8, 19, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (6, 6, 1), (6, 7, 1), (6, 11, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (7, 6, 1), (7, 7, 1), (7, 8, 1), (7, 1, 1), (7, 10, 1); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (8, 6, 1), (8, 7, 1), (8, 3, 1), (8, 12, 1);
 INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (9, 6, 1), (9, 7, 1), (9, 12, 1), (9, 5, 1);
-INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (10, 6, 1), (10, 7, 1), (10, 18, 1), (10, 19, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (10, 6, 1), (10, 7, 1), (10, 11, 1);
 
 
 INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (1, 1, 200, 1), (1, 2, 2, 0), (1, 3, 100, 0), (1, 4, 50, 0), (1, 5, 2, 0);
-INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (2, 6, 400, 1), (2, 7, 100, 0), (2, 8, 10, 0), (2, 9, 5, 0), (2, 10, 50, 0), (2, 11, 50, 0), (2, 12, 200, 0), (2, 28, 250, 0), (2, 29, 50, 0);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (2, 6, 400, 1), (2, 7, 100, 0), (2, 8, 10, 0), (2, 9, 5, 0), (2, 10, 50, 0), (2, 11, 50, 0), (2, 12, 200, 0), (2, 13, 50, 0);
 INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (3, 14, 150, 0), (3, 15, 4, 1), (3, 16, 100, 0), (3, 17, 50, 0), (3, 18, 50, 0), (3, 19, 5, 0), (3, 20, 30, 0), (3, 21, 20, 0), (3, 24, 20, 0);
 INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (4, 20, 100, 1), (4, 22, 50, 0), (4, 23, 30, 0), (4, 24, 20, 0);
 INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (5, 25, 300, 1), (5, 10, 100, 0), (5, 11, 2, 0), (5, 26, 100, 0), (5, 27, 50, 0), (5, 28, 250, 0), (5, 29, 100, 0);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (6, 20, 100, 1), (6, 22, 50, 0), (6, 24, 20, 0);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (7, 18, 200, 1), (7, 13, 20, 0), (7, 26, 50, 0);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (8, 2, 3, 0), (8, 27, 200, 0), (8, 29, 100, 0);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (9, 20, 100, 0), (9, 24, 30, 0), (9, 27, 100, 0);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (10, 6, 200, 1), (10, 22, 50, 0), (10, 24, 30, 0);
+
 
 INSERT INTO `Cooking_Competition`.`Tips` (`Tip_description`, `Recipe_idRecipe`) VALUES
 ('For a creamier texture, add a splash of heavy cream to the carbonara sauce just before serving.', 1),
@@ -300,3 +311,15 @@ INSERT INTO `Cooking_Competition`.`Tips` (`Tip_description`, `Recipe_idRecipe`) 
 ('Make your own Caesar dressing for the freshest flavor.',10),
 ('Add a handful of toasted pine nuts or croutons for extra crunch.',10),
 ('Serve with a wedge of lemon for squeezing over the salad just before eating.',10);
+
+INSERT INTO `Cooking_Competition`.`Steps` (`Step_number`, `Step_description`, `Recipe_idRecipe`) VALUES
+(1, 'Cook spaghetti until al dente.', 1), (2, 'Cook pancetta until crispy.', 1), (3, 'Whisk eggs, Parmesan cheese, and black pepper.', 1), (4, 'Toss spaghetti with egg mixture and pancetta.', 1),
+(1, 'Marinate chicken in yogurt and spices.', 2), (2, 'Grill until charred.', 2), (3, 'Cook onions, garlic, and ginger.', 2), (4, 'Add tomato sauce and spices.', 2), (5, 'Simmer with grilled chicken.', 2),
+(1, 'Lay out nori sheet.', 3), (2, 'Spread sushi rice.', 3), (3, 'Add crab meat, avocado, and cucumber.', 3), (4, 'Roll tightly.', 3), (5, 'Slice into bite-sized pieces.', 3),
+(1, 'Chop tomatoes, cucumbers, and onions.', 4), (2, 'Crumble feta cheese.', 4), (3, 'Toss together with olives and olive oil.', 4),
+(1, 'Sauté beef until browned.', 5), (2, 'Cook onions and mushrooms.', 5), (3, 'Combine beef with onions and mushrooms.', 5), (4, 'Add sour cream and simmer until heated through.', 5),
+(1, 'Slice tomatoes and mozzarella cheese.', 6), (2, 'Arrange them on a plate.', 6), (3, 'Drizzle with olive oil and balsamic glaze.', 6), (4, 'Garnish with fresh basil leaves.', 6),
+(1, 'Chop vegetables and tofu into bite-sized pieces.', 7), (2, 'Heat sesame oil in a pan.', 7), (3, 'Add vegetables and tofu.', 7), (4, 'Stir-fry until vegetables are tender.', 7), (5, 'Season with soy sauce.', 7),
+(1, 'Preheat oven to 350°F (175°C).', 8), (2, 'Cream butter and sugar.', 8), (3, 'Mix in flour, chocolate chips, and vanilla extract.', 8), (4, 'Drop spoonfuls of dough onto a baking sheet.', 8), (5, 'Bake for 10-12 minutes or until golden brown.', 8),
+(1, 'Preheat oven to 475°F (245°C).', 9), (2, 'Roll out pizza dough.', 9), (3, 'Spread tomato sauce on the dough.', 9), (4, 'Top with mozzarella cheese and basil leaves.', 9), (5, 'Drizzle with olive oil.', 9), (6, 'Bake for 12-15 minutes or until crust is golden brown.', 9),
+(1, 'Grill chicken breast until cooked through.', 10), (2, 'Chop romaine lettuce and chicken breast.', 10), (3, 'Toss lettuce with croutons, Parmesan cheese, and Caesar dressing.', 10), (4, 'Top with grilled chicken.', 10);
