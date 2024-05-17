@@ -194,7 +194,18 @@ INSERT INTO `Cooking_Competition`.`Recipe` (`title`, `description`, `difficulty`
 ('Vegetable Stir-Fry', 'Healthy stir-fry made with a variety of fresh vegetables, tofu, soy sauce, and sesame oil.', 2, 15, 15, 4, 9, 7, 'cooking', 31),
 ('Chocolate Chip Cookies', 'Classic homemade cookies made with butter, sugar, flour, chocolate chips, and vanilla extract.', 2, 15, 10, 12, 3, 9, 'baking', 32),
 ('Margarita Pizza', 'Traditional Italian pizza topped with tomato sauce, fresh mozzarella cheese, basil leaves, and olive oil.', 2, 20, 15, 1, 5, 7, 'cooking', 33),
-('Chicken Caesar Salad', 'Classic salad made with romaine lettuce, grilled chicken breast, croutons, Parmesan cheese, and Caesar dressing.', 2, 20, 15, 2, 5, 6, 'cooking', 34);
+('Chicken Caesar Salad', 'Classic salad made with romaine lettuce, grilled chicken breast, croutons, Parmesan cheese, and Caesar dressing.', 2, 20, 15, 2, 5, 6, 'cooking', 34),
+('Croissant','Flaky French pastry made with layers of buttery dough, perfect for breakfast or brunch.', 3, 60, 25, 6, 350, 20, 5, 30, 5, 1, '1. Prepare the dough and chill. 2. Roll out the dough and fold in butter. 3. Repeat folding and rolling several times. 4. Cut and shape the croissants. 5. Proof and bake until golden brown.', 'baking', 35),
+('Tacos al Pastor','Authentic Mexican street tacos featuring marinated pork, pineapple, and fresh toppings.', 2, 30, 20, 4, 400, 15, 25, 30, 7, 3, '1. Marinate the pork with adobo sauce. 2. Skewer pork and pineapple alternately. 3. Grill until cooked through. 4. Slice and serve in corn tortillas with toppings.', 'cooking', 36),
+('Pad Thai','Classic Thai noodle dish with shrimp, tofu, bean sprouts, and a tangy sauce.', 3, 20, 15, 4, 450, 10, 20, 35, 6, 7, '1. Soak rice noodles until soft. 2. Stir-fry shrimp and tofu. 3. Add noodles and sauce. 4. Toss with bean sprouts and scallions. 5. Serve with lime and peanuts.', 'cooking', 37),
+('Ratatouille','Traditional French vegetable dish made with layers of sliced eggplant, zucchini, and bell peppers.', 2, 30, 40, 4, 250, 10, 5, 30, 1, 7, '1. Slice vegetables thinly. 2. Layer in a baking dish with tomato sauce. 3. Bake until vegetables are tender. 4. Garnish with fresh herbs before serving.', 'cooking', 38),
+('Beef Tacos','Classic Mexican dish featuring seasoned beef, fresh vegetables, and warm tortillas.', 2, 25, 20, 4, 380, 18, 25, 20, 7, 3, '1. Season beef with taco seasoning. 2. Cook beef until browned. 3. Warm tortillas and assemble tacos with toppings. 4. Serve immediately.', 'cooking', 39),
+('Pesto Pasta','Italian pasta dish with homemade pesto sauce made from fresh basil, pine nuts, and Parmesan cheese.', 2, 15, 15, 4, 400, 15, 10, 30, 5, 7, '1. Cook pasta until al dente. 2. Blend basil, pine nuts, and Parmesan into a paste. 3. Toss pasta with pesto sauce. 4. Garnish with extra Parmesan before serving.', 'cooking', 40),
+('Shrimp Scampi','Classic Italian-American pasta dish featuring shrimp, garlic, white wine, and lemon sauce.', 3, 20, 20, 4, 420, 20, 30, 25, 5, 7, '1. Cook pasta until al dente. 2. Sauté shrimp and garlic. 3. Deglaze with white wine and lemon juice. 4. Toss with pasta and parsley.', 'cooking', 41),
+('Beef Wellington','Elegant English dish consisting of beef tenderloin wrapped in puff pastry and baked to perfection.', 4, 40, 30, 2, 600, 30, 25, 35, 3, 3, '1. Sear beef tenderloin. 2. Wrap in prosciutto and mushroom duxelles. 3. Encase in puff pastry and bake. 4. Rest before slicing and serving.', 'cooking', 42),
+('Greek Moussaka','Traditional Greek casserole with layers of eggplant, potatoes, ground lamb, and creamy bechamel sauce.', 3, 30, 45, 4, 480, 25, 20, 35, 9, 7, '1. Layer sliced eggplant and potatoes. 2. Brown ground lamb with onions and garlic. 3. Make bechamel sauce and pour over layers. 4. Bake until golden brown and bubbly.', 'cooking', 43),
+('Chicken Enchiladas','Classic Mexican dish featuring shredded chicken, cheese, and enchilada sauce wrapped in corn tortillas.', 2, 25, 25, 4, 420, 20, 25, 30, 7, 3, '1. Shred cooked chicken. 2. Fill tortillas with chicken and cheese. 3. Roll and place in baking dish. 4. Top with enchilada sauce and bake until bubbly.', 'cooking', 44);
+
 
 INSERT INTO `Cooking_Competition`.`Equipment` (`equip_name`, `equip_use`, `Image`) VALUES
 ('Skillet', 'For cooking', 1),
@@ -215,7 +226,18 @@ INSERT INTO `Cooking_Competition`.`Equipment` (`equip_name`, `equip_use`, `Image
 ('Blender', 'Blend smoothies, soups, and sauces', 16),
 ('Saucepan', 'Heat sauces, soups, and stews', 17),
 ('Salad Bowl', 'Mixing salad ingredients', 18),
-('Spatula', 'Flipping cookies', 19);
+('Spatula', 'Flipping cookies', 19),
+('Cookie sheet', 'Bake cookies', 20),
+('Pizza stone', 'Bake pizza', 21),
+('Pizza peel', 'Transfer pizza to and from oven', 22),
+('Salad spinner', 'Wash and dry salad greens', 23),
+('Measuring cups', 'Measure ingredients', 24),
+('Measuring spoons', 'Measure small amounts of ingredients', 25),
+('Mixing spoon', 'Stir ingredients', 26),
+('Pastry brush', 'Brush oil or glaze onto food', 27),
+('Zester', 'Zest citrus fruits', 28),
+('Juicer', 'Extract juice from fruits', 29),
+('Potato masher', 'Mash potatoes or other vegetables', 30);
 
 INSERT INTO `Cooking_Competition`.`Ingredients` (`Ingredient_name`, `fat`, `protein`, `carbohydrate`, `calories`, `Food_Group_idFood_Group`, `Measurement_Type`, `Image`) VALUES 
 ('Spaghetti', 1, 12, 25, 131, 3, 'grams', 1),
@@ -246,7 +268,27 @@ INSERT INTO `Cooking_Competition`.`Ingredients` (`Ingredient_name`, `fat`, `prot
 ('Mushroom', 0, 3, 1, 16, 1, 'grams', 26),
 ('Flour', 1, 3, 20, 100, 3, 'grams', 27),
 ('Beef broth', 1, 2, 3, 15, 4, 'ml', 28),
-('Sour cream', 20, 3, 2, 197, 5, 'grams', 29);
+('Sour cream', 20, 3, 2, 197, 5, 'grams', 29),
+('Sugar', 0, 0, 100, 387, 6, 'grams', 30),
+('Baking powder', 0, 0, 28, 107, 6, 'grams', 31),
+('Butter', 81, 1, 0, 717, 5, 'grams', 32),
+('Vanilla extract', 0, 0, 14, 288, 6, 'ml', 33),
+('Chocolate chips', 24, 4, 71, 450, 6, 'grams', 34),
+('Pizza dough', 3, 8, 53, 278, 3, 'grams', 35),
+('Fresh mozzarella cheese', 22, 18, 1, 280, 5, 'grams', 36),
+('Basil leaves', 0, 3, 2, 22, 1, 'grams', 37),
+('Enchilada sauce', 4, 1, 5, 45, 1, 'ml', 38),
+('Corn tortillas', 1, 2, 14, 64, 3, 'pieces', 39),
+('Shrimp', 1, 24, 0, 112, 4, 'grams', 40),
+('Lemon', 0, 1, 3, 17, 1, 'grams', 41),
+('Pasta', 1, 12, 25, 131, 3, 'grams', 42),
+('Breadcrumbs', 4, 10, 66, 384, 3, 'grams', 43),
+('Ground beef', 20, 24, 0, 283, 4, 'grams', 44),
+('Potatoes', 0, 2, 17, 77, 1, 'grams', 45),
+('Eggplant', 0, 1, 6, 25, 1, 'grams', 46),
+('Greek yogurt', 10, 10, 4, 146, 5, 'grams', 47),
+('Phyllo dough', 6, 7, 47, 299, 3, 'grams', 48),
+('Milk', 8, 8, 12, 103, 5, 'ml', 49);
 
 INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (1, 5), (1, 6), (1, 54);
 INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (2, 5), (2, 49), (2, 41), (2, 42);
@@ -258,6 +300,17 @@ INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLa
 INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (8, 7), (8, 8), (8, 39), (8, 36);
 INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (9, 5), (9, 57), (9, 11), (9, 42);
 INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (10, 6), (10, 11), (10, 49), (10, 15); 
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (11, 11), (11, 20);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (12, 39), (12, 41);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (13, 54), (13, 6);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (14, 6), (14, 14); 
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (15, 61), (15, 7);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (16, 54), (16, 14);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (17, 54), (17, 7);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (18, 57), (18, 39);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (19, 6), (19, 14);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (20, 7), (20, 38);
+
 
 INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (1, 1, 1), (1, 6, 1), (1, 7, 1), (1, 8, 1), (1, 9, 1); 
 INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (2, 2, 1), (2, 4, 1), (2, 6, 1), (2, 7, 1); 
@@ -269,7 +322,16 @@ INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Eq
 INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (8, 6, 1), (8, 7, 1), (8, 3, 1), (8, 12, 1);
 INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (9, 6, 1), (9, 7, 1), (9, 12, 1), (9, 5, 1);
 INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (10, 6, 1), (10, 7, 1), (10, 11, 1);
-
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (11, 9, 1), (11, 12, 1), (11, 16, 1); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (12, 2, 1), (12, 6, 1), (12, 7, 1), (12, 18, 1), (12, 19, 1); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (13, 2, 1), (13, 6, 1), (13, 7, 1), (13, 16, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (14, 7, 1), (14, 12, 1), (14, 16, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (15, 6, 1), (15, 10, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (16, 9, 1), (16, 6, 1), (16, 18, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (17, 9, 1), (17, 6, 1), (17, 16, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (18, 5, 1), (18, 6, 1), (18, 12, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (19, 7, 1), (19, 17, 1); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (20, 6, 1), (20, 12, 1); 
 
 INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (1, 1, 200, 1), (1, 2, 2, 0), (1, 3, 100, 0), (1, 4, 50, 0), (1, 5, 2, 0);
 INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (2, 6, 400, 1), (2, 7, 100, 0), (2, 8, 10, 0), (2, 9, 5, 0), (2, 10, 50, 0), (2, 11, 50, 0), (2, 12, 200, 0), (2, 13, 50, 0);
@@ -281,7 +343,16 @@ INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `
 INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (8, 2, 3, 0), (8, 27, 200, 0), (8, 29, 100, 0);
 INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (9, 20, 100, 0), (9, 24, 30, 0), (9, 27, 100, 0);
 INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (10, 6, 200, 1), (10, 22, 50, 0), (10, 24, 30, 0);
-
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (11, 27, 350, 1), (11, 7, 30, 1), (11, 4, 30, 1), (11, 6, 5, 1), (11, 1, 25, 1), (11, 2, 5, 1); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (12, 8, 30, 1), (12, 9, 25, 1), (12, 10, 5, 1), (12, 11, 5, 1), (12, 12, 15, 1), (12, 13, 50, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (13, 14, 20, 1), (13, 15, 10, 1), (13, 16, 15, 1), (13, 17, 10, 1), (13, 18, 5, 1), (13, 19, 10, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (14, 10, 5, 1), (14, 11, 2, 1), (14, 20, 5, 1), (14, 24, 20, 1), (14, 26, 3, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (15, 25, 300, 1), (15, 12, 8, 1), (15, 20, 10, 1), (15, 21, 5, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (16, 12, 250, 1), (16, 17, 200, 1), (16, 22, 50, 1), (16, 24, 30, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (17, 23, 250, 1), (17, 11, 3, 1), (17, 19, 30, 1), (17, 27, 200, 1); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES  (18, 25, 500, 1), (18, 27, 300, 1), (18, 28, 250, 1), (18, 29, 100, 1); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (19, 25, 500, 1), (19, 10, 3, 1), (19, 26, 5, 1), (19, 28, 300, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (20, 23, 300, 1), (20, 14, 10, 1), (20, 20, 10, 1), (20, 21, 5, 1);
 
 INSERT INTO `Cooking_Competition`.`Tips` (`Tip_description`, `Recipe_idRecipe`) VALUES
 ('For a creamier texture, add a splash of heavy cream to the carbonara sauce just before serving.', 1),
@@ -310,7 +381,39 @@ INSERT INTO `Cooking_Competition`.`Tips` (`Tip_description`, `Recipe_idRecipe`) 
 ('Finish with a sprinkle of fresh basil leaves and a drizzle of extra virgin olive oil for extra flavor.',9),
 ('Make your own Caesar dressing for the freshest flavor.',10),
 ('Add a handful of toasted pine nuts or croutons for extra crunch.',10),
-('Serve with a wedge of lemon for squeezing over the salad just before eating.',10);
+('Serve with a wedge of lemon for squeezing over the salad just before eating.',10),
+('Use cold butter for best results in creating flaky layers.', 11),
+('Allow the dough to rest in the refrigerator between folding to relax the gluten.', 11),
+('Brush the croissants with egg wash before baking for a shiny golden crust.', 11),
+('Marinate the pork for at least 4 hours, or overnight, for maximum flavor.', 12),
+('Use fresh pineapple for a sweet and tangy contrast to the savory pork.', 12),
+('Warm the corn tortillas on a hot skillet before serving for the best texture.', 12),
+('Soak the rice noodles in warm water for about 30 minutes before cooking.', 13),
+('Have all your ingredients prepped and ready before you start cooking.', 13),
+('Adjust the level of spice and tanginess in the sauce to suit your taste preferences.', 13),
+('Slice the vegetables thinly and evenly for even cooking.', 14),
+('Layer the vegetables in a spiral pattern for an attractive presentation.', 14),
+('Let the ratatouille rest for a few minutes before serving to allow the flavors to meld.', 14),
+('Use high-quality tortillas for the best flavor and texture.', 15),
+('Don’t overcrowd the pan when cooking the beef to ensure it browns evenly.', 15),
+('Serve with a variety of toppings like salsa, guacamole, and sour cream for customization.', 15),
+('Use fresh basil for the most vibrant pesto flavor.', 16),
+('Toast the pine nuts lightly before blending for extra nuttiness.', 16),
+('Adjust the consistency of the pesto with olive oil as needed.', 16),
+('Use fresh shrimp for the best flavor and texture.', 17),
+('Don’t overcook the shrimp; they should be pink and opaque when done.', 17),
+('Add a splash of white wine to deglaze the pan and add flavor to the sauce.', 17),
+('Make sure the puff pastry is chilled before wrapping the beef to prevent it from becoming soggy.', 18),
+('Sear the beef quickly over high heat to create a flavorful crust.', 18),
+('Let the beef rest before slicing to allow the juices to redistribute.', 18),
+('Slice the eggplant thinly and salt it to draw out excess moisture before cooking to prevent sogginess.', 19),
+('Make the bechamel sauce creamy but not too thick to ensure it spreads evenly over the layers.', 19),
+('Let the moussaka cool for a few minutes after baking to allow it to set before serving.', 19),
+('Use precooked shredded chicken or rotisserie chicken to save time.', 20),
+('Warm the corn tortillas briefly in the microwave or on a hot skillet before filling to prevent them from tearing.', 20),
+('Top the enchiladas with extra cheese and cilantro for added flavor and garnish.', 20);
+
+
 
 INSERT INTO `Cooking_Competition`.`Steps` (`Step_number`, `Step_description`, `Recipe_idRecipe`) VALUES
 (1, 'Cook spaghetti until al dente.', 1), (2, 'Cook pancetta until crispy.', 1), (3, 'Whisk eggs, Parmesan cheese, and black pepper.', 1), (4, 'Toss spaghetti with egg mixture and pancetta.', 1),
@@ -322,4 +425,14 @@ INSERT INTO `Cooking_Competition`.`Steps` (`Step_number`, `Step_description`, `R
 (1, 'Chop vegetables and tofu into bite-sized pieces.', 7), (2, 'Heat sesame oil in a pan.', 7), (3, 'Add vegetables and tofu.', 7), (4, 'Stir-fry until vegetables are tender.', 7), (5, 'Season with soy sauce.', 7),
 (1, 'Preheat oven to 350°F (175°C).', 8), (2, 'Cream butter and sugar.', 8), (3, 'Mix in flour, chocolate chips, and vanilla extract.', 8), (4, 'Drop spoonfuls of dough onto a baking sheet.', 8), (5, 'Bake for 10-12 minutes or until golden brown.', 8),
 (1, 'Preheat oven to 475°F (245°C).', 9), (2, 'Roll out pizza dough.', 9), (3, 'Spread tomato sauce on the dough.', 9), (4, 'Top with mozzarella cheese and basil leaves.', 9), (5, 'Drizzle with olive oil.', 9), (6, 'Bake for 12-15 minutes or until crust is golden brown.', 9),
-(1, 'Grill chicken breast until cooked through.', 10), (2, 'Chop romaine lettuce and chicken breast.', 10), (3, 'Toss lettuce with croutons, Parmesan cheese, and Caesar dressing.', 10), (4, 'Top with grilled chicken.', 10);
+(1, 'Grill chicken breast until cooked through.', 10), (2, 'Chop romaine lettuce and chicken breast.', 10), (3, 'Toss lettuce with croutons, Parmesan cheese, and Caesar dressing.', 10), (4, 'Top with grilled chicken.', 10),
+(1, 'Prepare the dough by mixing flour, yeast, sugar, salt, and water.', 11), (2, 'Roll out the dough into a rectangle and place cold butter in the center.', 1), (3, 'Fold the dough over the butter and roll it out again into a rectangle.', 11), (4, 'Repeat the folding process several times, chilling the dough in between.', 11), (5, 'Cut the dough into triangles, roll them up, and shape them into croissants.', 11), (6, 'Place the croissants on a baking sheet, proof until doubled in size, and bake until golden brown.', 11),
+(1, 'Marinate the pork shoulder in a mixture of adobo sauce, pineapple juice, and spices.', 12), (2, 'Skewer the marinated pork and pineapple alternately on a vertical rotisserie.', 12), (3, 'Cook the skewered meat on the rotisserie, slicing off pieces as it cooks.', 12), (4, 'Serve the cooked meat in warm corn tortillas with chopped onion, cilantro, and pineapple salsa.', 12),
+(1, 'Soak the rice noodles in warm water until softened, then drain.', 13), (2, 'In a hot wok or skillet, stir-fry shrimp, tofu, and aromatics until cooked.', 13), (3, 'Push the ingredients to one side and crack an egg into the empty space. Scramble until cooked.', 13), (4, 'Add the drained noodles to the wok along with the sauce. Toss until well coated and heated through.', 13), (5, 'Toss in bean sprouts and scallions, and garnish with peanuts and lime wedges before serving.', 13),
+(1, 'Thinly slice eggplant, zucchini, and bell peppers.', 14), (2, 'Spread tomato sauce in the bottom of a baking dish.', 14), (3, 'Arrange the sliced vegetables in the dish in an overlapping pattern.', 14), (4, 'Drizzle olive oil over the top and season with salt, pepper, and herbs.', 14), (5, 'Cover the dish with foil and bake until the vegetables are tender.', 14),
+(1, 'Season ground beef with taco seasoning and cook in a skillet until browned.', 15), (2, 'Warm tortillas on a hot skillet or in the oven.', 15), (3, 'Assemble tacos by filling each tortilla with cooked beef and desired toppings.', 15), (4, 'Serve immediately and enjoy!', 15),
+(1, 'Cook pasta according to package instructions until al dente.', 16), (2, 'In a food processor, combine fresh basil, pine nuts, garlic, and Parmesan cheese.',16), (3, 'With the processor running, slowly drizzle in olive oil until a smooth pesto forms.', 16), (4, 'Toss cooked pasta with the pesto sauce until evenly coated.', 16), (5, 'Garnish with additional Parmesan cheese and fresh basil leaves before serving.', 16),
+(1, 'Cook pasta according to package instructions until al dente.', 17), (2, 'In a large skillet, melt butter and sauté minced garlic until fragrant.', 17), (3, 'Add shrimp to the skillet and cook until pink and opaque, then remove and set aside.', 17), (4, 'Deglaze the skillet with white wine, then add lemon juice and chicken broth.', 17), (5, 'Return the shrimp to the skillet and toss with the sauce and cooked pasta.', 17), (6, 'Garnish with chopped parsley and grated Parmesan cheese before serving.', 17),
+(1, 'Season beef tenderloin with salt and pepper, then sear in a hot skillet until browned on all sides.', 18), (2, 'Spread a layer of mushroom duxelles and prosciutto on rolled-out puff pastry.', 18), (3, 'Place the seared beef on top of the mushroom mixture and wrap tightly in the puff pastry.', 18), (4, 'Brush the pastry with beaten egg and make decorative cuts on top.', 18), (5, 'Bake in a preheated oven until the pastry is golden brown and the beef is cooked to your desired doneness.', 18), (6, 'Let the beef Wellington rest for a few minutes before slicing and serving.', 18),
+(1, 'Slice the eggplant and potatoes thinly, then salt the eggplant slices and let them sit for about 30 minutes to remove excess moisture.', 19), (2, 'Brown ground lamb with diced onions and minced garlic in a skillet over medium heat until cooked through.', 19), (3, 'Make a bechamel sauce by melting butter in a saucepan, whisking in flour to form a roux, then gradually adding milk while stirring constantly until thickened.', 19), (4, 'Layer the sliced eggplant and potatoes in a baking dish, spreading the cooked lamb mixture over the layers.', 19), (5, 'Pour the bechamel sauce over the top layer and smooth it out with a spatula.', 19), (6, 'Bake the moussaka in a preheated oven until the top is golden brown and bubbly, about 45-50 minutes.', 19), (7, 'Let the moussaka cool for a few minutes before slicing and serving with a sprinkle of fresh parsley.', 19),
+(1, 'Shred cooked chicken and toss it with taco seasoning and a small amount of enchilada sauce.', 20), (2, 'Warm corn tortillas in the microwave or on a skillet until soft and pliable.', 20), (3, 'Place a spoonful of the chicken mixture in the center of each tortilla, then roll it up tightly and place seam-side down in a baking dish.', 20), (4, 'Pour enchilada sauce over the rolled tortillas, making sure they are fully covered.', 20), (5, 'Sprinkle shredded cheese over the top of the enchiladas, then cover the baking dish with foil.', 20), (6, 'Bake in a preheated oven until the cheese is melted and bubbly, about 20-25 minutes.', 20), (7, 'Garnish with chopped cilantro and serve hot with your favorite toppings, such as sour cream and sliced jalapenos.', 20);
