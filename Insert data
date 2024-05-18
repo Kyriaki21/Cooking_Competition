@@ -101,6 +101,28 @@ INSERT INTO `Cooking_Competition`.`Food_Group` (`name_food_group`, `description_
   ('Oils and Fats', 'Includes cooking oils like olive oil, vegetable oil, butter, and margarine.', 'Main Course', 9),
   ('Beverages', 'Consists of various beverages such as water, tea, coffee, juice, and alcoholic drinks.', 'Drinks', 10);
   
+INSERT INTO `Cooking_Competition`.`Concept` (`Concept_name`, `Concept_description`, `Image`) VALUES 
+('Village Recipes', 'Traditional recipes from the village.', 1),
+('Risotto Recipes', 'A collection of delicious risotto recipes.', 2),
+('Easter Sweets', 'Easter cakes, Easter desserts, and sweets ideal for the Easter table.', 3),
+('Healthy Recipes', 'Nutritious and healthy recipes for a balanced diet.', 4),
+('Quick Meals', 'Recipes that can be prepared in under 30 minutes.', 5),
+('Vegetarian Dishes', 'Delicious vegetarian recipes for every occasion.', 6),
+('International Cuisine', 'Recipes from various international cuisines.', 7),
+('Comfort Food', 'Warm and comforting recipes for any time.', 8),
+('Holiday Specials', 'Special recipes for the holiday season.', 9),
+('Desserts', 'A variety of dessert recipes.', 10),
+('Appetizers', 'Tasty appetizer recipes to start your meal.', 11),
+('Main Courses', 'Hearty main course recipes.', 12),
+('Soups and Stews', 'Comforting soups and stews.', 13),
+('Grill and BBQ', 'Grilling and BBQ recipes.', 14),
+('Pasta Dishes', 'Delicious pasta recipes.', 15),
+('Seafood Delights', 'A variety of seafood recipes.', 16),
+('Baking Favorites', 'Favorite baking recipes.', 17),
+('Gluten-Free Recipes', 'Delicious gluten-free recipes.', 18),
+('Vegan Recipes', 'Plant-based vegan recipes.', 19),
+('Low-Carb Recipes', 'Low-carbohydrate recipes.', 20);
+  
 INSERT INTO `Cooking_Competition`.`Cook` (`first_name`, `last_name`, `phone_number`, `birth_date`, `age`, `Years_experience`, `Status`, `Image`) VALUES
   ('John', 'Doe', '+441234567890', '1990-05-15', 34, 10, 'C cook', 1),
   ('Alice', 'Smith', '+441987654321', '1985-08-20', 39, 15, 'A cook', 2),
@@ -185,27 +207,56 @@ INSERT INTO `Cooking_Competition`.`Cook` (`first_name`, `last_name`, `phone_numb
   ('Massimo', 'De Luca', '+333245678904', '1981-09-21', 40, 19, 'Chef', 100);  
   
 INSERT INTO `Cooking_Competition`.`Recipe` (`title`, `description`, `difficulty`, `prep_time`, `cook_time`, `portions`, `Cuisine_id`, `Type_Meal_id`, `syntagi`, `Image`) VALUES
-('Spaghetti Carbonara', 'Classic Italian pasta dish made with spaghetti, eggs, pancetta, Parmesan cheese, and black pepper.', 3, 20, 20, 4, 5, 7, 'cooking', 5),
-('Chicken Tikka Masala', 'Indian-inspired dish featuring grilled chicken in a creamy tomato sauce with aromatic spices.', 4, 40, 30, 4, 8, 7, 'cooking', 8),
-('California Roll', 'Popular Japanese sushi roll filled with crab meat, avocado, cucumber, and sushi rice.', 2, 25, 0, 4, 6, 7, 'cooking', 6),
-('Greek Salad', 'Traditional Greek salad made with tomatoes, cucumbers, onions, feta cheese, olives, and olive oil.', 1, 10, 0, 2, 9, 6, 'cooking', 9),
-('Beef Stroganoff', 'Classic Russian dish featuring sautéed pieces of beef served in a sour cream sauce with mushrooms and onions.', 3, 30, 30, 4, 13, 7, 'cooking', 13),
-('Caprese Salad', 'Classic Italian salad made with fresh tomatoes, mozzarella cheese, basil, olive oil, and balsamic glaze.', 1, 10, 0, 2, 5, 6, 'cooking', 30),
-('Vegetable Stir-Fry', 'Healthy stir-fry made with a variety of fresh vegetables, tofu, soy sauce, and sesame oil.', 2, 15, 15, 4, 9, 7, 'cooking', 31),
-('Chocolate Chip Cookies', 'Classic homemade cookies made with butter, sugar, flour, chocolate chips, and vanilla extract.', 2, 15, 10, 12, 3, 9, 'baking', 32),
-('Margarita Pizza', 'Traditional Italian pizza topped with tomato sauce, fresh mozzarella cheese, basil leaves, and olive oil.', 2, 20, 15, 1, 5, 7, 'cooking', 33),
-('Chicken Caesar Salad', 'Classic salad made with romaine lettuce, grilled chicken breast, croutons, Parmesan cheese, and Caesar dressing.', 2, 20, 15, 2, 5, 6, 'cooking', 34),
-('Croissant','Flaky French pastry made with layers of buttery dough, perfect for breakfast or brunch.', 3, 60, 25, 6, 350, 20, 5, 30, 5, 1, '1. Prepare the dough and chill. 2. Roll out the dough and fold in butter. 3. Repeat folding and rolling several times. 4. Cut and shape the croissants. 5. Proof and bake until golden brown.', 'baking', 35),
-('Tacos al Pastor','Authentic Mexican street tacos featuring marinated pork, pineapple, and fresh toppings.', 2, 30, 20, 4, 400, 15, 25, 30, 7, 3, '1. Marinate the pork with adobo sauce. 2. Skewer pork and pineapple alternately. 3. Grill until cooked through. 4. Slice and serve in corn tortillas with toppings.', 'cooking', 36),
-('Pad Thai','Classic Thai noodle dish with shrimp, tofu, bean sprouts, and a tangy sauce.', 3, 20, 15, 4, 450, 10, 20, 35, 6, 7, '1. Soak rice noodles until soft. 2. Stir-fry shrimp and tofu. 3. Add noodles and sauce. 4. Toss with bean sprouts and scallions. 5. Serve with lime and peanuts.', 'cooking', 37),
-('Ratatouille','Traditional French vegetable dish made with layers of sliced eggplant, zucchini, and bell peppers.', 2, 30, 40, 4, 250, 10, 5, 30, 1, 7, '1. Slice vegetables thinly. 2. Layer in a baking dish with tomato sauce. 3. Bake until vegetables are tender. 4. Garnish with fresh herbs before serving.', 'cooking', 38),
-('Beef Tacos','Classic Mexican dish featuring seasoned beef, fresh vegetables, and warm tortillas.', 2, 25, 20, 4, 380, 18, 25, 20, 7, 3, '1. Season beef with taco seasoning. 2. Cook beef until browned. 3. Warm tortillas and assemble tacos with toppings. 4. Serve immediately.', 'cooking', 39),
-('Pesto Pasta','Italian pasta dish with homemade pesto sauce made from fresh basil, pine nuts, and Parmesan cheese.', 2, 15, 15, 4, 400, 15, 10, 30, 5, 7, '1. Cook pasta until al dente. 2. Blend basil, pine nuts, and Parmesan into a paste. 3. Toss pasta with pesto sauce. 4. Garnish with extra Parmesan before serving.', 'cooking', 40),
-('Shrimp Scampi','Classic Italian-American pasta dish featuring shrimp, garlic, white wine, and lemon sauce.', 3, 20, 20, 4, 420, 20, 30, 25, 5, 7, '1. Cook pasta until al dente. 2. Sauté shrimp and garlic. 3. Deglaze with white wine and lemon juice. 4. Toss with pasta and parsley.', 'cooking', 41),
-('Beef Wellington','Elegant English dish consisting of beef tenderloin wrapped in puff pastry and baked to perfection.', 4, 40, 30, 2, 600, 30, 25, 35, 3, 3, '1. Sear beef tenderloin. 2. Wrap in prosciutto and mushroom duxelles. 3. Encase in puff pastry and bake. 4. Rest before slicing and serving.', 'cooking', 42),
-('Greek Moussaka','Traditional Greek casserole with layers of eggplant, potatoes, ground lamb, and creamy bechamel sauce.', 3, 30, 45, 4, 480, 25, 20, 35, 9, 7, '1. Layer sliced eggplant and potatoes. 2. Brown ground lamb with onions and garlic. 3. Make bechamel sauce and pour over layers. 4. Bake until golden brown and bubbly.', 'cooking', 43),
-('Chicken Enchiladas','Classic Mexican dish featuring shredded chicken, cheese, and enchilada sauce wrapped in corn tortillas.', 2, 25, 25, 4, 420, 20, 25, 30, 7, 3, '1. Shred cooked chicken. 2. Fill tortillas with chicken and cheese. 3. Roll and place in baking dish. 4. Top with enchilada sauce and bake until bubbly.', 'cooking', 44);
-
+('Spaghetti Carbonara', 'Classic Italian pasta dish made with spaghetti, eggs, pancetta, Parmesan cheese, and black pepper.', 3, 20, 20, 4, 5, 7, 'cooking', 1),
+('Chicken Tikka Masala', 'Indian-inspired dish featuring grilled chicken in a creamy tomato sauce with aromatic spices.', 4, 40, 30, 4, 8, 7, 'cooking', 2),
+('California Roll', 'Popular Japanese sushi roll filled with crab meat, avocado, cucumber, and sushi rice.', 2, 25, 0, 4, 6, 7, 'cooking', 3),
+('Greek Salad', 'Traditional Greek salad made with tomatoes, cucumbers, onions, feta cheese, olives, and olive oil.', 1, 10, 0, 2, 9, 6, 'cooking', 4),
+('Beef Stroganoff', 'Classic Russian dish featuring sautéed pieces of beef served in a sour cream sauce with mushrooms and onions.', 3, 30, 30, 4, 13, 7, 'cooking', 5),
+('Caprese Salad', 'Classic Italian salad made with fresh tomatoes, mozzarella cheese, basil, olive oil, and balsamic glaze.', 1, 10, 0, 2, 5, 6, 'cooking', 6),
+('Vegetable Stir-Fry', 'Healthy stir-fry made with a variety of fresh vegetables, tofu, soy sauce, and sesame oil.', 2, 15, 15, 4, 9, 7, 'cooking', 7),
+('Chocolate Chip Cookies', 'Classic homemade cookies made with butter, sugar, flour, chocolate chips, and vanilla extract.', 2, 15, 10, 12, 3, 9, 'baking', 8),
+('Margarita Pizza', 'Traditional Italian pizza topped with tomato sauce, fresh mozzarella cheese, basil leaves, and olive oil.', 2, 20, 15, 1, 5, 7, 'cooking', 9),
+('Chicken Caesar Salad', 'Classic salad made with romaine lettuce, grilled chicken breast, croutons, Parmesan cheese, and Caesar dressing.', 2, 20, 15, 2, 5, 6, 'cooking', 10),
+('Croissant','Flaky French pastry made with layers of buttery dough, perfect for breakfast or brunch.', 3, 60, 25, 6, 5, 1, 'baking', 11),
+('Tacos al Pastor','Authentic Mexican street tacos featuring marinated pork, pineapple, and fresh toppings.', 2, 30, 20, 4, 7, 3, 'cooking', 12),
+('Pad Thai','Classic Thai noodle dish with shrimp, tofu, bean sprouts, and a tangy sauce.', 3, 20, 15, 4, 6, 7, 'cooking', 13),
+('Ratatouille','Traditional French vegetable dish made with layers of sliced eggplant, zucchini, and bell peppers.', 2, 30, 40, 4, 1, 7, 'cooking', 14),
+('Beef Tacos','Classic Mexican dish featuring seasoned beef, fresh vegetables, and warm tortillas.', 2, 25, 20, 4, 7, 3, 'cooking', 15),
+('Pesto Pasta','Italian pasta dish with homemade pesto sauce made from fresh basil, pine nuts, and Parmesan cheese.', 2, 15, 15, 4, 5, 7, 'cooking', 16),
+('Shrimp Scampi','Classic Italian-American pasta dish featuring shrimp, garlic, white wine, and lemon sauce.', 3, 20, 20, 4, 5, 7, 'cooking', 17),
+('Beef Wellington','Elegant English dish consisting of beef tenderloin wrapped in puff pastry and baked to perfection.', 4, 40, 30, 2, 3, 3, 'cooking', 18),
+('Greek Moussaka','Traditional Greek casserole with layers of eggplant, potatoes, ground lamb, and creamy bechamel sauce.', 3, 30, 45, 4, 9, 7, 'cooking', 19),
+('Chicken Enchiladas','Classic Mexican dish featuring shredded chicken, cheese, and enchilada sauce wrapped in corn tortillas.', 2, 25, 25, 4, 7, 3, 'cooking', 20),
+('French Onion Soup', 'Rich and flavorful soup made with caramelized onions, beef broth, and topped with melted cheese.', 3, 15, 60, 4, 2, 8, 'cooking', 21),
+('Shrimp Scampi', 'Garlic butter shrimp served over linguine pasta.', 2, 10, 15, 4, 10, 7, 'cooking', 22),
+('Vegetable Lasagna', 'Layered lasagna with vegetables, ricotta, mozzarella, and marinara sauce.', 4, 30, 60, 6, 5, 7, 'cooking', 23),
+('Tuna Poke Bowl', 'Hawaiian dish with marinated raw tuna, rice, and assorted vegetables.', 2, 20, 0, 4, 11, 6, 'cooking', 24),
+('Beef Wellington', 'Tender beef fillet wrapped in puff pastry with mushrooms and prosciutto.', 5, 40, 50, 4, 1, 7, 'cooking', 25),
+('Eggplant Parmesan', 'Breaded and fried eggplant slices layered with marinara sauce and cheese.', 3, 20, 30, 4, 5, 7, 'cooking', 26),
+('Chicken Alfredo', 'Creamy pasta dish with grilled chicken and Alfredo sauce.', 3, 20, 20, 4, 8, 7, 'cooking', 27),
+('Quiche Lorraine', 'Savory tart with a filling of eggs, cream, cheese, and bacon.', 3, 15, 45, 6, 2, 8, 'cooking', 28),
+('Pineapple Fried Rice', 'Fried rice with pineapple, vegetables, and optional shrimp or chicken.', 2, 15, 15, 4, 12, 7, 'cooking', 29),
+('Chocolate Lava Cake', 'Decadent chocolate cake with a gooey molten center.', 4, 15, 10, 4, 3, 9, 'baking', 30),
+('Lemon Garlic Salmon', 'Baked salmon fillets with a tangy lemon garlic sauce.', 2, 10, 20, 4, 5, 7, 'cooking', 31),
+('Spicy Korean Fried Chicken', 'Crispy fried chicken coated in a spicy Korean sauce.', 4, 30, 20, 4, 8, 7, 'cooking', 32),
+('Mushroom Risotto', 'Creamy risotto with mushrooms, Parmesan cheese, and white wine.', 3, 20, 30, 4, 5, 7, 'cooking', 33),
+('Vietnamese Pho', 'Traditional Vietnamese noodle soup with beef and fresh herbs.', 3, 30, 60, 4, 6, 8, 'cooking', 34),
+('BBQ Pulled Pork Sandwiches', 'Slow-cooked pulled pork served on buns with BBQ sauce.', 3, 20, 360, 6, 7, 3, 'cooking', 35),
+('Falafel Wraps', 'Crispy falafel balls wrapped in pita with vegetables and tahini sauce.', 3, 20, 10, 4, 9, 7, 'cooking', 36),
+('Peking Duck', 'Crispy roasted duck served with pancakes, cucumber, and hoisin sauce.', 5, 60, 90, 4, 6, 3, 'cooking', 37),
+('Stuffed Bell Peppers', 'Bell peppers stuffed with ground beef, rice, and vegetables.', 3, 25, 45, 4, 1, 7, 'cooking', 38),
+('Shrimp and Grits', 'Southern dish with shrimp served over creamy cheese grits.', 3, 15, 20, 4, 2, 7, 'cooking', 39),
+('Coconut Curry Chicken', 'Chicken cooked in a rich coconut curry sauce with vegetables.', 3, 20, 30, 4, 8, 7, 'cooking', 40),
+('Maple Glazed Salmon', 'Salmon fillets glazed with a sweet and tangy maple sauce.', 2, 10, 20, 4, 5, 7, 'cooking', 41),
+('Teriyaki Chicken', 'Grilled chicken coated in a rich teriyaki sauce.', 3, 20, 15, 4, 8, 7, 'cooking', 42),
+('Vegan Buddha Bowl', 'A nourishing bowl of quinoa, roasted vegetables, and tahini sauce.', 2, 30, 25, 4, 9, 6, 'cooking', 43),
+('Seafood Paella', 'Spanish rice dish with shrimp, mussels, and saffron.', 4, 40, 30, 6, 5, 7, 'cooking', 44),
+('Buffalo Cauliflower Bites', 'Spicy roasted cauliflower bites with buffalo sauce.', 2, 15, 25, 4, 9, 6, 'cooking', 45),
+('Lamb Kofta', 'Grilled lamb skewers seasoned with Middle Eastern spices.', 3, 25, 20, 4, 8, 7, 'cooking', 46),
+('Butternut Squash Soup', 'Creamy soup made with roasted butternut squash and spices.', 2, 15, 30, 4, 5, 8, 'cooking', 47),
+('Beef and Broccoli Stir-Fry', 'Quick stir-fry with tender beef and crisp broccoli in a savory sauce.', 3, 20, 15, 4, 8, 7, 'cooking', 48),
+('Blueberry Muffins', 'Moist muffins packed with fresh blueberries.', 2, 15, 25, 12, 3, 9, 'baking', 49),
+('Garlic Herb Roasted Chicken', 'Whole chicken roasted with garlic and herbs.', 3, 20, 90, 6, 8, 7, 'cooking', 50);
 
 INSERT INTO `Cooking_Competition`.`Equipment` (`equip_name`, `equip_use`, `Image`) VALUES
 ('Skillet', 'For cooking', 1),
@@ -237,7 +288,177 @@ INSERT INTO `Cooking_Competition`.`Equipment` (`equip_name`, `equip_use`, `Image
 ('Pastry brush', 'Brush oil or glaze onto food', 27),
 ('Zester', 'Zest citrus fruits', 28),
 ('Juicer', 'Extract juice from fruits', 29),
-('Potato masher', 'Mash potatoes or other vegetables', 30);
+('Potato masher', 'Mash potatoes or other vegetables', 30),
+('Broiler', 'For broiling', 31),
+('Wok', 'For stir-frying', 32),
+('Mandoline', 'For slicing', 33),
+('Colander', 'For draining', 34),
+('Food Processor', 'For chopping and mixing', 35),
+('Immersion Blender', 'For blending soups and sauces', 36),
+('Stand Mixer', 'For mixing and kneading dough', 37),
+('Pressure Cooker', 'For cooking quickly under pressure', 38),
+('Dutch Oven', 'For slow cooking and baking', 39),
+('Toaster Oven', 'For toasting and small bakes', 40),
+('Thermometer', 'For measuring temperature', 41),
+('Tongs', 'For flipping and picking up food', 42),
+('Peeler', 'For peeling vegetables and fruits', 43),
+('Rolling Pin', 'For rolling dough', 44),
+('Grater', 'For grating cheese and vegetables', 45),
+('Ramekins', 'For baking individual portions', 46),
+('Silicone Baking Mat', 'For non-stick baking', 47),
+('Double Boiler', 'For gentle heating', 48),
+('Pastry Bag', 'For piping', 49),
+('Offset Spatula', 'For spreading and smoothing', 50),
+('Roasting Pan', 'For roasting meats and vegetables', 51),
+('Sieve', 'For sifting and straining', 52),
+('Ice Cream Maker', 'For making ice cream', 53),
+('Slow Cooker', 'For slow cooking', 54),
+('Popcorn Maker', 'For making popcorn', 55),
+('Waffle Maker', 'For making waffles', 56),
+('Electric Griddle', 'For cooking pancakes and other griddled foods', 57),
+('Spice Grinder', 'For grinding spices', 58),
+('Coffee Grinder', 'For grinding coffee beans', 59),
+('Mortar and Pestle', 'For grinding and crushing', 60),
+('Salad Spinner', 'For drying salad greens', 61),
+('Rice Cooker', 'For cooking rice', 62),
+('Yogurt Maker', 'For making yogurt', 63),
+('Egg Cooker', 'For cooking eggs', 64),
+('Crepe Maker', 'For making crepes', 65),
+('Bread Machine', 'For making bread', 66),
+('Juicer', 'For extracting juice', 67),
+('Mandoline Slicer', 'For slicing vegetables', 68),
+('Cheese Grater', 'For grating cheese', 69),
+('Pastry Blender', 'For blending pastry dough', 70),
+('Can Opener', 'For opening cans', 71),
+('Bottle Opener', 'For opening bottles', 72),
+('Corkscrew', 'For opening wine bottles', 73),
+('Kitchen Shears', 'For cutting food', 74),
+('Pizza Cutter', 'For cutting pizza', 75),
+('Melon Baller', 'For scooping melon', 76),
+('Apple Corer', 'For coring apples', 77),
+('Peeler', 'For peeling vegetables', 78),
+('Egg Separator', 'For separating egg yolks from whites', 79),
+('Fish Scaler', 'For scaling fish', 80),
+('Sushi Mat', 'For rolling sushi', 81),
+('BBQ Grill', 'For grilling', 82),
+('Chafing Dish', 'For keeping food warm', 83),
+('Food Steamer', 'For steaming food', 84),
+('Tortilla Press', 'For making tortillas', 85),
+('Microwave', 'For quick heating', 86),
+('Deep Fryer', 'For deep frying', 87),
+('Air Fryer', 'For air frying', 88),
+('Instant Pot', 'For pressure cooking and slow cooking', 89),
+('Salamander Broiler', 'For broiling', 90),
+('Quesadilla Maker', 'For making quesadillas', 91),
+('Fondue Pot', 'For making fondue', 92),
+('Griddle', 'For cooking pancakes and other foods', 93),
+('Pizza Oven', 'For baking pizza', 94),
+('Sous Vide', 'For sous vide cooking', 95),
+('Food Dehydrator', 'For dehydrating food', 96),
+('Panini Press', 'For making paninis', 97),
+('Electric Kettle', 'For boiling water', 98),
+('Tea Infuser', 'For brewing loose leaf tea', 99),
+('Coffee Maker', 'For brewing coffee', 100),
+('French Press', 'For making coffee', 101),
+('Espresso Machine', 'For making espresso', 102),
+('Coffee Percolator', 'For brewing coffee', 103),
+('Electric Burner', 'For cooking', 104),
+('Propane Grill', 'For grilling', 105),
+('Smoker', 'For smoking food', 106),
+('Electric Skillet', 'For frying and cooking', 107),
+('Hand Mixer', 'For mixing ingredients', 108),
+('Hand Blender', 'For blending ingredients', 109),
+('Stand Mixer', 'For mixing and kneading', 110),
+('Dutch Oven', 'For baking and slow cooking', 111),
+('Crockpot', 'For slow cooking', 112),
+('Cast Iron Skillet', 'For cooking and frying', 113),
+('Pressure Cooker', 'For cooking under pressure', 114),
+('Double Boiler', 'For gentle heating', 115),
+('Food Processor', 'For processing food', 116),
+('Immersion Blender', 'For blending soups and sauces', 117),
+('Thermometer', 'For measuring temperature', 118),
+('Tongs', 'For flipping and picking up food', 119),
+('Peeler', 'For peeling vegetables and fruits', 120),
+('Whisk', 'For mixing ingredients', 121),
+('Microplane', 'For zesting and grating', 122),
+('Spider Strainer', 'For straining and skimming', 123),
+('Ice Cream Scoop', 'For scooping ice cream', 124),
+('Turkey Baster', 'For basting', 125),
+('Kitchen Torch', 'For caramelizing and searing', 126),
+('Rolling Pin', 'For rolling dough', 127),
+('Pizza Stone', 'For baking pizza', 128),
+('Wok', 'For stir frying', 129),
+('Zoodle Maker', 'For making vegetable noodles', 130),
+('Mandoline', 'For slicing vegetables', 131),
+('Pastry Cutter', 'For cutting dough', 132),
+('Dough Scraper', 'For scraping dough', 133),
+('Fish Spatula', 'For flipping fish', 134),
+('Ladle', 'For serving soups and stews', 135),
+('Skimmer', 'For skimming and straining', 136),
+('Taco Holder', 'For holding tacos', 137),
+('Cheese Knife', 'For cutting cheese', 138),
+('Butter Knife', 'For spreading butter', 139),
+('Honey Dipper', 'For drizzling honey', 140),
+('Oyster Shucker', 'For shucking oysters', 141),
+('Corn Holder', 'For holding corn on the cob', 142),
+('Spaghetti Server', 'For serving spaghetti', 143),
+('Potato Ricer', 'For mashing potatoes', 144),
+('Salad Servers', 'For serving salad', 145),
+('Soup Spoon', 'For serving soup', 146),
+('Rice Paddle', 'For serving rice', 147),
+('Herb Scissors', 'For cutting herbs', 148),
+('Citrus Press', 'For juicing citrus', 149),
+('Garlic Press', 'For pressing garlic', 150),
+('Egg Slicer', 'For slicing eggs', 151),
+('Tomato Slicer', 'For slicing tomatoes', 152),
+('Cheese Slicer', 'For slicing cheese', 153),
+('Nutcracker', 'For cracking nuts', 154),
+('Pasta Maker', 'For making pasta', 155),
+('Bamboo Steamer', 'For steaming food', 156),
+('Egg Timer', 'For timing cooking eggs', 157),
+('Baking Steel', 'For baking', 158),
+('Silicone Baking Mat', 'For non-stick baking', 159),
+('Pastry Brush', 'For brushing pastries', 160),
+('Meat Tenderizer', 'For tenderizing meat', 161),
+('Marinade Injector', 'For injecting marinades into meat', 162),
+('Butter Churn', 'For making butter', 163),
+('Splatter Screen', 'For preventing splatters', 164),
+('Pancake Dispenser', 'For dispensing pancake batter', 165),
+('Poultry Shears', 'For cutting poultry', 166),
+('Crepe Spreader', 'For spreading crepe batter', 167),
+('Lemon Squeezer', 'For squeezing lemons', 168),
+('Salmon Fillet Knife', 'For filleting salmon', 169),
+('Ginger Grater', 'For grating ginger', 170),
+('Tamper', 'For pressing down ingredients', 171),
+('Bento Box', 'For packing lunches', 172),
+('Bag Clips', 'For sealing bags', 173),
+('Citrus Zester', 'For zesting citrus', 174),
+('Digital Scale', 'For measuring ingredients', 175),
+('Corn Peeler', 'For peeling corn', 176),
+('Egg Poacher', 'For poaching eggs', 177),
+('Candy Thermometer', 'For measuring candy temperature', 178),
+('Crepe Pan', 'For making crepes', 179),
+('French Fry Cutter', 'For cutting fries', 180),
+('Herb Mill', 'For grinding herbs', 181),
+('Truffle Shaver', 'For shaving truffles', 182),
+('Meat Grinder', 'For grinding meat', 183),
+('Cheesecloth', 'For straining', 184),
+('Food Mill', 'For pureeing', 185),
+('Gravy Separator', 'For separating gravy', 186),
+('Hamburger Press', 'For forming hamburger patties', 187),
+('Apple Slicer', 'For slicing apples', 188),
+('Dough Docker', 'For docking dough', 189),
+('Cookie Press', 'For making cookies', 190),
+('Chocolate Molds', 'For molding chocolate', 191),
+('Egg Ring', 'For cooking round eggs', 192),
+('Ice Cube Tray', 'For making ice cubes', 193),
+('Roasting Fork', 'For roasting', 194),
+('Pastry Wheel', 'For cutting pastry', 195),
+('Spiralizer', 'For spiralizing vegetables', 196),
+('Sous Vide Rack', 'For organizing sous vide bags', 197),
+('Grill Brush', 'For cleaning grills', 198),
+('Warming Tray', 'For keeping food warm', 199),
+('Electric Knife', 'For cutting meat', 200);
 
 INSERT INTO `Cooking_Competition`.`Ingredients` (`Ingredient_name`, `fat`, `protein`, `carbohydrate`, `calories`, `Food_Group_idFood_Group`, `Measurement_Type`, `Image`) VALUES 
 ('Spaghetti', 1, 12, 25, 131, 3, 'grams', 1),
@@ -288,7 +509,158 @@ INSERT INTO `Cooking_Competition`.`Ingredients` (`Ingredient_name`, `fat`, `prot
 ('Eggplant', 0, 1, 6, 25, 1, 'grams', 46),
 ('Greek yogurt', 10, 10, 4, 146, 5, 'grams', 47),
 ('Phyllo dough', 6, 7, 47, 299, 3, 'grams', 48),
-('Milk', 8, 8, 12, 103, 5, 'ml', 49);
+('Milk', 8, 8, 12, 103, 5, 'ml', 49),
+('Cream Cheese', 33, 7, 5, 350, 5, 'grams', 50),
+('Chives', 0, 1, 1, 4, 1, 'grams', 51),
+('Romaine Lettuce', 0, 1, 2, 17, 1, 'grams', 52),
+('Croutons', 10, 4, 44, 305, 3, 'grams', 53),
+('Caesar Dressing', 15, 2, 6, 160, 5, 'ml', 54),
+('Dijon Mustard', 3, 1, 0, 30, 6, 'ml', 55),
+('Honey', 0, 0, 82, 304, 6, 'ml', 56),
+('Lamb Chops', 30, 25, 0, 400, 4, 'grams', 57),
+('Mint Leaves', 0, 0, 1, 2, 1, 'grams', 58),
+('Quinoa', 6, 24, 64, 368, 3, 'grams', 59),
+('Bell Peppers', 0, 1, 6, 25, 1, 'grams', 60),
+('Sweet Corn', 1, 3, 19, 86, 1, 'grams', 61),
+('Paprika', 13, 14, 54, 282, 8, 'grams', 62),
+('Coconut Milk', 24, 3, 6, 230, 9, 'ml', 63),
+('Fish Sauce', 0, 4, 0, 20, 10, 'ml', 64),
+('Red Curry Paste', 8, 2, 13, 130, 6, 'grams', 65),
+('Bok Choy', 0, 1, 2, 9, 1, 'grams', 66),
+('Rice Noodles', 1, 3, 78, 340, 3, 'grams', 67),
+('Firm Tofu', 5, 10, 2, 94, 4, 'grams', 68),
+('Soy Sauce', 0, 5, 8, 53, 10, 'ml', 69),
+('Green Beans', 0, 2, 7, 35, 1, 'grams', 70),
+('Brussels Sprouts', 0, 3, 9, 38, 1, 'grams', 71),
+('Carrots', 0, 1, 10, 41, 1, 'grams', 72),
+('Broccoli', 0, 3, 6, 31, 1, 'grams', 73),
+('Asparagus', 0, 2, 4, 20, 1, 'grams', 74),
+('Cauliflower', 0, 2, 5, 25, 1, 'grams', 75),
+('Peas', 0, 5, 14, 81, 1, 'grams', 76),
+('Zucchini', 0, 1, 4, 17, 1, 'grams', 77),
+('Pineapple', 0, 1, 13, 50, 1, 'grams', 78),
+('Mango', 0, 1, 15, 60, 1, 'grams', 79),
+('Papaya', 0, 1, 11, 43, 1, 'grams', 80),
+('Strawberries', 0, 1, 7, 32, 1, 'grams', 81),
+('Blueberries', 0, 1, 14, 57, 1, 'grams', 82),
+('Raspberries', 0, 1, 12, 52, 1, 'grams', 83),
+('Blackberries', 0, 1, 10, 43, 1, 'grams', 84),
+('Almonds', 50, 21, 22, 579, 4, 'grams', 85),
+('Walnuts', 65, 15, 14, 654, 4, 'grams', 86),
+('Cashews', 44, 18, 30, 553, 4, 'grams', 87),
+('Pistachios', 45, 21, 28, 562, 4, 'grams', 88),
+('Hazelnuts', 61, 15, 17, 628, 4, 'grams', 89),
+('Brazil Nuts', 66, 14, 12, 656, 4, 'grams', 90),
+('Macadamia Nuts', 76, 8, 14, 718, 4, 'grams', 91),
+('Pine Nuts', 68, 14, 13, 673, 4, 'grams', 92),
+('Pumpkin Seeds', 49, 30, 10, 574, 4, 'grams', 93),
+('Sunflower Seeds', 51, 21, 20, 584, 4, 'grams', 94),
+('Chia Seeds', 31, 17, 42, 486, 4, 'grams', 95),
+('Flax Seeds', 42, 19, 29, 534, 4, 'grams', 96),
+('Hemp Seeds', 48, 32, 10, 553, 4, 'grams', 97),
+('Sesame Seeds', 50, 17, 23, 573, 4, 'grams', 98),
+('Poppy Seeds', 41, 18, 28, 525, 4, 'grams', 99),
+('Quinoa', 6, 24, 64, 368, 3, 'grams', 100),
+('Bulgar Wheat', 1, 12, 76, 342, 3, 'grams', 101),
+('Farro', 2, 14, 54, 337, 3, 'grams', 102),
+('Barley', 1, 12, 73, 352, 3, 'grams', 103),
+('Millet', 4, 11, 73, 378, 3, 'grams', 104),
+('Couscous', 0, 3, 23, 112, 3, 'grams', 105),
+('Brown Rice', 2, 3, 23, 112, 3, 'grams', 106),
+('Wild Rice', 1, 4, 21, 101, 3, 'grams', 107),
+('Basmati Rice', 0, 3, 25, 121, 3, 'grams', 108),
+('Jasmine Rice', 0, 3, 26, 130, 3, 'grams', 109),
+('Parsnips', 0, 1, 18, 75, 1, 'grams', 110),
+('Turnips', 0, 1, 6, 28, 1, 'grams', 111),
+('Radishes', 0, 1, 4, 16, 1, 'grams', 112),
+('Celery', 0, 1, 3, 14, 1, 'grams', 113),
+('Beets', 0, 2, 10, 43, 1, 'grams', 114),
+('Sweet Potatoes', 0, 2, 20, 86, 1, 'grams', 115),
+('Butternut Squash', 0, 1, 12, 50, 1, 'grams', 116),
+('Acorn Squash', 0, 1, 10, 40, 1, 'grams', 117),
+('Spaghetti Squash', 0, 1, 7, 31, 1, 'grams', 118),
+('Kale', 0, 2, 5, 25, 1, 'grams', 119),
+('Spinach', 0, 2, 3, 23, 1, 'grams', 120),
+('Arugula', 0, 2, 4, 25, 1, 'grams', 121),
+('Romaine Lettuce', 0, 1, 2, 17, 1, 'grams', 122),
+('Butter Lettuce', 0, 1, 2, 15, 1, 'grams', 123),
+('Iceberg Lettuce', 0, 1, 2, 14, 1, 'grams', 124),
+('Radicchio', 0, 1, 4, 20, 1, 'grams', 125),
+('Watercress', 0, 2, 1, 11, 1, 'grams', 126),
+('Endive', 0, 1, 3, 17, 1, 'grams', 127),
+('Escarole', 0, 1, 3, 16, 1, 'grams', 128),
+('Collard Greens', 0, 3, 4, 32, 1, 'grams', 129),
+('Mustard Greens', 0, 2, 4, 27, 1, 'grams', 130),
+('Swiss Chard', 0, 2, 4, 20, 1, 'grams', 131),
+('Bok Choy', 0, 1, 2, 9, 1, 'grams', 132),
+('Napa Cabbage', 0, 1, 3, 16, 1, 'grams', 133),
+('Red Cabbage', 0, 1, 5, 22, 1, 'grams', 134),
+('Green Cabbage', 0, 1, 5, 22, 1, 'grams', 135),
+('Savoy Cabbage', 0, 1, 5, 23, 1, 'grams', 136),
+('Brussels Sprouts', 0, 3, 9, 38, 1, 'grams', 137),
+('Artichokes', 0, 3, 11, 47, 1, 'grams', 138),
+('Fennel', 0, 1, 7, 31, 1, 'grams', 139),
+('Leeks', 0, 1, 14, 61, 1, 'grams', 140),
+('Garlic', 0, 1, 1, 4, 1, 'grams', 141),
+('Shallots', 0, 1, 7, 30, 1, 'grams', 142),
+('Scallions', 0, 1, 4, 19, 1, 'grams', 143),
+('Ginger', 0, 1, 18, 80, 8, 'grams', 144),
+('Turmeric', 0, 1, 26, 312, 8, 'grams', 145),
+('Cinnamon', 1, 1, 81, 247, 8, 'grams', 146),
+('Nutmeg', 36, 6, 49, 525, 8, 'grams', 147),
+('Cloves', 13, 6, 66, 274, 8, 'grams', 148),
+('Cardamom', 7, 11, 68, 311, 8, 'grams', 149),
+('Star Anise', 15, 1, 50, 337, 8, 'grams', 150),
+('Black Pepper', 3, 1, 8, 255, 8, 'grams', 151),
+('White Pepper', 3, 1, 8, 255, 8, 'grams', 152),
+('Pink Peppercorns', 10, 2, 25, 275, 8, 'grams', 153),
+('Green Peppercorns', 3, 1, 8, 255, 8, 'grams', 154),
+('Szechuan Peppercorns', 5, 2, 22, 180, 8, 'grams', 155),
+('Coriander', 9, 12, 55, 298, 8, 'grams', 156),
+('Cumin', 22, 18, 44, 375, 8, 'grams', 157),
+('Fennel Seeds', 14, 15, 52, 345, 8, 'grams', 158),
+('Fenugreek', 6, 23, 58, 323, 8, 'grams', 159),
+('Paprika', 13, 14, 54, 282, 8, 'grams', 160),
+('Saffron', 0, 11, 65, 310, 8, 'grams', 161),
+('Curry Powder', 14, 14, 55, 325, 8, 'grams', 162),
+('Garam Masala', 14, 7, 20, 123, 8, 'grams', 163),
+('Mustard Seeds', 29, 25, 28, 508, 8, 'grams', 164),
+('Dill Seeds', 15, 15, 55, 305, 8, 'grams', 165),
+('Bay Leaves', 8, 7, 75, 313, 8, 'grams', 166),
+('Oregano', 4, 9, 68, 265, 8, 'grams', 167),
+('Thyme', 7, 6, 65, 276, 8, 'grams', 168),
+('Rosemary', 6, 3, 64, 331, 8, 'grams', 169),
+('Sage', 13, 5, 61, 315, 8, 'grams', 170),
+('Marjoram', 7, 5, 60, 271, 8, 'grams', 171),
+('Basil', 4, 3, 42, 233, 8, 'grams', 172),
+('Parsley', 1, 3, 6, 36, 8, 'grams', 173),
+('Cilantro', 0, 2, 4, 23, 8, 'grams', 174),
+('Mint', 0, 3, 8, 48, 8, 'grams', 175),
+('Tarragon', 4, 2, 42, 295, 8, 'grams', 176),
+('Chervil', 3, 3, 49, 237, 8, 'grams', 177),
+('Chives', 0, 1, 4, 30, 8, 'grams', 178),
+('Dill', 0, 2, 4, 23, 8, 'grams', 179),
+('Fennel Fronds', 0, 2, 4, 30, 8, 'grams', 180),
+('Serrano Peppers', 0, 1, 4, 23, 1, 'grams', 181),
+('Jalapeno Peppers', 0, 1, 4, 25, 1, 'grams', 182),
+('Habanero Peppers', 0, 1, 4, 25, 1, 'grams', 183),
+('Cayenne Peppers', 0, 1, 4, 25, 1, 'grams', 184),
+('Banana Peppers', 0, 1, 4, 25, 1, 'grams', 185),
+('Poblano Peppers', 0, 1, 4, 25, 1, 'grams', 186),
+('Red Bell Peppers', 0, 1, 6, 25, 1, 'grams', 187),
+('Green Bell Peppers', 0, 1, 6, 25, 1, 'grams', 188),
+('Yellow Bell Peppers', 0, 1, 6, 25, 1, 'grams', 189),
+('Orange Bell Peppers', 0, 1, 6, 25, 1, 'grams', 190),
+('Tomatillos', 0, 1, 6, 25, 1, 'grams', 191),
+('Kale', 0, 2, 5, 25, 1, 'grams', 192),
+('Spinach', 0, 2, 3, 23, 1, 'grams', 193),
+('Swiss Chard', 0, 2, 4, 20, 1, 'grams', 194),
+('Collard Greens', 0, 3, 4, 32, 1, 'grams', 195),
+('Mustard Greens', 0, 2, 4, 27, 1, 'grams', 196),
+('Watercress', 0, 2, 1, 11, 1, 'grams', 197),
+('Endive', 0, 1, 3, 17, 1, 'grams', 198),
+('Escarole', 0, 1, 3, 16, 1, 'grams', 199),
+('Radicchio', 0, 1, 4, 20, 1, 'grams', 200);
 
 INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (1, 5), (1, 6), (1, 54);
 INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (2, 5), (2, 49), (2, 41), (2, 42);
@@ -310,28 +682,139 @@ INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLa
 INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (18, 57), (18, 39);
 INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (19, 6), (19, 14);
 INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (20, 7), (20, 38);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (21, 8), (21, 65), (21, 46);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (22, 11), (22, 48), (22, 54);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (23, 5), (23, 11), (23, 15), (23, 64);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (24, 6), (24, 16), (24, 9), (24, 62);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (25, 5), (25, 50), (25, 54), (25, 39);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (26, 5), (26, 14), (26, 64), (26, 47);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (27, 5), (27, 49), (27, 54), (27, 39);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (28, 5), (28, 15), (28, 7), (28, 64);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (29, 5), (29, 11), (29, 15), (29, 55);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (30, 8), (30, 11), (30, 7), (30, 37);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (31, 6), (31, 11), (31, 49), (31, 15);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (32, 7), (32, 14), (32, 17);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (33, 6), (33, 12), (33, 13);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (34, 8), (34, 14), (34, 15);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (35, 7), (35, 18), (35, 22);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (36, 11), (36, 13), (36, 21);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (37, 12), (37, 17), (37, 19);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (38, 6), (38, 11), (38, 49), (38, 15);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (39, 7), (39, 14), (39, 17);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (40, 9), (40, 14), (40, 18);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (41, 6), (41, 48), (41, 42);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (42, 6), (42, 49), (42, 41);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (43, 6), (43, 15), (43, 7);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (44, 6), (44, 48), (44, 7);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (45, 6), (45, 15), (45, 17);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (46, 6), (46, 52), (46, 47);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (47, 6), (47, 8), (47, 15);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (48, 6), (48, 50), (48, 12);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (49, 8), (49, 37), (49, 38);
+INSERT INTO `Cooking_Competition`.`Recipe_Label` (`Recipe_idRecipe`, `Label_idLabel`) VALUES (50, 6), (50, 49), (50, 46);
 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (1, 15), (1, 8), (1, 12); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (2, 7), (2, 12), (2, 8); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (3, 7), (3, 6), (3, 12); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (4, 6), (4, 11), (4, 12);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (5, 12), (5, 8), (5, 13);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (6, 11), (6, 6), (6, 12);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (7, 6), (7, 12), (7, 10);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (8, 10), (8, 17), (8, 11); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (9, 15), (9, 7), (9, 12); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (10, 11), (10, 12), (10, 6); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (11, 17), (11, 10), (11, 8); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (12, 7), (12, 11), (12, 12); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (13, 7), (13, 12), (13, 8); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (14, 6), (14, 12), (14, 7); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (15, 12), (15, 7), (15, 8); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (16, 15), (16, 6), (16, 12); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (17, 16), (17, 12), (17, 8); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (18, 8), (18, 12), (18, 17); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (19, 12), (19, 7), (19, 6); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (20, 7), (20, 12), (20, 8); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (21, 13), (21, 8), (21, 12); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (22, 16), (22, 12), (22, 8); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (23, 6), (23, 12), (23, 10); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (24, 7), (24, 6), (24, 12); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (25, 12), (25, 8), (25, 7); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (26, 6), (26, 12), (26, 7); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (27, 15), (27, 12), (27, 8);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (28, 12), (28, 10), (28, 17); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (29, 7), (29, 16), (29, 12); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (30, 10), (30, 17), (30, 11);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (31, 16), (31, 12), (31, 8); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (32, 14), (32, 12), (32, 8); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (33, 12), (33, 13), (33, 6);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (34, 7), (34, 13), (34, 12); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (35, 8), (35, 12), (35, 7);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (36, 6), (36, 12), (36, 10);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (37, 7), (37, 12), (37, 8); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (38, 12), (38, 6), (38, 7); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (39, 12), (39, 16), (39, 8);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (40, 7), (40, 12), (40, 8); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (41, 16), (41, 12), (41, 8); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (42, 7), (42, 12), (42, 8);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (43, 6), (43, 12), (43, 8); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (44, 7), (44, 16), (44, 12); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (45, 6), (45, 12), (45, 8); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (46, 7), (46, 12), (46, 8); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (47, 13), (47, 8), (47, 12);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (48, 12), (48, 13), (48, 7); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (49, 10), (49, 17), (49, 6); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Concept` (`Recipe_idRecipe`, `Concept_idConcept`) VALUES (50, 12), (50, 8), (50, 16); 
 
-INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (1, 1, 1), (1, 6, 1), (1, 7, 1), (1, 8, 1), (1, 9, 1); 
-INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (2, 2, 1), (2, 4, 1), (2, 6, 1), (2, 7, 1); 
-INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (3, 3, 1), (3, 6, 1), (3, 7, 1); 
-INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (4, 6, 1), (4, 7, 1), (4, 11, 1); 
-INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (5, 1, 1), (5, 4, 1), (5, 6, 1), (5, 7, 1); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (1, 1, 1), (1, 6, 1), (1, 7, 1), (1, 8, 1), (1, 9, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (2, 2, 1), (2, 4, 1), (2, 6, 1), (2, 7, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (3, 3, 1), (3, 6, 1), (3, 7, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (4, 6, 1), (4, 7, 1), (4, 11, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (5, 1, 1), (5, 4, 1), (5, 6, 1), (5, 7, 1);
 INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (6, 6, 1), (6, 7, 1), (6, 11, 1);
-INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (7, 6, 1), (7, 7, 1), (7, 8, 1), (7, 1, 1), (7, 10, 1); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (7, 6, 1), (7, 7, 1), (7, 8, 1), (7, 1, 1), (7, 10, 1);
 INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (8, 6, 1), (8, 7, 1), (8, 3, 1), (8, 12, 1);
 INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (9, 6, 1), (9, 7, 1), (9, 12, 1), (9, 5, 1);
 INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (10, 6, 1), (10, 7, 1), (10, 11, 1);
-INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (11, 9, 1), (11, 12, 1), (11, 16, 1); 
-INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (12, 2, 1), (12, 6, 1), (12, 7, 1), (12, 18, 1), (12, 19, 1); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (11, 9, 1), (11, 12, 1), (11, 16, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (12, 2, 1), (12, 6, 1), (12, 7, 1), (12, 18, 1), (12, 19, 1);
 INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (13, 2, 1), (13, 6, 1), (13, 7, 1), (13, 16, 1);
 INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (14, 7, 1), (14, 12, 1), (14, 16, 1);
 INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (15, 6, 1), (15, 10, 1);
 INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (16, 9, 1), (16, 6, 1), (16, 18, 1);
 INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (17, 9, 1), (17, 6, 1), (17, 16, 1);
 INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (18, 5, 1), (18, 6, 1), (18, 12, 1);
-INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (19, 7, 1), (19, 17, 1); 
-INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (20, 6, 1), (20, 12, 1); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (19, 7, 1), (19, 17, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (20, 6, 1), (20, 12, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (21, 4, 1), (21, 5, 1), (21, 6, 1), (21, 7, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (22, 6, 1), (22, 7, 1), (22, 8, 1), (22, 11, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (23, 5, 1), (23, 6, 1), (23, 7, 1), (23, 8, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (24, 7, 1), (24, 8, 1), (24, 9, 1), (24, 10, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (25, 1, 1), (25, 5, 1), (25, 6, 1), (25, 7, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (26, 1, 1), (26, 4, 1), (26, 6, 1), (26, 7, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (27, 1, 1), (27, 6, 1), (27, 7, 1), (27, 10, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (28, 5, 1), (28, 6, 1), (28, 7, 1), (28, 8, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (29, 1, 1), (29, 6, 1), (29, 7, 1), (29, 10, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (30, 5, 1), (30, 8, 1), (30, 12, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (31, 1, 1), (31, 2, 1), (31, 3, 1), (31, 4, 1), (31, 5, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (32, 6, 1), (32, 7, 1), (32, 8, 1), (32, 9, 1), (32, 10, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (33, 11, 1), (33, 12, 1), (33, 13, 1), (33, 14, 1), (33, 15, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (34, 16, 1), (34, 17, 1), (34, 18, 1), (34, 19, 1), (34, 20, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (35, 21, 1), (35, 22, 1), (35, 23, 1), (35, 24, 1), (35, 25, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (36, 26, 1), (36, 27, 1), (36, 28, 1), (36, 29, 1), (36, 30, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (37, 31, 1), (37, 32, 1), (37, 33, 1), (37, 34, 1), (37, 35, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (38, 36, 1), (38, 37, 1), (38, 38, 1), (38, 39, 1), (38, 40, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (39, 41, 1), (39, 42, 1), (39, 43, 1), (39, 44, 1), (39, 45, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (40, 46, 1), (40, 47, 1), (40, 48, 1), (40, 49, 1), (40, 50, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (41, 1, 1), (41, 4, 1), (41, 6, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (42, 14, 1), (42, 6, 1), (42, 7, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (43, 18, 1), (43, 4, 1), (43, 6, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (44, 9, 1), (44, 34, 1), (44, 35, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (45, 7, 1), (45, 20, 1), (45, 33, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (46, 6, 1), (46, 7, 1), (46, 8, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (47, 4, 1), (47, 6, 1), (47, 34, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (48, 15, 1), (48, 6, 1), (48, 7, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (49, 3, 1), (49, 6, 1), (49, 20, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Equipment` (`Recipe_idRecipe`, `Equipment_idEquipment`, `Quantity`) VALUES (50, 39, 1), (50, 6, 1), (50, 7, 1);
+
 
 INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (1, 1, 200, 1), (1, 2, 2, 0), (1, 3, 100, 0), (1, 4, 50, 0), (1, 5, 2, 0);
 INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (2, 6, 400, 1), (2, 7, 100, 0), (2, 8, 10, 0), (2, 9, 5, 0), (2, 10, 50, 0), (2, 11, 50, 0), (2, 12, 200, 0), (2, 13, 50, 0);
@@ -340,79 +823,102 @@ INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `
 INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (5, 25, 300, 1), (5, 10, 100, 0), (5, 11, 2, 0), (5, 26, 100, 0), (5, 27, 50, 0), (5, 28, 250, 0), (5, 29, 100, 0);
 INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (6, 20, 100, 1), (6, 22, 50, 0), (6, 24, 20, 0);
 INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (7, 18, 200, 1), (7, 13, 20, 0), (7, 26, 50, 0);
-INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (8, 2, 3, 0), (8, 27, 200, 0), (8, 29, 100, 0);
-INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (9, 20, 100, 0), (9, 24, 30, 0), (9, 27, 100, 0);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (8, 2, 3, 0), (8, 27, 200, 0), (8, 29, 100, 0), (8, 34, 100, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (9, 20, 100, 0), (9, 24, 30, 0), (9, 27, 100, 0), (9, 35, 100, 1);
 INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (10, 6, 200, 1), (10, 22, 50, 0), (10, 24, 30, 0);
-INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (11, 27, 350, 1), (11, 7, 30, 1), (11, 4, 30, 1), (11, 6, 5, 1), (11, 1, 25, 1), (11, 2, 5, 1); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (11, 27, 350, 1), (11, 7, 30, 1), (11, 4, 30, 1), (11, 6, 5, 1), (11, 1, 25, 1), (11, 2, 5, 1);
 INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (12, 8, 30, 1), (12, 9, 25, 1), (12, 10, 5, 1), (12, 11, 5, 1), (12, 12, 15, 1), (12, 13, 50, 1);
 INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (13, 14, 20, 1), (13, 15, 10, 1), (13, 16, 15, 1), (13, 17, 10, 1), (13, 18, 5, 1), (13, 19, 10, 1);
 INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (14, 10, 5, 1), (14, 11, 2, 1), (14, 20, 5, 1), (14, 24, 20, 1), (14, 26, 3, 1);
 INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (15, 25, 300, 1), (15, 12, 8, 1), (15, 20, 10, 1), (15, 21, 5, 1);
 INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (16, 12, 250, 1), (16, 17, 200, 1), (16, 22, 50, 1), (16, 24, 30, 1);
-INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (17, 23, 250, 1), (17, 11, 3, 1), (17, 19, 30, 1), (17, 27, 200, 1); 
-INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES  (18, 25, 500, 1), (18, 27, 300, 1), (18, 28, 250, 1), (18, 29, 100, 1); 
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (17, 23, 250, 1), (17, 11, 3, 1), (17, 19, 30, 1), (17, 27, 200, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (18, 25, 500, 1), (18, 27, 300, 1), (18, 28, 250, 1), (18, 29, 100, 1);
 INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (19, 25, 500, 1), (19, 10, 3, 1), (19, 26, 5, 1), (19, 28, 300, 1);
 INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (20, 23, 300, 1), (20, 14, 10, 1), (20, 20, 10, 1), (20, 21, 5, 1);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (21, 10, 3, 1), (21, 28, 500, 0), (21, 4, 100, 0), (21, 24, 50, 0);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (22, 6, 400, 1), (22, 9, 10, 0), (22, 24, 20, 0), (22, 8, 5, 0);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (23, 26, 200, 1), (23, 22, 300, 0), (23, 4, 200, 0), (23, 12, 500, 0);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (24, 16, 200, 1), (24, 17, 100, 0), (24, 18, 50, 0), (24, 14, 200, 0);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (25, 25, 500, 1), (25, 10, 200, 0), (25, 12, 100, 0), (25, 27, 300, 0);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (26, 18, 200, 1), (26, 27, 100, 0), (26, 4, 200, 0), (26, 12, 500, 0);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (27, 6, 400, 1), (27, 24, 20, 0), (27, 4, 200, 0), (27, 12, 500, 0);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (28, 2, 5, 1), (28, 24, 100, 0), (28, 4, 200, 0), (28, 29, 500, 0);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (29, 18, 200, 1), (29, 20, 100, 0), (29, 14, 200, 0), (29, 24, 20, 0);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (30, 2, 3, 1), (30, 13, 100, 0), (30, 4, 200, 0), (30, 8, 50, 0);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (31, 1, 200, 1), (31, 2, 2, 0), (31, 3, 100, 0), (31, 4, 50, 0), (31, 5, 2, 0);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (32, 6, 400, 1), (32, 7, 100, 0), (32, 8, 10, 0), (32, 9, 5, 0), (32, 10, 50, 0);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (33, 11, 3, 1), (33, 12, 250, 0), (33, 13, 200, 0), (33, 14, 100, 0), (33, 15, 50, 0);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (34, 16, 200, 1), (34, 17, 200, 0), (34, 18, 100, 0), (34, 19, 50, 0), (34, 20, 30, 0);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (35, 21, 500, 1), (35, 22, 200, 0), (35, 23, 100, 0), (35, 24, 150, 0), (35, 25, 300, 0);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (36, 26, 300, 1), (36, 27, 200, 0), (36, 28, 100, 0), (36, 29, 200, 0), (36, 30, 30, 0);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (37, 31, 200, 1), (37, 32, 200, 0), (37, 33, 30, 0), (37, 34, 200, 0), (37, 35, 200, 0);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (38, 36, 100, 1), (38, 37, 4, 0), (38, 38, 150, 0), (38, 39, 100, 0), (38, 40, 200, 0);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (39, 41, 200, 1), (39, 42, 150, 0), (39, 43, 150, 0), (39, 44, 200, 0), (39, 45, 200, 0);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (40, 46, 200, 1), (40, 47, 150, 0), (40, 48, 100, 0), (40, 49, 200, 0), (40, 50, 30, 0);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (41, 40, 400, 1), (41, 24, 30, 0), (41, 41, 10, 0), (41, 56, 20, 0);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (42, 6, 400, 1), (42, 69, 30, 0), (42, 9, 5, 0), (42, 55, 10, 0);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (43, 59, 200, 1), (43, 60, 100, 0), (43, 66, 50, 0), (43, 64, 10, 0);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (44, 67, 200, 1), (44, 40, 100, 0), (44, 25, 100, 0), (44, 63, 30, 0), (44, 24, 10, 0);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (45, 46, 1, 1), (45, 24, 20, 0), (45, 55, 1, 0);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (46, 57, 400, 1), (46, 9, 5, 0), (46, 24, 10, 0), (46, 56, 5, 0);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (47, 46, 1, 1), (47, 64, 10, 0), (47, 9, 5, 0), (47, 13, 20, 0);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (48, 25, 200, 1), (48, 60, 100, 0), (48, 69, 30, 0), (48, 10, 50, 0);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (49, 30, 100, 1), (49, 34, 50, 0), (49, 2, 2, 0), (49, 33, 5, 0);
+INSERT INTO `Cooking_Competition`.`Recipe_has_Ingredients` (`Recipe_idRecipe`, `Ingredients_idIngredients`, `Quantity`, `is_basic`) VALUES (50, 6, 2000, 1), (50, 9, 2, 0), (50, 11, 3, 0), (50, 58, 10, 0);
+
 
 INSERT INTO `Cooking_Competition`.`Tips` (`Tip_description`, `Recipe_idRecipe`) VALUES
-('For a creamier texture, add a splash of heavy cream to the carbonara sauce just before serving.', 1),
-('For a healthier version, use turkey bacon instead of regular bacon in the carbonara recipe.', 1),
-('To prevent the chicken from drying out, cook it on a grill over medium heat, flipping once halfway through.', 2),
-('To enhance the flavor, marinate the chicken tikka in the refrigerator for at least 2 hours before grilling.', 2),
-('For a vegetarian option, substitute the chicken in the tikka masala recipe with firm tofu or paneer cubes.', 2),
-('To prevent the sushi roll from falling apart, use a bamboo sushi mat to tightly roll and compress the ingredients.', 3),
-('For a spicy kick, add a pinch of wasabi or Sriracha sauce to the sushi rice before rolling the California roll.', 3),
-('To make the sushi rice stickier, rinse it under cold water until the water runs clear before cooking.', 3),
-('For an extra burst of freshness, sprinkle the Greek salad with freshly chopped oregano leaves before serving.', 4),
-('For added crunch, sprinkle the Greek salad with toasted pine nuts or slivered almonds before serving.', 4),
-('For a richer sauce, add a tablespoon of Dijon mustard to the stroganoff sauce along with the sour cream.', 5),
-('To make the stroganoff sauce thicker, mix a tablespoon of cornstarch with cold water and add it to the sauce.', 5),
-('Use ripe, juicy tomatoes for the best flavor.',6),
-('Fresh mozzarella cheese works best for this salad.',6),
-('Drizzle the olive oil and balsamic glaze just before serving to preserve their flavors.',6),
-('Cut vegetables into uniform sizes to ensure even cooking.',7),
-('For extra flavor, marinate tofu in soy sauce and sesame oil before stir-frying.',7),
-('Add a splash of rice vinegar or lime juice for a tangy kick.',7),
-('Chill the dough for at least 30 minutes before baking to prevent spreading.',8),
-('Use a mixture of dark and milk chocolate chips for a more complex flavor.',8),
-('For chewier cookies, slightly underbake them and let them cool on the baking sheet for a few minutes before transferring to a wire rack.',8),
-('Preheat your oven and pizza stone or baking sheet for a crispier crust.',9),
-('Do not overload the pizza with toppings to prevent a soggy crust.',9),
-('Finish with a sprinkle of fresh basil leaves and a drizzle of extra virgin olive oil for extra flavor.',9),
-('Make your own Caesar dressing for the freshest flavor.',10),
-('Add a handful of toasted pine nuts or croutons for extra crunch.',10),
-('Serve with a wedge of lemon for squeezing over the salad just before eating.',10),
-('Use cold butter for best results in creating flaky layers.', 11),
-('Allow the dough to rest in the refrigerator between folding to relax the gluten.', 11),
-('Brush the croissants with egg wash before baking for a shiny golden crust.', 11),
-('Marinate the pork for at least 4 hours, or overnight, for maximum flavor.', 12),
-('Use fresh pineapple for a sweet and tangy contrast to the savory pork.', 12),
-('Warm the corn tortillas on a hot skillet before serving for the best texture.', 12),
-('Soak the rice noodles in warm water for about 30 minutes before cooking.', 13),
-('Have all your ingredients prepped and ready before you start cooking.', 13),
-('Adjust the level of spice and tanginess in the sauce to suit your taste preferences.', 13),
-('Slice the vegetables thinly and evenly for even cooking.', 14),
-('Layer the vegetables in a spiral pattern for an attractive presentation.', 14),
-('Let the ratatouille rest for a few minutes before serving to allow the flavors to meld.', 14),
-('Use high-quality tortillas for the best flavor and texture.', 15),
-('Don’t overcrowd the pan when cooking the beef to ensure it browns evenly.', 15),
-('Serve with a variety of toppings like salsa, guacamole, and sour cream for customization.', 15),
-('Use fresh basil for the most vibrant pesto flavor.', 16),
-('Toast the pine nuts lightly before blending for extra nuttiness.', 16),
-('Adjust the consistency of the pesto with olive oil as needed.', 16),
-('Use fresh shrimp for the best flavor and texture.', 17),
-('Don’t overcook the shrimp; they should be pink and opaque when done.', 17),
-('Add a splash of white wine to deglaze the pan and add flavor to the sauce.', 17),
-('Make sure the puff pastry is chilled before wrapping the beef to prevent it from becoming soggy.', 18),
-('Sear the beef quickly over high heat to create a flavorful crust.', 18),
-('Let the beef rest before slicing to allow the juices to redistribute.', 18),
-('Slice the eggplant thinly and salt it to draw out excess moisture before cooking to prevent sogginess.', 19),
-('Make the bechamel sauce creamy but not too thick to ensure it spreads evenly over the layers.', 19),
-('Let the moussaka cool for a few minutes after baking to allow it to set before serving.', 19),
-('Use precooked shredded chicken or rotisserie chicken to save time.', 20),
-('Warm the corn tortillas briefly in the microwave or on a hot skillet before filling to prevent them from tearing.', 20),
-('Top the enchiladas with extra cheese and cilantro for added flavor and garnish.', 20);
-
+('For a creamier texture, add a splash of heavy cream to the carbonara sauce just before serving.', 1), ('For a healthier version, use turkey bacon instead of regular bacon in the carbonara recipe.', 1),
+('To prevent the chicken from drying out, cook it on a grill over medium heat, flipping once halfway through.', 2), ('To enhance the flavor, marinate the chicken tikka in the refrigerator for at least 2 hours before grilling.', 2), ('For a vegetarian option, substitute the chicken in the tikka masala recipe with firm tofu or paneer cubes.', 2),
+('To prevent the sushi roll from falling apart, use a bamboo sushi mat to tightly roll and compress the ingredients.', 3), ('For a spicy kick, add a pinch of wasabi or Sriracha sauce to the sushi rice before rolling the California roll.', 3), ('To make the sushi rice stickier, rinse it under cold water until the water runs clear before cooking.', 3),
+('For an extra burst of freshness, sprinkle the Greek salad with freshly chopped oregano leaves before serving.', 4), ('For added crunch, sprinkle the Greek salad with toasted pine nuts or slivered almonds before serving.', 4),
+('For a richer sauce, add a tablespoon of Dijon mustard to the stroganoff sauce along with the sour cream.', 5), ('To make the stroganoff sauce thicker, mix a tablespoon of cornstarch with cold water and add it to the sauce.', 5),
+('Use ripe, juicy tomatoes for the best flavor.',6), ('Fresh mozzarella cheese works best for this salad.',6), ('Drizzle the olive oil and balsamic glaze just before serving to preserve their flavors.',6),
+('Cut vegetables into uniform sizes to ensure even cooking.',7), ('For extra flavor, marinate tofu in soy sauce and sesame oil before stir-frying.',7), ('Add a splash of rice vinegar or lime juice for a tangy kick.',7),
+('Chill the dough for at least 30 minutes before baking to prevent spreading.',8), ('Use a mixture of dark and milk chocolate chips for a more complex flavor.',8), ('For chewier cookies, slightly underbake them and let them cool on the baking sheet for a few minutes before transferring to a wire rack.',8),
+('Preheat your oven and pizza stone or baking sheet for a crispier crust.',9), ('Do not overload the pizza with toppings to prevent a soggy crust.',9), ('Finish with a sprinkle of fresh basil leaves and a drizzle of extra virgin olive oil for extra flavor.',9),
+('Make your own Caesar dressing for the freshest flavor.',10), ('Add a handful of toasted pine nuts or croutons for extra crunch.',10), ('Serve with a wedge of lemon for squeezing over the salad just before eating.',10),
+('Use cold butter for best results in creating flaky layers.', 11), ('Allow the dough to rest in the refrigerator between folding to relax the gluten.', 11), ('Brush the croissants with egg wash before baking for a shiny golden crust.', 11),
+('Marinate the pork for at least 4 hours, or overnight, for maximum flavor.', 12), ('Use fresh pineapple for a sweet and tangy contrast to the savory pork.', 12), ('Warm the corn tortillas on a hot skillet before serving for the best texture.', 12),
+('Soak the rice noodles in warm water for about 30 minutes before cooking.', 13), ('Have all your ingredients prepped and ready before you start cooking.', 13), ('Adjust the level of spice and tanginess in the sauce to suit your taste preferences.', 13),
+('Slice the vegetables thinly and evenly for even cooking.', 14), ('Layer the vegetables in a spiral pattern for an attractive presentation.', 14), ('Let the ratatouille rest for a few minutes before serving to allow the flavors to meld.', 14),
+('Use high-quality tortillas for the best flavor and texture.', 15), ('Don’t overcrowd the pan when cooking the beef to ensure it browns evenly.', 15), ('Serve with a variety of toppings like salsa, guacamole, and sour cream for customization.', 15),
+('Use fresh basil for the most vibrant pesto flavor.', 16), ('Toast the pine nuts lightly before blending for extra nuttiness.', 16), ('Adjust the consistency of the pesto with olive oil as needed.', 16),
+('Use fresh shrimp for the best flavor and texture.', 17), ('Don’t overcook the shrimp; they should be pink and opaque when done.', 17), ('Add a splash of white wine to deglaze the pan and add flavor to the sauce.', 17),
+('Make sure the puff pastry is chilled before wrapping the beef to prevent it from becoming soggy.', 18), ('Sear the beef quickly over high heat to create a flavorful crust.', 18), ('Let the beef rest before slicing to allow the juices to redistribute.', 18),
+('Slice the eggplant thinly and salt it to draw out excess moisture before cooking to prevent sogginess.', 19), ('Make the bechamel sauce creamy but not too thick to ensure it spreads evenly over the layers.', 19), ('Let the moussaka cool for a few minutes after baking to allow it to set before serving.', 19),
+('Use precooked shredded chicken or rotisserie chicken to save time.', 20), ('Warm the corn tortillas briefly in the microwave or on a hot skillet before filling to prevent them from tearing.', 20), ('Top the enchiladas with extra cheese and cilantro for added flavor and garnish.', 20),
+('Use a good quality beef broth for the best flavor.', 21), ('Top with Gruyere cheese for a classic French touch.', 21), ('Serve with a slice of crusty bread for dipping.', 21),
+('Use fresh shrimp for the best taste.', 22), ('Add a splash of white wine for extra flavor.', 22), ('Serve immediately for the best texture.', 22),
+('Use a variety of vegetables for more flavor.', 23), ('Let the lasagna rest for a few minutes before serving.', 23), ('Top with fresh basil for a burst of freshness.', 23),
+('Use sushi-grade tuna for the best quality.', 24), ('Marinate the tuna for at least 15 minutes.', 24), ('Serve with a variety of toppings for more texture.', 24),
+('Use a meat thermometer to ensure the beef is cooked perfectly.', 25), ('Let the beef rest before slicing.', 25), ('Serve with a red wine reduction for extra flavor.', 25),
+('Use fresh eggplant for the best texture.', 26), ('Let the eggplant slices drain before frying.', 26), ('Top with extra cheese for a richer flavor.', 26),
+('Use freshly grated Parmesan for the best taste.', 27), ('Cook the pasta until al dente.', 27), ('Serve immediately for the best texture.', 27),
+('Use a pre-made pie crust for convenience.', 28), ('Add some nutmeg for extra flavor.', 28), ('Serve warm for the best taste.', 28),
+('Use fresh pineapple for a better taste.', 29), ('Add some cashews for extra crunch.', 29), ('Serve immediately for the best texture.', 29),
+('Use high-quality chocolate for the best flavor.', 30), ('Serve warm for the best gooey center.', 30), ('Top with a scoop of vanilla ice cream.', 30),
+('For extra flavor, marinate the salmon overnight.', 31), ('Serve with a side of asparagus for a complete meal.', 31),('Add a sprinkle of fresh dill before serving.', 31),
+('Use Korean red pepper paste for authentic flavor.', 32), ('Serve with pickled radish and kimchi.', 32),('Use boneless chicken thighs for juicier meat.', 32),
+('Use Arborio rice for the best texture.', 33), ('Add a splash of white wine for extra depth of flavor.', 33),('Finish with a pat of butter and a sprinkle of Parmesan.', 33),
+('Use thinly sliced beef for quick cooking.', 34), ('Add fresh Thai basil for an authentic taste.', 34),('Serve with lime wedges for a fresh, tangy kick.', 34),
+('Use a slow cooker for tender, flavorful pork.', 35), ('Toast the buns for added texture.', 35),('Serve with a side of sweet potato fries.', 35),
+('Serve with a side of tabbouleh for a complete meal.', 36), ('Use a food processor for a smooth mixture.', 36),('Serve with homemade hummus for extra flavor.', 36),
+('Roast the duck on a rack to allow the fat to drain.', 37), ('Serve with fresh cucumber slices for crunch.', 37),('Use store-bought pancakes for convenience.', 37),
+('Top with grated cheese for extra flavor.', 38), ('Serve with a side of garlic bread.', 38),('Use different colored bell peppers for a vibrant presentation.', 38),
+('Use fresh shrimp for the best flavor.', 39), ('Add a dash of hot sauce for a spicy kick.', 39),('Serve with a side of sautéed greens.', 39),
+('Use full-fat coconut milk for a richer curry.', 40), ('Serve with jasmine rice for a fragrant touch.', 40),('Top with fresh cilantro for garnish.', 40),
+('Use fresh salmon for best results.', 41),('Line the baking dish with foil for easier cleanup.', 41),('Serve with a side of steamed broccoli.', 41),
+('Let the chicken marinate longer for deeper flavor.', 42),('Use a meat thermometer to ensure chicken is cooked through.', 42),('Serve with a side of steamed rice.', 42),
+('Use seasonal vegetables for the freshest flavor.', 43),('Add a sprinkle of sesame seeds for extra crunch.', 43),('Serve with a wedge of lime.', 43),
+('Use a wide, shallow pan for even cooking.', 44),('Do not stir the rice too much to avoid a mushy texture.', 44),('Add a squeeze of lemon juice before serving.', 44),
+('Make sure the cauliflower is evenly coated with oil.', 45),('Serve with a side of ranch dressing.', 45),('Garnish with chopped parsley.', 45),
+('Soak skewers in water for 30 minutes before grilling.', 46),('Serve with a side of pita bread.', 46),('Garnish with fresh mint leaves.', 46),
+('Roast the squash with a drizzle of honey for added sweetness.', 47),('Blend the soup for a smoother texture.', 47),('Serve with a dollop of sour cream.', 47),
+('Use fresh ginger for a more authentic flavor.', 48),('Serve with a side of steamed rice.', 48),('Garnish with sesame seeds.', 48),
+('Do not overmix the batter to keep the muffins light and fluffy.', 49),('Use fresh or frozen blueberries.', 49),('Let the muffins cool before removing from the tin.', 49),
+('Use kitchen twine to tie the chicken legs together for even cooking.', 50),('Baste the chicken with pan juices every 30 minutes.', 50),('Let the chicken rest before carving to retain juices.', 50);
 
 
 INSERT INTO `Cooking_Competition`.`Steps` (`Step_number`, `Step_description`, `Recipe_idRecipe`) VALUES
@@ -435,4 +941,34 @@ INSERT INTO `Cooking_Competition`.`Steps` (`Step_number`, `Step_description`, `R
 (1, 'Cook pasta according to package instructions until al dente.', 17), (2, 'In a large skillet, melt butter and sauté minced garlic until fragrant.', 17), (3, 'Add shrimp to the skillet and cook until pink and opaque, then remove and set aside.', 17), (4, 'Deglaze the skillet with white wine, then add lemon juice and chicken broth.', 17), (5, 'Return the shrimp to the skillet and toss with the sauce and cooked pasta.', 17), (6, 'Garnish with chopped parsley and grated Parmesan cheese before serving.', 17),
 (1, 'Season beef tenderloin with salt and pepper, then sear in a hot skillet until browned on all sides.', 18), (2, 'Spread a layer of mushroom duxelles and prosciutto on rolled-out puff pastry.', 18), (3, 'Place the seared beef on top of the mushroom mixture and wrap tightly in the puff pastry.', 18), (4, 'Brush the pastry with beaten egg and make decorative cuts on top.', 18), (5, 'Bake in a preheated oven until the pastry is golden brown and the beef is cooked to your desired doneness.', 18), (6, 'Let the beef Wellington rest for a few minutes before slicing and serving.', 18),
 (1, 'Slice the eggplant and potatoes thinly, then salt the eggplant slices and let them sit for about 30 minutes to remove excess moisture.', 19), (2, 'Brown ground lamb with diced onions and minced garlic in a skillet over medium heat until cooked through.', 19), (3, 'Make a bechamel sauce by melting butter in a saucepan, whisking in flour to form a roux, then gradually adding milk while stirring constantly until thickened.', 19), (4, 'Layer the sliced eggplant and potatoes in a baking dish, spreading the cooked lamb mixture over the layers.', 19), (5, 'Pour the bechamel sauce over the top layer and smooth it out with a spatula.', 19), (6, 'Bake the moussaka in a preheated oven until the top is golden brown and bubbly, about 45-50 minutes.', 19), (7, 'Let the moussaka cool for a few minutes before slicing and serving with a sprinkle of fresh parsley.', 19),
-(1, 'Shred cooked chicken and toss it with taco seasoning and a small amount of enchilada sauce.', 20), (2, 'Warm corn tortillas in the microwave or on a skillet until soft and pliable.', 20), (3, 'Place a spoonful of the chicken mixture in the center of each tortilla, then roll it up tightly and place seam-side down in a baking dish.', 20), (4, 'Pour enchilada sauce over the rolled tortillas, making sure they are fully covered.', 20), (5, 'Sprinkle shredded cheese over the top of the enchiladas, then cover the baking dish with foil.', 20), (6, 'Bake in a preheated oven until the cheese is melted and bubbly, about 20-25 minutes.', 20), (7, 'Garnish with chopped cilantro and serve hot with your favorite toppings, such as sour cream and sliced jalapenos.', 20);
+(1, 'Shred cooked chicken and toss it with taco seasoning and a small amount of enchilada sauce.', 20), (2, 'Warm corn tortillas in the microwave or on a skillet until soft and pliable.', 20), (3, 'Place a spoonful of the chicken mixture in the center of each tortilla, then roll it up tightly and place seam-side down in a baking dish.', 20), (4, 'Pour enchilada sauce over the rolled tortillas, making sure they are fully covered.', 20), (5, 'Sprinkle shredded cheese over the top of the enchiladas, then cover the baking dish with foil.', 20), (6, 'Bake in a preheated oven until the cheese is melted and bubbly, about 20-25 minutes.', 20), (7, 'Garnish with chopped cilantro and serve hot with your favorite toppings, such as sour cream and sliced jalapenos.', 20),
+(1, 'Slice onions thinly.', 21), (2, 'Caramelize onions in a saucepan until golden brown.', 21), (3, 'Add beef broth and simmer for 30 minutes.', 21), (4, 'Season with salt and pepper.', 21), (5, 'Top with croutons and grated cheese.', 21), (6, 'Broil until cheese is melted and bubbly.', 21),
+(1, 'Cook linguine pasta until al dente.', 22), (2, 'Sauté garlic in butter in a skillet.', 22), (3, 'Add shrimp and cook until pink.', 22), (4, 'Toss shrimp and garlic butter with pasta.', 22), (5, 'Garnish with parsley and serve immediately.', 22),
+(1, 'Preheat oven to 375°F (190°C).', 23), (2, 'Sauté vegetables until tender.', 23), (3, 'Layer lasagna noodles, vegetables, ricotta, mozzarella, and marinara sauce in a baking dish.', 23), (4, 'Repeat layers and top with mozzarella cheese.', 23), (5, 'Bake for 45 minutes or until bubbly and golden brown.', 23), (6, 'Let rest for 10 minutes before serving.', 23),
+(1, 'Marinate raw tuna in soy sauce, sesame oil, and green onions for 15 minutes.', 24), (2, 'Cook sushi rice according to package instructions.', 24), (3, 'Prepare toppings: slice avocado, cucumber, and radish.', 24), (4, 'Assemble bowls with rice, tuna, and toppings.', 24), (5, 'Drizzle with extra marinade and garnish with sesame seeds.', 24),
+(1, 'Preheat oven to 400°F (200°C).', 25), (2, 'Sear beef fillet in a hot skillet until browned on all sides.', 25), (3, 'Sauté mushrooms and shallots until tender.', 25), (4, 'Wrap beef in prosciutto and mushroom mixture.', 25),(5, 'Wrap in puff pastry and brush with egg wash.', 25), (6, 'Bake for 40 minutes or until golden brown.', 25), (7, 'Let rest for 10 minutes before slicing.', 25),
+(1, 'Preheat oven to 375°F (190°C).', 26), (2, 'Slice eggplant into rounds and season with salt.', 26), (3, 'Dredge eggplant in flour, dip in beaten eggs, and coat with breadcrumbs.', 26), (4, 'Fry eggplant until golden brown.', 26), (5, 'Layer fried eggplant, marinara sauce, and mozzarella in a baking dish.', 26), (6, 'Repeat layers and top with Parmesan cheese.', 26), (7, 'Bake for 25 minutes or until bubbly and golden.', 26),
+(1, 'Cook fettuccine pasta until al dente.', 27), (2, 'Grill chicken breast and slice thinly.', 27), (3, 'Melt butter in a saucepan and stir in heavy cream.', 27), (4, 'Add grated Parmesan cheese and stir until melted.', 27), (5, 'Toss pasta with Alfredo sauce and grilled chicken.', 27), (6, 'Garnish with parsley and serve immediately.', 27),
+(1, 'Preheat oven to 350°F (175°C).', 28), (2, 'Cook bacon until crispy.', 28), (3, 'Whisk eggs, heavy cream, and cheese together.', 28), (4, 'Stir in cooked bacon and season with salt and pepper.', 28), (5, 'Pour mixture into pie crust.', 28), (6, 'Bake for 45 minutes or until set.', 28),
+(1, 'Cook jasmine rice and let cool.', 29), (2, 'Sauté diced pineapple, carrots, and peas in a wok.', 29), (3, 'Add cooked rice and stir-fry with soy sauce.', 29), (4, 'Add shrimp or chicken, if using.', 29), (5, 'Garnish with green onions and serve immediately.', 29),
+(1, 'Preheat oven to 425°F (220°C).', 30), (2, 'Melt chocolate and butter together.', 30), (3, 'Whisk in sugar, eggs, and flour.', 30), (4, 'Pour batter into greased ramekins.', 30), (5, 'Bake for 10-12 minutes or until edges are set and center is gooey.', 30), (6, 'Serve warm with a scoop of vanilla ice cream.', 30),
+(1, 'Preheat oven to 375°F (190°C).', 31),  (2, 'Mix lemon juice, garlic, and olive oil.', 31), (3, 'Place salmon on a baking sheet and brush with lemon garlic mixture.', 31), (4, 'Bake for 20 minutes or until cooked through.', 31),
+(1, 'Marinate chicken in soy sauce, ginger, and garlic for 30 minutes.', 32),  (2, 'Heat oil in a skillet and fry chicken until crispy.', 32),  (3, 'Coat fried chicken with spicy Korean sauce.', 32),  (4, 'Serve with steamed rice.', 32),(5, 'Garnish with sesame seeds and chopped green onions.', 32),(6, 'Serve immediately while hot.', 32), (7, 'Prepare additional sauce for dipping.', 32), (8, 'Enjoy your spicy Korean fried chicken.', 32),
+(1, 'Heat olive oil in a saucepan over medium heat.', 33), (2, 'Add mushrooms and cook until tender.', 33),  (3, 'Stir in rice and cook for 1 minute.', 33),  (4, 'Gradually add broth, stirring constantly until absorbed.', 33),(5, 'Continue adding broth until rice is creamy and cooked through.', 33),
+(1, 'Soak rice noodles in hot water until tender.', 34), (2, 'Bring broth to a boil and add beef slices.', 34), (3, 'Divide noodles into bowls and pour hot broth over.', 34), (4, 'Top with fresh herbs and lime wedges.', 34),(5, 'Serve with bean sprouts and chili sauce on the side.', 34),(6, 'Add hoisin sauce and sriracha for extra flavor.', 34),
+(1, 'Season pork with BBQ rub and slow cook for 6 hours.', 35), (2, 'Shred cooked pork with forks.', 35), (3, 'Toast buns and assemble sandwiches with pulled pork and BBQ sauce.', 35), (4, 'Serve with coleslaw.', 35),
+(1, 'Blend chickpeas, garlic, parsley, and spices in a food processor.', 36), (2, 'Form mixture into balls and fry until golden brown.', 36), (3, 'Warm pita bread and fill with falafel, vegetables, and tahini sauce.', 36), (4, 'Serve with a side of hummus.', 36),
+(1, 'Rub duck with spices and roast at 375°F (190°C) for 90 minutes.', 37), (2, 'Slice cucumber and scallions.', 37), (3, 'Serve duck with pancakes, cucumber, and hoisin sauce.', 37), (4, 'Roll up and enjoy.', 37),(5, 'Make sure to serve duck while hot.', 37),
+(1, 'Cut tops off bell peppers and remove seeds.', 38), (2, 'Brown ground beef with onions and garlic.', 38), (3, 'Mix beef with cooked rice and stuff into bell peppers.', 38), (4, 'Bake at 375°F (190°C) for 45 minutes.', 38),(5, 'Top with cheese and bake until melted.', 38),(6, 'Serve hot with a side of sour cream.', 38),
+(1, 'Cook grits according to package instructions.', 39), (2, 'Sauté shrimp with garlic, butter, and spices.', 39), (3, 'Serve shrimp over a bed of creamy cheese grits.', 39),  (4, 'Garnish with chopped parsley.', 39), (5, 'Serve immediately.', 39), (6, 'Enjoy your shrimp and grits.', 39),
+(1, 'Sauté onions and garlic in oil until soft.', 40), (2, 'Add chicken and cook until browned.', 40), (3, 'Stir in coconut milk and curry paste.', 40), (4, 'Simmer until chicken is cooked through.', 40), (5, 'Serve with rice and garnish with cilantro.', 40), (6, 'Enjoy your chicken curry.', 40),
+(1, 'Preheat oven to 375°F (190°C).', 41), (2, 'Place salmon fillets in a baking dish.', 41), (3, 'Mix maple syrup, soy sauce, garlic, and lemon juice.', 41), (4, 'Pour mixture over salmon and bake for 20 minutes.', 41),
+(1, 'Marinate chicken in teriyaki sauce for 15 minutes.', 42), (2, 'Grill chicken until fully cooked.', 42), (3, 'Brush with additional teriyaki sauce while grilling.', 42), (4, 'Serve with steamed vegetables.', 42),
+(1, 'Cook quinoa according to package instructions.', 43), (2, 'Roast vegetables in the oven with olive oil and spices.', 43), (3, 'Assemble bowl with quinoa, roasted vegetables, and tahini sauce.', 43),
+(1, 'Heat oil in a large paella pan.', 44), (2, 'Cook onions, garlic, and bell peppers until soft.', 44), (3, 'Add rice and cook for 2 minutes.', 44), (4, 'Add broth and saffron, bring to a boil.', 44), (5, 'Add seafood and cook until rice is done.', 44),
+(1, 'Preheat oven to 450°F (230°C).', 45), (2, 'Toss cauliflower florets with olive oil and spices.', 45), (3, 'Bake for 25 minutes, tossing halfway through.', 45),
+(1, 'Mix ground lamb with spices, garlic, and onion.', 46), (2, 'Shape into skewers and grill until cooked through.', 46), (3, 'Serve with yogurt sauce.', 46),
+(1, 'Roast butternut squash in the oven until tender.', 47), (2, 'Sauté onions and garlic in a saucepan.', 47), (3, 'Add roasted squash, broth, and spices.', 47),
+(1, 'Slice beef and broccoli.', 48), (2, 'Stir-fry beef in a hot wok until browned.', 48), (3, 'Add broccoli and stir-fry until tender.', 48), (4, 'Pour in soy sauce mixture and cook until heated through.', 48),
+(1, 'Preheat oven to 400°F (200°C).', 49), (2, 'Mix flour, sugar, baking powder, and salt.', 49), (3, 'Add eggs, milk, and melted butter.', 49), (4, 'Fold in blueberries and bake in muffin tins for 25 minutes.', 49),
+(1, 'Preheat oven to 375°F (190°C).', 50), (2, 'Rub chicken with garlic and herb mixture.', 50), (3, 'Roast in the oven for 90 minutes.', 50), (4, 'Let rest before carving and serving.', 50);
