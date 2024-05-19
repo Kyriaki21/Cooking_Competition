@@ -1245,3 +1245,55 @@ BEGIN
 END //
 
 DELIMITER ;
+
+-- Assign randomly recipes to cooks
+DELIMITER $$
+
+CREATE PROCEDURE AssignRecipesToCooks()
+BEGIN
+    -- Declare variables
+    DECLARE total_recipes INT;
+    DECLARE total_cooks INT;
+    DECLARE recipe_counter INT;
+    DECLARE cook_counter INT;
+
+    -- Get the total number of recipes and cooks
+    SELECT COUNT(*) INTO total_recipes FROM Recipe;
+    SELECT COUNT(*) INTO total_cooks FROM Cook;
+
+    -- Shuffle the list of cooks
+    DROP TEMPORARY TABLE IF EXISTS TempShuffledCooks;
+    CREATE TEMPORARY TABLE TempShuffledCooks
+    SELECT *, RAND() as rnd FROM Cook ORDER BY rnd;
+
+    -- Shuffle the list of recipes
+    DROP TEMPORARY TABLE IF EXISTS TempShuffledRecipes;
+    CREATE TEMPORARY TABLE TempShuffledRecipes
+    SELECT *, RAND() as rnd FROM Recipe ORDER BY rnd;
+
+    -- Reset counters
+    SET recipe_counter = 1;
+    SET cook_counter = 1;
+
+    -- Assign recipes to cooks
+    WHILE recipe_counter <= total_recipes DO
+        UPDATE Recipe
+        SET Cook_idCook = (SELECT idCook FROM TempShuffledCooks WHERE position = cook_counter)
+        WHERE idRecipe = (SELECT idRecipe FROM TempShuffledRecipes WHERE position = recipe_counter);
+        
+        -- Increment counters
+        SET recipe_counter = recipe_counter + 1;
+        SET cook_counter = cook_counter + 1;
+
+        -- Reset cook counter if it exceeds the total number of cooks
+        IF cook_counter > total_cooks THEN
+            SET cook_counter = 1;
+        END IF;
+    END WHILE;
+
+    -- Clean up temporary tables
+    DROP TEMPORARY TABLE IF EXISTS TempShuffledCooks;
+    DROP TEMPORARY TABLE IF EXISTS TempShuffledRecipes;
+END$$
+
+DELIMITER ;
