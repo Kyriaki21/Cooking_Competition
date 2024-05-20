@@ -1556,7 +1556,7 @@ DELIMITER ;
 
 DELIMITER //
 
-CREATE PROCEDURE GenerateMultipleSeasons()
+CREATE PROCEDURE GenerateMultipleSeasonsforsetseed()
 BEGIN
     DECLARE i INT DEFAULT 1;
 
@@ -1570,9 +1570,26 @@ BEGIN
         SET i = i + 1;
 
         -- Reset the seed for the next call
-        SET SESSION rand_seed1 = 1;
-        SET SESSION rand_seed2 = 1;
+        SET SESSION rand_seed1 = i;
+        SET SESSION rand_seed2 = i;
     END WHILE;
 END //
 
 DELIMITER ;
+
+DELIMITER //
+
+CREATE PROCEDURE GenerateMultipleSeasons(IN n INT)
+BEGIN
+    DECLARE i INT DEFAULT 1;
+
+    -- Call GenerateSeasonEpisodes() n times to generate data for n seasons
+    WHILE i <= n DO
+        CALL GenerateSeasonEpisodes();
+        SET i = i + 1;
+    END WHILE;
+END //
+
+DELIMITER ;
+
+
