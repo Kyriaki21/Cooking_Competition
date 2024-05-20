@@ -1,3 +1,5 @@
+USE Cooking_Competition;
+
 INSERT INTO `Cooking_Competition`.`Image` (`Description`,`idImage`,`URL`) VALUES
 ('French', 1, 'https://example.com/image1.jpg'),
 ('Chinese', 2, 'https://example.com/image2.jpg'),
