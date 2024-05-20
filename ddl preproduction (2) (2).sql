@@ -827,11 +827,7 @@ DELIMITER ;
 -- ----------------------------------------------------------------------------------------------------------------------
 
 -- 3.1. Average Rating (score) per cook and national cuisine
-DELIMITER //
-
-CREATE PROCEDURE GetCookScoresByCuisine()
-BEGIN
-    -- Select the required data
+CREATE VIEW CookScoresByCuisine AS
     SELECT 
         c.idCook,
         c.first_name,
@@ -850,9 +846,7 @@ BEGIN
         c.idCook, cu.Cuisine
     ORDER BY 
         cu.Cuisine, avg_score DESC;
-END //
 
-DELIMITER ;
     
 -- 3.2.a For a given National Cuisine the cooks belonging to it
 DELIMITER //
@@ -1207,24 +1201,15 @@ END //
 DELIMITER ;
 
 -- 3.15 Food groups that have never appeared in the competition
-DELIMITER //
-CREATE PROCEDURE FindUnusedFoodGroups()
-BEGIN
-    -- Select food groups that have not appeared in any recipe linked to an episode
-    SELECT *
-    FROM Food_Group
-    WHERE idFood_Group NOT IN (
-        SELECT DISTINCT Food_Group_idFood_Group
-        FROM Recipe_has_Ingredients
-        WHERE Recipe_idRecipe IN (
-            SELECT DISTINCT Recipe_idRecipe
-            FROM Episode_has_Participants
-            JOIN Recipe_has_Cook ON Episode_has_Participants.Recipe_idRecipe = Recipe_has_Cook.Recipe_idRecipe
-        )
-    );
-END //
-
-DELIMITER ;
+CREATE VIEW UnusedFoodGroupsView AS
+    SELECT fg.*
+    FROM Food_Group fg
+    LEFT JOIN (
+        SELECT DISTINCT rhi.Ingredients_idIngredients, ig.Food_Group_idFood_Group
+        FROM Recipe_has_Ingredients rhi
+        JOIN Ingredients ig ON rhi.Ingredients_idIngredients = ig.idIngredients
+    ) rhi ON fg.idFood_Group = rhi.Food_Group_idFood_Group
+    WHERE rhi.Ingredients_idIngredients IS NULL;
 
 DELIMITER //
 
