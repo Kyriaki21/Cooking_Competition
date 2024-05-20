@@ -1106,7 +1106,6 @@ END //
 DELIMITER ;
 
 -- 3.11 Top 5 reviewers who have given the highest overall rating to a cook
-DELIMITER //
 
 DELIMITER //
 
