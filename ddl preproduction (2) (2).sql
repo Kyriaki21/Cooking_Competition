@@ -56,7 +56,7 @@ CREATE TABLE `Cooking_Competition`.`Food_Group` (
   UNIQUE INDEX `Recipe_Category_UNIQUE` (`Recipe_Category` ASC)  )
 ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE `Cooking_Competition`.`Recipe` (
+CREATE TABLE Cooking_Competition.Recipe (
   `idRecipe` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `title` VARCHAR(200) NOT NULL,
   `description` TEXT NOT NULL,
@@ -69,7 +69,7 @@ CREATE TABLE `Cooking_Competition`.`Recipe` (
   `total_protein` INT NULL,
   `total_carbohydrate` INT NULL,
   `Cuisine_id` INT UNSIGNED NOT NULL,
-  `Type_Meal_id` INT UNSIGNED NOT NULL,
+  `Type_Meal` INT UNSIGNED NOT NULL,
   `syntagi` ENUM('cooking', 'pastry') NOT NULL,
   `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `Image` INT UNSIGNED NOT NULL,
@@ -81,21 +81,21 @@ CREATE TABLE `Cooking_Competition`.`Recipe` (
     ON UPDATE CASCADE,
   PRIMARY KEY (`idRecipe`),
   INDEX `fk_Recipe_Cuisine1_idx` (`Cuisine_id` ASC)  ,
-  INDEX `fk_Recipe_Type_Meal1_idx` (`Type_Meal_id` ASC)  ,
+  INDEX `fk_Recipe_Type_Meal1_idx` (`Type_Meal` ASC)  ,
   CONSTRAINT `fk_Recipe_Cuisine1`
     FOREIGN KEY (`Cuisine_id`)
     REFERENCES `Cooking_Competition`.`Cuisine` (`idCuisine`)
     ON DELETE RESTRICT
     ON UPDATE CASCADE,
   CONSTRAINT `fk_Recipe_Type_Meal1`
-    FOREIGN KEY (`Type_Meal_id`)
+    FOREIGN KEY (`Type_Meal`)
     REFERENCES `Cooking_Competition`.`Type_Meal` (`idType_Meal`)
     ON DELETE RESTRICT
     ON UPDATE CASCADE,
-  CONSTRAINT range_dif check (difficulty IN (1,5)),
-  CONSTRAINT prep_time_check check (prep_time > 0),
-  CONSTRAINT portions_check check (portions > 0),
-  CONSTRAINT cook_time_check check (cook_time >= 0))
+  CONSTRAINT `range_dif` CHECK (`difficulty` BETWEEN 1 AND 5),
+  CONSTRAINT `prep_time_check` check (prep_time >= 0),
+  CONSTRAINT `portions_check` check (portions > 0),
+  CONSTRAINT `cook_time_check` check (cook_time >= 0))
 ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `Cooking_Competition`.`Tips` (
@@ -807,21 +807,21 @@ BEGIN
     DECLARE prevStep TINYINT;
 
     -- Find the step number of the previous step for the given recipe
-    SELECT Step_number INTO prevStep FROM Steps WHERE Recipe_idRecipe = NEW.Recipe_idRecipe ORDER BY idSteps DESC LIMIT 1;
+    SELECT Step_number 
+    INTO prevStep 
+    FROM Steps 
+    WHERE Recipe_idRecipe = NEW.Recipe_idRecipe 
+    ORDER BY Step_number DESC 
+    LIMIT 1;
 
-    -- If no previous step exists or the step number is consecutive, allow the insertion
-    IF prevStep IS NULL OR NEW.Step_number = prevStep + 1 THEN
-        -- Insert the new step
-        INSERT INTO Steps (Step_number, Step_description, Recipe_idRecipe)
-        VALUES (NEW.Step_number, NEW.Step_description, NEW.Recipe_idRecipe);
-    ELSE
-        -- If the previous step doesn't exist or step numbers are not consecutive, raise an error
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Previous step does not exist or step numbers are not consecutive for this recipe. Please insert the steps for this recipe in the correct order.';
+    -- If the previous step exists and the new step number is not consecutive, raise an error
+    IF prevStep IS NOT NULL AND NEW.Step_number != prevStep + 1 THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Previous step does not exist or step numbers are not consecutive for this recipe. Please insert the steps for this recipe in the correct order.';
     END IF;
 END //
 
 DELIMITER ;
-
 
 
 -- ----------------------------------------------------------------------------------------------------------------------
@@ -847,7 +847,15 @@ CREATE VIEW CookScoresByCuisine AS
     ORDER BY 
         cu.Cuisine, avg_score DESC;
 
-    
+DELIMITER //
+
+CREATE PROCEDURE AVG_SCORE_CUISine_COOK()
+BEGIN
+	SELECT * FROM CookScoresByCuisine;
+END //
+
+DELIMITER ;
+
 -- 3.2.a For a given National Cuisine the cooks belonging to it
 DELIMITER //
 
@@ -885,7 +893,7 @@ END //
 
 DELIMITER ;
 
--- 3.2.b For a given sezon, the cooks participated in episodes
+-- 3.2.b For a given season, the cooks participated in episodes
 DELIMITER //
 
 CREATE PROCEDURE GetCooksBySeason(IN season_name VARCHAR(255))
@@ -924,180 +932,205 @@ END //
 DELIMITER ;
 
 -- 3.3 The young cooks (age < 30 years) who have the most recipes
-DELIMITER //
-
-CREATE PROCEDURE FindYoungCooksWithMostRecipes()
-BEGIN
-    DECLARE max_recipe_count INT;
-    
-    -- Find the maximum number of recipes among cooks under 30
-    SELECT MAX(recipe_count) INTO max_recipe_count
-    FROM (
-        SELECT 
-            c.idCook,
-            COUNT(r.idRecipe) AS recipe_count
-        FROM 
-            Cook c
-        INNER JOIN 
-            Recipe r ON c.idCook = r.Cook_idCook
-        WHERE 
-            TIMESTAMPDIFF(YEAR, c.date_of_birth, CURDATE()) < 30
-        GROUP BY 
-            c.idCook
-    ) AS MAXcounts;
-    
-    -- Get the cooks with the maximum recipe count and under 30 years old
-    SELECT 
-        c.idCook,
-        c.first_name,
-        c.last_name,
-        COUNT(r.idRecipe) AS recipe_count
-    FROM 
-        Cook c
-    INNER JOIN 
-        Recipe r ON c.idCook = r.Cook_idCook
-    WHERE 
-        TIMESTAMPDIFF(YEAR, c.date_of_birth, CURDATE()) < 30
-    GROUP BY 
-        c.idCook, c.first_name, c.last_name
-    HAVING 
-        recipe_count = max_recipe_count;
-END //
-
-DELIMITER 
-
--- 3.4 Cooks who have never judged an episode
-DELIMITER //
-
-CREATE PROCEDURE FindCooksNeverJudgedEpisode()
-BEGIN
-    SELECT c.idCook, c.first_name, c.last_name
-    FROM Cook c
-    LEFT JOIN Episode_Judges ej ON c.idCook = ej.Judge_idCook
-    WHERE ej.Judge_idCook IS NULL;
-END //
-
-DELIMITER ;
-
-
--- 3.5 Judges who have participated in the same number of episodes over a period of one year with
-DELIMITER //
-
-CREATE PROCEDURE FindJudgesWithSameEpisodes()
-BEGIN
-    SELECT 
-        j1.idJudge AS Judge1_ID,
-        j1.first_name AS Judge1_FirstName,
-        j1.last_name AS Judge1_LastName,
-        j2.idJudge AS Judge2_ID,
-        j2.first_name AS Judge2_FirstName,
-        j2.last_name AS Judge2_LastName,
-        COUNT(*) AS NumEpisodes
-    FROM 
-        Judge j1
-    JOIN 
-        Judge j2 ON j1.idJudge <> j2.idJudge
-    JOIN 
-        Episode_has_Judge ej1 ON j1.idJudge = ej1.Judge_idJudge
-    JOIN 
-        Episode_has_Judge ej2 ON j2.idJudge = ej2.Judge_idJudge
-    WHERE 
-        ej1.Episode_idEpisode = ej2.Episode_idEpisode
-    GROUP BY 
-        j1.idJudge, j2.idJudge
-    HAVING 
-        NumEpisodes > 3
-    ORDER BY 
-        NumEpisodes DESC;
-END //
-
-DELIMITER ;
-
--- 3.7 All cooks who have participated at least 5 fewer times than the cook with the most episodes
+CREATE VIEW YoungCooksInEpisodes AS
 SELECT 
     c.idCook,
     c.first_name,
     c.last_name,
-    COUNT(*) AS episodes_participated
+    c.age,
+    ep.idEpisode AS episode_id,
+    ep.Episode_number,
+    ep.Season_number,
+    'Judge' AS role
+FROM 
+    Cook c
+JOIN 
+    Judge j ON c.idCook = j.Cook_idCook
+JOIN 
+    Episode_has_Judges ehj ON j.idJudge = ehj.Judge_idJudge
+JOIN 
+    Episode ep ON ehj.Episode_idEpisode = ep.idEpisode
+WHERE 
+    c.age < 30
+
+UNION
+
+SELECT 
+    c.idCook,
+    c.first_name,
+    c.last_name,
+    c.age,
+    ep.idEpisode AS episode_id,
+    ep.Episode_number,
+    ep.Season_number,
+    'Cook' AS role
 FROM 
     Cook c
 JOIN 
     Episode_has_Participants ehp ON c.idCook = ehp.Cook_idCook
+JOIN 
+    Episode ep ON ehp.Episode_idEpisode = ep.idEpisode
+WHERE 
+    c.age < 30;
+
+DELIMITER //
+
+CREATE PROCEDURE GetYoungCooksFromView()
+BEGIN
+    SELECT * FROM YoungCooksInEpisodes;
+END //
+
+DELIMITER ;
+
+
+-- 3.4 Cooks who have never judged an episode
+CREATE OR REPLACE VIEW CooksNeverJudged AS
+SELECT 
+    c.idCook,
+    c.first_name,
+    c.last_name,
+    c.age
+FROM 
+    Cook c
+LEFT JOIN 
+    Judge j ON c.idCook = j.Cook_idCook
+WHERE 
+    j.Cook_idCook IS NULL;
+
+DELIMITER //
+
+CREATE PROCEDURE GetCooksNeverJudged()
+BEGIN
+    SELECT * FROM CooksNeverJudged;
+END //
+
+DELIMITER ;
+
+-- 3.5 Judges who have participated in the same number of episodes over a period of one year with
+CREATE OR REPLACE VIEW JudgesSameNumberOfEpisodes AS
+SELECT 
+    j.idJudge,
+    j.Cook_idCook,
+    COUNT(ej.Episode_idEpisode) AS num_episodes
+FROM 
+    Judge j
+INNER JOIN 
+    Episode_has_Judges ej ON j.idJudge = ej.Judge_idJudge
+INNER JOIN 
+    Episode e ON ej.Episode_idEpisode = e.idEpisode
+WHERE 
+    e.last_update >= DATE_SUB(CURRENT_DATE(), INTERVAL 1 YEAR)
 GROUP BY 
-    c.idCook, c.first_name, c.last_name
+    j.idJudge, j.Cook_idCook
 HAVING 
-    episodes_participated <= (
-        SELECT 
-            MAX(episodes_participated) - 5
-        FROM (
-            SELECT 
-                Cook_idCook,
-                COUNT(*) AS episodes_participated
-            FROM 
-                Episode_has_Participants
-            GROUP BY 
-                Cook_idCook
-        ) AS subquery
-    ); 
+    num_episodes > 3
+
+DELIMITER //
+
+CREATE PROCEDURE GetJudgesWithSameNumberOfEpisodes()
+BEGIN
+    SELECT * FROM JudgesSameNumberOfEpisodes;
+END //
+
+DELIMITER ;
+
+
+-- 3.7 All cooks who have participated at least 5 fewer times than the cook with the most episodes
+CREATE VIEW CooksWithFewerParticipations AS
+SELECT c.idCook, c.first_name, c.last_name
+FROM Cook c
+JOIN (
+    SELECT Cook_idCook, COUNT(*) AS max_participations
+    FROM Episode_has_Participants
+    GROUP BY Cook_idCook
+    ORDER BY max_participations DESC
+    LIMIT 1
+) AS max_episodes ON c.idCook <> max_episodes.Cook_idCook
+JOIN (
+    SELECT Cook_idCook, COUNT(*) AS num_participations
+    FROM Episode_has_Participants
+    GROUP BY Cook_idCook
+) AS cook_participations ON c.idCook = cook_participations.Cook_idCook
+WHERE max_episodes.max_participations - cook_participations.num_participations >= 5;
+
+DELIMITER //
+
+CREATE PROCEDURE CallCooksWithFewerParticipations()
+BEGIN
+    -- Selecting data from the view
+    SELECT *
+    FROM CooksWithFewerParticipations;
+END //
+
+DELIMITER ;
+
     
 -- 3.9 List of average number of grams of carbohydrates in the competition per sezon
+CREATE VIEW AverageCarbohydratesPerSeason AS
+SELECT
+    e.Season_number,
+    AVG(i.carbohydrate) AS average_carbohydrates
+FROM
+    Episode e
+JOIN
+    Episode_has_Participants ep ON e.idEpisode = ep.Episode_idEpisode
+JOIN
+    Recipe r ON ep.Recipe_idRecipe = r.idRecipe
+JOIN
+    Recipe_has_Ingredients ri ON r.idRecipe = ri.Recipe_idRecipe
+JOIN
+    Ingredients i ON ri.Ingredients_idIngredients = i.idIngredients
+GROUP BY
+    e.Season_number;
+
 DELIMITER //
 
-CREATE PROCEDURE CalculateMeanCarbohydratesPerSeason()
+DELIMITER //
+
+CREATE PROCEDURE CalculateAverageCarbohydratesPerSeason()
 BEGIN
-    SELECT 
-        e.Season_number,
-        AVG(i.carbohydrate) AS average_carbohydrates
-    FROM 
-        Episode e
-    JOIN 
-        Episode_has_Participants ep ON e.idEpisode = ep.Episode_idEpisode
-    JOIN 
-        Recipe r ON ep.Recipe_idRecipe = r.idRecipe
-    JOIN 
-        Recipe_has_Ingredients ri ON r.idRecipe = ri.Recipe_idRecipe
-    JOIN 
-        Ingredients i ON ri.Ingredients_idIngredients = i.idIngredients
-    GROUP BY 
-        e.Season_number;
+    SELECT * FROM AverageCarbohydratesPerSeason;
 END //
 
 DELIMITER ;
+
 
 -- 3.10 Cuisines have the same number of entries in competitions over two consecutive years, with at least 3 entries per year
+CREATE VIEW ConsecutiveYearCuisines AS
+SELECT 
+    cc1.idCuisine,
+    cc1.Cuisine,
+    COUNT(DISTINCT ep1.idEpisode) AS Entries_Year1,
+    COUNT(DISTINCT ep2.idEpisode) AS Entries_Year2
+FROM 
+    Cooking_Competition.Cuisine cc1
+JOIN 
+    Cooking_Competition.Recipe rec ON cc1.idCuisine = rec.Cuisine_id
+JOIN 
+    Cooking_Competition.Episode_has_Participants epp1 ON rec.idRecipe = epp1.Recipe_idRecipe
+JOIN 
+    Cooking_Competition.Episode ep1 ON epp1.Episode_idEpisode = ep1.idEpisode
+JOIN 
+    Cooking_Competition.Episode_has_Participants epp2 ON rec.idRecipe = epp2.Recipe_idRecipe
+JOIN 
+    Cooking_Competition.Episode ep2 ON epp2.Episode_idEpisode = ep2.idEpisode
+WHERE 
+    YEAR(ep1.last_update) = YEAR(ep2.last_update) - 1
+GROUP BY 
+    cc1.idCuisine
+HAVING 
+    Entries_Year1 >= 3 AND Entries_Year2 >= 3;
+
+
 DELIMITER //
 
-CREATE PROCEDURE FindCuisinesWithSameEntries()
+CREATE PROCEDURE GetConsecutiveYearCuisines()
 BEGIN
-    -- Step 1: Calculate count of entries per national cuisine for each year
-    WITH entries_per_year AS (
-        SELECT cuisine, year, COUNT(*) AS entry_count
-        FROM competition
-        GROUP BY cuisine, year
-    ),
-
-    -- Step 2: Merge the results for the two consecutive years
-    merged_entries AS (
-        SELECT e1.cuisine, e1.year AS year_1, e1.entry_count AS entry_count_1,
-               e2.year AS year_2, e2.entry_count AS entry_count_2
-        FROM entries_per_year e1
-        JOIN entries_per_year e2 ON e1.cuisine = e2.cuisine AND e1.year = e2.year - 1
-    ),
-
-    -- Step 3: Filter out cuisines with fewer than 3 entries per year in either year
-    filtered_entries AS (
-        SELECT cuisine, year_1, entry_count_1, year_2, entry_count_2
-        FROM merged_entries
-        WHERE entry_count_1 >= 3 AND entry_count_2 >= 3
-    )
-
-    -- Step 4: Identify cuisines with the same number of entries over two consecutive years
-    SELECT cuisine
-    FROM filtered_entries
-    WHERE entry_count_1 = entry_count_2;
-END //
+    SELECT * FROM ConsecutiveYearCuisines;
+END//
 
 DELIMITER ;
+
 
 -- 3.11 Top 5 reviewers who have given the highest overall rating to a cook
 
@@ -1113,89 +1146,124 @@ CREATE VIEW Top5JudgesTotalScoreView AS
     ORDER BY 
         total_score DESC
     LIMIT 5;
-
--- 3.12  The most technically challenging, in terms of recipes, episode of the competition per year
+    
 DELIMITER //
 
-CREATE PROCEDURE MostDifficultEpisodePerSeason()
+CREATE PROCEDURE CallTop5JudgesTotalScore()
 BEGIN
-    SELECT 
-        s.Season_number,
-        MAX(avg_difficulty) AS max_difficulty,
-        (
-            SELECT 
-                e.Episode_number
-            FROM 
-                Episodes e
-            JOIN 
-                Recipes r ON e.idEpisode = r.Episode_idEpisode
-            WHERE 
-                e.Season_idSeason = s.idSeason
-            GROUP BY 
-                e.idEpisode
-            HAVING 
-                AVG(r.Difficulty) = MAX(avg_difficulty)
-            LIMIT 1
-        ) AS most_difficult_episode
-    FROM 
-        Seasons s
-    JOIN 
-        Episodes ep ON s.idSeason = ep.Season_idSeason
-    JOIN 
-        Recipes rc ON ep.idEpisode = rc.Episode_idEpisode
-    GROUP BY 
-        s.idSeason;
+    -- Select from the view to get the cuisines with the same number of entries over two consecutive years
+    SELECT * FROM Top5JudgesTotalScoreView ;
+END //
+
+DELIMITER ;
+
+-- 3.12  The most technically challenging, in terms of recipes, episode of the competition per year
+CREATE VIEW EpisodeStatusSum AS
+SELECT 
+    e.idEpisode,
+    SUM(CASE
+        WHEN c.Status = 'C cook' THEN 1
+        WHEN c.Status = 'B cook' THEN 2
+        WHEN c.Status = 'A cook' THEN 3
+        WHEN c.Status = 'assistant head Chef' THEN 4
+        WHEN c.Status = 'Chef' THEN 5
+        ELSE 0
+    END) AS sum_status
+FROM 
+    Episode e
+INNER JOIN
+    Episode_has_Participants ep ON e.idEpisode = ep.Episode_idEpisode
+INNER JOIN
+    Cook c ON ep.Cook_idCook = c.idCook
+GROUP BY 
+    e.idEpisode;
+
+DELIMITER //
+
+CREATE PROCEDURE FindLowestSumStatusEpisode()
+BEGIN
+    -- Select the episode with the lowest sum of status values
+    SELECT *
+    FROM EpisodeStatusSum
+    ORDER BY sum_status
+    LIMIT 1;
 END//
 
 DELIMITER ;
 
 -- 3.13 Episode garnered the lowest status ranking (judges and cooks)
+-- Create the view to calculate the sum of status scores for judges and cooks
+CREATE OR REPLACE VIEW Episode_Sum_Status AS
+SELECT
+    ep.idEpisode,
+    SUM(CASE
+            WHEN c.Status = 'C cook' THEN 1
+            WHEN c.Status = 'B cook' THEN 2
+            WHEN c.Status = 'A cook' THEN 3
+            WHEN c.Status = 'assistant head Chef' THEN 4
+            WHEN c.Status = 'Chef' THEN 5
+            ELSE 0
+        END) AS cook_status_sum,
+    SUM(CASE
+            WHEN j.idJudge IS NOT NULL THEN
+                CASE
+                    WHEN c.Status = 'C cook' THEN 1
+                    WHEN c.Status = 'B cook' THEN 2
+                    WHEN c.Status = 'A cook' THEN 3
+                    WHEN c.Status = 'assistant head Chef' THEN 4
+                    WHEN c.Status = 'Chef' THEN 5
+                    ELSE 0
+                END
+            ELSE 0
+        END) AS judge_status_sum
+FROM
+    Episode ep
+LEFT JOIN Episode_has_Participants ehp ON ep.idEpisode = ehp.Episode_idEpisode
+LEFT JOIN Cook c ON ehp.Cook_idCook = c.idCook
+LEFT JOIN Judge j ON j.Cook_idCook = c.idCook
+GROUP BY
+    ep.idEpisode;
+
+-- Create the procedure to select the episode with the lowest sum of status scores
 DELIMITER //
+
 CREATE PROCEDURE LowestSumStatusEpisode()
 BEGIN
-    -- Select the episode with the lowest sum of status values
-    SELECT 
-        episode_id,
-        SUM(CASE
-            WHEN status = 'C cook' THEN 1
-            WHEN status = 'B cook' THEN 2
-            WHEN status = 'A cook' THEN 3
-            WHEN status = 'assistant head Chef' THEN 4
-            WHEN status = 'Chef' THEN 5
-            ELSE 0
-        END) AS sum_status
-    FROM 
-        Contestants
-    GROUP BY 
-        episode_id
-    ORDER BY 
-        sum_status
-    LIMIT 1;
-END;
+    DECLARE min_sum INT;
+
+    -- Find the minimum sum of status scores
+    SELECT MIN(cook_status_sum + judge_status_sum)
+    INTO min_sum
+    FROM Episode_Sum_Status;
+
+    -- Select the episode with the lowest sum of status scores
+    SELECT idEpisode
+    FROM Episode_Sum_Status
+    WHERE cook_status_sum + judge_status_sum = min_sum;
+END //
+
 DELIMITER ;
 
 -- 3.14  Theme has appeared most often in the competition
+CREATE VIEW MostCommonConceptAllEpisodes AS
+SELECT Concept_name AS Most_Common_Concept
+FROM (
+    SELECT Concept_idConcept, COUNT(*) AS concept_count
+    FROM Recipe_has_Concept
+    JOIN Recipe ON Recipe_has_Concept.Recipe_idRecipe = Recipe.idRecipe
+    JOIN Episode_has_Participants ON Recipe.idRecipe = Episode_has_Participants.Recipe_idRecipe
+    JOIN Episode ON Episode_has_Participants.Episode_idEpisode = Episode.idEpisode
+    GROUP BY Concept_idConcept
+    ORDER BY concept_count DESC
+    LIMIT 1
+) AS most_common
+JOIN Concept ON most_common.Concept_idConcept = Concept.idConcept;
+
 DELIMITER //
 
-CREATE PROCEDURE MostCommonConceptAllEpisodes()
+CREATE PROCEDURE GetMostCommonConcept()
 BEGIN
-    DECLARE most_common_concept VARCHAR(255);
-
-    -- Query to find the most common concept among all episodes
-    SELECT Concept_name INTO most_common_concept
-    FROM (
-        SELECT Concept_idConcept, COUNT(*) AS concept_count
-        FROM Recipe_has_Concept
-        JOIN Recipe ON Recipe_has_Concept.Recipe_idRecipe = Recipe.idRecipe
-        JOIN Episode ON Recipe.Episode_idEpisode = Episode.idEpisode
-        GROUP BY Concept_idConcept
-        ORDER BY concept_count DESC
-        LIMIT 1
-    ) AS most_common
-    JOIN Concept ON most_common.Concept_idConcept = Concept.idConcept;
-
-    -- Return the most common concept among all episodes
-    SELECT most_common_concept AS Most_Common_Concept;
+	SELECT * FROM MostCommonConceptAllEpisodes;
 END //
 
 DELIMITER ;
@@ -1366,10 +1434,6 @@ BEGIN
 END //
 
 DELIMITER ;
-
-
-
-
 
 -- trigger for all cuisine/cook.judge/recipe in one
 DELIMITER //
