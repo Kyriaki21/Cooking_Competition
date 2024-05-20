@@ -1292,7 +1292,7 @@ BEGIN
             -- Select a random cuisine that hasn't been selected yet and doesn't appear in the last 3 episodes
             REPEAT
                 SELECT idCuisine INTO selected_cuisine FROM temp_cuisines ORDER BY RAND() LIMIT 1;
-            UNTIL selected_cuisine NOT IN (SELECT idCuisine FROM Episode_has_Participants 
+            UNTIL selected_cuisine NOT IN (SELECT Cuisine_idCuisine FROM Episode_has_Participants 
                                            JOIN Episode ON Episode.idEpisode = Episode_has_Participants.Episode_idEpisode
                                            WHERE Episode.season = season_num AND Episode.episode_number > (i - 3))
             END REPEAT;
@@ -1313,7 +1313,7 @@ BEGIN
                 SELECT r.idRecipe INTO selected_recipe 
                 FROM Recipe r
                 WHERE r.Cook_idCook = selected_cook AND r.Cuisine_idCuisine = selected_cuisine
-                AND r.idRecipe NOT IN (SELECT idRecipe FROM Episode_has_Participants 
+                AND r.idRecipe NOT IN (SELECT Recipe_idRecipe FROM Episode_has_Participants 
                                        JOIN Episode ON Episode.idEpisode = Episode_has_Participants.Episode_idEpisode
                                        WHERE Episode.season = season_num AND Episode.episode_number > (i - 3))
                 ORDER BY RAND() LIMIT 1;
@@ -1341,7 +1341,7 @@ BEGIN
 
         -- Randomly select 3 judges for the episode from the Cook table who haven't been selected yet in this episode
         CREATE TEMPORARY TABLE temp_judges AS
-        SELECT idCook FROM Cook 
+                SELECT idCook FROM Cook 
         WHERE idCook NOT IN (SELECT idCook FROM temp_participations WHERE count >= 3)  -- ensure the cook has not judged more than 3 times consecutively
         ORDER BY RAND() LIMIT 3;
 
@@ -1367,6 +1367,11 @@ BEGIN
             SET j = j + 1;
         END WHILE;
 
+        -- Create entries in the judge_scores_participant table
+        INSERT INTO judge_scores_participant (episode_id, judge_id, participant_id, score)
+        SELECT episode_num, selected_judge, selected_cook, 0
+        FROM temp_judges;
+
         -- Clean up temporary tables for the episode
         DELETE FROM temp_episode_cooks;
         DELETE FROM temp_episode_cuisines;
@@ -1385,6 +1390,10 @@ BEGIN
 END //
 
 DELIMITER ;
+
+
+
+
 
 -- trigger for all cuisine/cook.judge/recipe in one
 DELIMITER //
