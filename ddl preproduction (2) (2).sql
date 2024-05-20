@@ -1283,22 +1283,19 @@ BEGIN
         -- Get the current episode number
         SELECT MAX(idEpisode) INTO episode_num FROM Episode WHERE season = season_num AND episode_number = i;
 
-        -- Randomly select 10 cuisines ensuring each cuisine doesn't appear more than 3 times in a row
+        -- Randomly select 10 cuisines
         CREATE TEMPORARY TABLE temp_cuisines AS
-        SELECT idCuisine 
-        FROM (
-            SELECT idCuisine, 
-                   @rn := IF(@prev_cuisine = idCuisine, @rn + 1, 1) AS row_number,
-                   @prev_cuisine := idCuisine
-            FROM Cuisine, (SELECT @prev_cuisine := null, @rn := 0) AS vars
-            ORDER BY RAND()
-        ) AS sub
-        WHERE row_number <= 3;
+        SELECT idCuisine FROM Cuisine ORDER BY RAND() LIMIT 10;
 
         SET j = 1;
         WHILE j <= 10 DO
-            -- Select a random cuisine from the temporary table
-            SELECT idCuisine INTO selected_cuisine FROM temp_cuisines ORDER BY RAND() LIMIT 1;
+            -- Select a random cuisine that hasn't been selected yet and doesn't appear in the last 3 episodes
+            REPEAT
+                SELECT idCuisine INTO selected_cuisine FROM temp_cuisines ORDER BY RAND() LIMIT 1;
+            UNTIL selected_cuisine NOT IN (SELECT idCuisine FROM Episode_has_Participants 
+                                           JOIN Episode ON Episode.idEpisode = Episode_has_Participants.Episode_idEpisode
+                                           WHERE Episode.season = season_num AND Episode.episode_number > (i - 3))
+            END REPEAT;
 
             -- Select a random cook for the selected cuisine who hasn't been selected yet in this episode
             REPEAT
@@ -1375,8 +1372,19 @@ BEGIN
         DELETE FROM temp_episode_cuisines;
         DELETE FROM temp_episode_recipes;
         DROP TEMPORARY TABLE IF EXISTS temp_cuisines;
-        DROP TEMPORARY TABLE IF EXISTS
+        DROP TEMPORARY TABLE IF EXISTS temp_judges;
 
+        SET i = i + 1;
+    END WHILE;
+
+    -- Drop temporary tables
+    DROP TEMPORARY TABLE IF EXISTS temp_participations;
+    DROP TEMPORARY TABLE IF EXISTS temp_episode_cooks;
+    DROP TEMPORARY TABLE IF EXISTS temp_episode_cuisines;
+    DROP TEMPORARY TABLE IF EXISTS temp_episode_recipes;
+END //
+
+DELIMITER ;
 
 -- trigger for all cuisine/cook.judge/recipe in one
 DELIMITER //
