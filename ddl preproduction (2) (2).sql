@@ -1107,26 +1107,18 @@ DELIMITER ;
 
 -- 3.11 Top 5 reviewers who have given the highest overall rating to a cook
 
-DELIMITER //
-
-CREATE PROCEDURE Top5JudgesTotalScore()
-BEGIN
+CREATE VIEW Top5JudgesTotalScoreView AS
     SELECT 
-        (SELECT Cook_name FROM Cooks WHERE idCook = c.Judge_idJudge) AS Judge_name,
-        c.Cook_name,
-        SUM(sc.score) AS total_score
+        (SELECT CONCAT_WS(' ', first_name, last_name) FROM Cook WHERE idCook = jp.Judge_idJudge) AS Judge_name,
+        (SELECT CONCAT_WS(' ', first_name, last_name) FROM Cook WHERE idCook = jp.Participant_id) AS Participant_name,
+        SUM(jp.Score) AS total_score
     FROM 
-        Score_given sc
-    JOIN 
-        Cooks c ON sc.Cook_idCook = c.idCook
+        Judge_Participant_Scores jp
     GROUP BY 
-        Judge_name, c.Cook_name
+        Judge_name, Participant_name
     ORDER BY 
         total_score DESC
     LIMIT 5;
-END//
-
-DELIMITER ;
 
 -- 3.12  The most technically challenging, in terms of recipes, episode of the competition per year
 DELIMITER //
