@@ -1108,34 +1108,23 @@ DELIMITER ;
 -- 3.11 Top 5 reviewers who have given the highest overall rating to a cook
 DELIMITER //
 
-CREATE PROCEDURE MostDifficultEpisodePerSeason()
+DELIMITER //
+
+CREATE PROCEDURE Top5JudgesTotalScore()
 BEGIN
     SELECT 
-        s.Season_number,
-        MAX(avg_difficulty) AS max_difficulty,
-        (
-            SELECT 
-                e.Episode_number
-            FROM 
-                Episodes e
-            JOIN 
-                Recipes r ON e.idEpisode = r.Episode_idEpisode
-            WHERE 
-                e.Season_idSeason = s.idSeason
-            GROUP BY 
-                e.idEpisode
-            HAVING 
-                AVG(r.Difficulty) = MAX(avg_difficulty)
-            LIMIT 1
-        ) AS most_difficult_episode
+        (SELECT Cook_name FROM Cooks WHERE idCook = c.Judge_idJudge) AS Judge_name,
+        c.Cook_name,
+        SUM(sc.score) AS total_score
     FROM 
-        Seasons s
+        Score_given sc
     JOIN 
-        Episodes ep ON s.idSeason = ep.Season_idSeason
-    JOIN 
-        Recipes rc ON ep.idEpisode = rc.Episode_idEpisode
+        Cooks c ON sc.Cook_idCook = c.idCook
     GROUP BY 
-        s.idSeason;
+        Judge_name, c.Cook_name
+    ORDER BY 
+        total_score DESC
+    LIMIT 5;
 END//
 
 DELIMITER ;
@@ -1246,7 +1235,6 @@ END //
 
 DELIMITER ;
 
--- with the table judges
 DELIMITER //
 
 CREATE PROCEDURE GenerateSeasonEpisodes()
@@ -1301,25 +1289,33 @@ BEGIN
 
         SET j = 1;
         WHILE j <= 10 DO
-            -- Select a random cuisine that hasn't been selected yet
+            -- Select a random cuisine that hasn't been selected yet and doesn't appear in the last 3 episodes
             REPEAT
                 SELECT idCuisine INTO selected_cuisine FROM temp_cuisines ORDER BY RAND() LIMIT 1;
-            UNTIL selected_cuisine NOT IN (SELECT idCuisine FROM temp_episode_cuisines)
+            UNTIL selected_cuisine NOT IN (SELECT idCuisine FROM Episode_has_Participants 
+                                           JOIN Episode ON Episode.idEpisode = Episode_has_Participants.Episode_idEpisode
+                                           WHERE Episode.season = season_num AND Episode.episode_number > (i - 3))
             END REPEAT;
 
             -- Select a random cook for the selected cuisine who hasn't been selected yet in this episode
             REPEAT
-                SELECT idCook INTO selected_cook FROM Cook
-                WHERE idCuisine = selected_cuisine
-                AND idCook NOT IN (SELECT idCook FROM temp_participations WHERE count >= 3)  -- ensure the cook has not participated more than 3 times consecutively
+                SELECT c.idCook INTO selected_cook 
+                FROM Cook c
+                JOIN Cook_has_Cuisine chc ON c.idCook = chc.Cook_idCook
+                WHERE chc.Cuisine_idCuisine = selected_cuisine
+                AND c.idCook NOT IN (SELECT idCook FROM temp_participations WHERE count >= 3)  -- ensure the cook has not participated more than 3 times consecutively
                 ORDER BY RAND() LIMIT 1;
             UNTIL selected_cook NOT IN (SELECT idCook FROM temp_episode_cooks)
             END REPEAT;
 
-            -- Select a random recipe for the selected cook that hasn't been selected yet
+            -- Select a random recipe for the selected cook that hasn't been selected yet and doesn't appear in the last 3 episodes
             REPEAT
-                SELECT idRecipe INTO selected_recipe FROM Recipe
-                WHERE idCook = selected_cook AND idCuisine = selected_cuisine
+                SELECT r.idRecipe INTO selected_recipe 
+                FROM Recipe r
+                WHERE r.Cook_idCook = selected_cook AND r.Cuisine_idCuisine = selected_cuisine
+                AND r.idRecipe NOT IN (SELECT idRecipe FROM Episode_has_Participants 
+                                       JOIN Episode ON Episode.idEpisode = Episode_has_Participants.Episode_idEpisode
+                                       WHERE Episode.season = season_num AND Episode.episode_number > (i - 3))
                 ORDER BY RAND() LIMIT 1;
             UNTIL selected_recipe NOT IN (SELECT idRecipe FROM temp_episode_recipes)
             END REPEAT;
@@ -1390,153 +1386,10 @@ END //
 
 DELIMITER ;
 
--- without
-DELIMITER //
-
-CREATE PROCEDURE GenerateSeasonEpisodes()
-BEGIN
-    DECLARE season_num INT;
-    DECLARE episode_num INT;
-    DECLARE num_episodes INT DEFAULT 10;
-    DECLARE i INT DEFAULT 1;
-    DECLARE j INT;
-
-    -- Get the next season number
-    SELECT IFNULL(MAX(season), 0) + 1 INTO season_num FROM Episode;
-
-    -- Create 10 episodes for the new season
-    WHILE i <= num_episodes DO
-        INSERT INTO Episode (season, episode_number)
-        VALUES (season_num, i);
-        SET i = i + 1;
-    END WHILE;
-
-    -- Create temporary tables to track consecutive appearances and selections within an episode
-    CREATE TEMPORARY TABLE temp_participations (
-        idCook INT,
-        count INT DEFAULT 0
-    );
-
-    CREATE TEMPORARY TABLE temp_episode_cooks (
-        idCook INT
-    );
-
-    CREATE TEMPORARY TABLE temp_episode_cuisines (
-        idCuisine INT
-    );
-
-    CREATE TEMPORARY TABLE temp_episode_recipes (
-        idRecipe INT
-    );
-
-    -- Loop over each new episode to assign cuisines, cooks, recipes, and judges
-    SET i = 1;
-    WHILE i <= num_episodes DO
-        -- Get the current episode number
-        SELECT MAX(idEpisode) INTO episode_num FROM Episode WHERE season = season_num AND episode_number = i;
-
-        -- Randomly select 10 cuisines
-        CREATE TEMPORARY TABLE temp_cuisines AS
-        SELECT idCuisine FROM Cuisine ORDER BY RAND() LIMIT 10;
-
-        SET j = 1;
-        WHILE j <= 10 DO
-            -- Select a random cuisine that hasn't been selected yet
-            DECLARE selected_cuisine INT;
-            REPEAT
-                SELECT idCuisine INTO selected_cuisine FROM temp_cuisines ORDER BY RAND() LIMIT 1;
-            UNTIL selected_cuisine NOT IN (SELECT idCuisine FROM temp_episode_cuisines)
-            END REPEAT;
-
-            -- Select a random cook for the selected cuisine who hasn't been selected yet in this episode
-            DECLARE selected_cook INT;
-            REPEAT
-                SELECT idCook INTO selected_cook FROM Cook
-                WHERE idCuisine = selected_cuisine
-                AND idCook NOT IN (SELECT idCook FROM temp_participations WHERE count >= 3)  -- ensure the cook has not participated more than 3 times consecutively
-                ORDER BY RAND() LIMIT 1;
-            UNTIL selected_cook NOT IN (SELECT idCook FROM temp_episode_cooks)
-            END REPEAT;
-
-            -- Select a random recipe for the selected cook that hasn't been selected yet
-            DECLARE selected_recipe INT;
-            REPEAT
-                SELECT idRecipe INTO selected_recipe FROM Recipe
-                WHERE idCook = selected_cook AND idCuisine = selected_cuisine
-                ORDER BY RAND() LIMIT 1;
-            UNTIL selected_recipe NOT IN (SELECT idRecipe FROM temp_episode_recipes)
-            END REPEAT;
-
-            -- Insert into Episode_has_Participants
-            INSERT INTO Episode_has_Participants (Episode_idEpisode, Participant_id, Cuisine_idCuisine, Recipe_idRecipe)
-            VALUES (episode_num, selected_cook, selected_cuisine, selected_recipe);
-
-            -- Track selected cooks, cuisines, and recipes
-            INSERT INTO temp_episode_cooks (idCook) VALUES (selected_cook);
-            INSERT INTO temp_episode_cuisines (idCuisine) VALUES (selected_cuisine);
-            INSERT INTO temp_episode_recipes (idRecipe) VALUES (selected_recipe);
-
-            -- Update the participation count
-            IF EXISTS (SELECT * FROM temp_participations WHERE idCook = selected_cook) THEN
-                UPDATE temp_participations SET count = count + 1 WHERE idCook = selected_cook;
-            ELSE
-                INSERT INTO temp_participations (idCook, count) VALUES (selected_cook, 1);
-            END IF;
-
-            SET j = j + 1;
-        END WHILE;
-
-        -- Randomly select 3 judges for the episode from the Cook table who haven't been selected yet in this episode
-        CREATE TEMPORARY TABLE temp_judges AS
-        SELECT idCook FROM Cook 
-        WHERE idCook NOT IN (SELECT idCook FROM temp_participations WHERE count >= 3)  -- ensure the cook has not judged more than 3 times consecutively
-        ORDER BY RAND() LIMIT 3;
-
-        SET j = 1;
-        WHILE j <= 3 DO
-            DECLARE selected_judge INT;
-            REPEAT
-                SELECT idCook INTO selected_judge FROM temp_judges ORDER BY RAND() LIMIT 1;
-            UNTIL selected_judge NOT IN (SELECT idCook FROM temp_episode_cooks)
-            END REPEAT;
-
-            -- Insert into Judge table if not already present
-            IF NOT EXISTS (SELECT 1 FROM Judge WHERE idCook = selected_judge) THEN
-                INSERT INTO Judge (idJudge) VALUES (selected_judge);
-            END IF;
-
-            -- Insert into Episode_has_Judge
-            INSERT INTO Episode_has_Judge (Episode_idEpisode, Judge_idJudge)
-            VALUES (episode_num, selected_judge);
-
-            -- Track selected judges
-            INSERT INTO temp_episode_cooks (idCook) VALUES (selected_judge);
-
-            SET j = j + 1;
-        END WHILE;
-
-        -- Clean up temporary tables for the episode
-        DELETE FROM temp_episode_cooks;
-        DELETE FROM temp_episode_cuisines;
-        DELETE FROM temp_episode_recipes;
-        DROP TEMPORARY TABLE IF EXISTS temp_cuisines;
-        DROP TEMPORARY TABLE IF EXISTS temp_judges;
-
-        SET i = i + 1;
-    END WHILE;
-
-    -- Drop temporary tables
-    DROP TEMPORARY TABLE IF EXISTS temp_participations;
-    DROP TEMPORARY TABLE IF EXISTS temp_episode_cooks;
-    DROP TEMPORARY TABLE IF EXISTS temp_episode_cuisines;
-    DROP TEMPORARY TABLE IF EXISTS temp_episode_recipes;
-END //
-
-DELIMITER ;
 -- trigger for all cuisine/cook.judge/recipe in one
 DELIMITER //
 CREATE TRIGGER before_episode_insert
-BEFORE INSERT ON Episode
+BEFORE INSERT ON Episode_has_Participants
 FOR EACH ROW
 BEGIN
     DECLARE last_episode_id INT;
@@ -1546,10 +1399,10 @@ BEGIN
     DECLARE last_episode_recipe INT;
     
     -- Get the ID of the last episode in the same season
-    SELECT idEpisode INTO last_episode_id 
-    FROM Episode 
-    WHERE Season = NEW.Season 
-    ORDER BY idEpisode DESC 
+    SELECT Episode_idEpisode INTO last_episode_id 
+    FROM Episode_has_Participants 
+    WHERE Episode_idEpisode = NEW.Episode_idEpisode
+    ORDER BY Episode_idEpisode DESC 
     LIMIT 1;
 
     IF last_episode_id IS NOT NULL THEN
@@ -1557,13 +1410,13 @@ BEGIN
         SELECT COUNT(*) INTO last_episode_cook_participant
         FROM Episode_has_Participants
         WHERE Episode_idEpisode = last_episode_id
-        AND ParticipantType = 'Cook';
+        AND Cook_idCook = NEW.Cook_idCook;
 
         -- Get the number of times the cook appeared as a judge in the last episode
         SELECT COUNT(*) INTO last_episode_cook_judge
         FROM Episode_has_Judges
         WHERE Episode_idEpisode = last_episode_id
-        AND Judge_idJudge IN (SELECT idCook FROM Cook);
+        AND Judge_idJudge = NEW.Cook_idCook;
 
         -- Get the cuisine of the last episode
         SELECT Cuisine_idCuisine INTO last_episode_cuisine
@@ -1595,10 +1448,11 @@ END;
 //
 DELIMITER ;
 
+
 -- after cookhasrecipe
 DELIMITER //
 CREATE TRIGGER after_cook_recipe_insert
-AFTER INSERT ON Cook_has_Recipe
+AFTER INSERT ON Recipe_has_Cook
 FOR EACH ROW
 BEGIN
     DECLARE cuisine_exists INT;
@@ -1622,23 +1476,94 @@ DELIMITER ;
 -- after update cookhasrecipe
 DELIMITER //
 CREATE TRIGGER after_cook_recipe_update
-AFTER UPDATE ON Cook_has_Recipe
+AFTER UPDATE ON Recipe_has_Cook
 FOR EACH ROW
 BEGIN
     DECLARE cuisine_count INT;
 
     -- Count the number of recipes the cook has for the cuisine
     SELECT COUNT(*) INTO cuisine_count
-    FROM Cook_has_Recipe cr
-    WHERE cr.Cook_idCook = NEW.Cook_idCook
-    AND cr.Cuisine_idCuisine = NEW.Cuisine_idCuisine;
+    FROM Recipe_has_Cook rc
+    WHERE rc.Cook_idCook = NEW.Cook_idCook
+    AND rc.Cuisine_idCuisine = Cuisine_idCuisine;
 
     -- If the count is zero, delete the entry from Cook_has_Cuisine
     IF cuisine_count = 0 THEN
         DELETE FROM Cook_has_Cuisine
         WHERE Cook_idCook = NEW.Cook_idCook
-        AND Cuisine_idCuisine = NEW.Cuisine_idCuisine;
+        AND Cuisine_idCuisine = Cuisine_idCuisine;
     END IF;
 END;
 //
+DELIMITER ;
+
+
+-- after delete cookhasrecipe
+DELIMITER //
+
+CREATE PROCEDURE Delete_Recipe_Has_Cook_And_Check_Cuisine (
+    IN p_Cook_id INT,
+    IN p_Cuisine_id INT
+)
+BEGIN
+    -- Delete from Recipe_has_Cook
+    DELETE FROM Recipe_has_Cook
+    WHERE Cook_idCook = p_Cook_id AND Cuisine_idCuisine = p_Cuisine_id;
+
+    -- Check if there are any remaining recipes with the same cuisine
+    IF NOT EXISTS (
+        SELECT 1 FROM Recipe_has_Cook WHERE Cuisine_idCuisine = p_Cuisine_id
+    ) THEN
+        -- Delete the entry from Cook_has_Cuisine
+        DELETE FROM Cook_has_Cuisine
+        WHERE Cook_idCook = p_Cook_id AND Cuisine_idCuisine = p_Cuisine_id;
+    END IF;
+END;
+//
+
+DELIMITER ;
+
+
+DELIMITER //
+
+CREATE TRIGGER after_delete_recipe_has_cook
+AFTER DELETE ON Recipe_has_Cook
+FOR EACH ROW
+BEGIN
+    DECLARE cuisine_id INT;
+    
+    -- Get the cuisine ID from the deleted row
+    SELECT Cuisine_idCuisine INTO cuisine_id
+    FROM Recipe_has_Cook
+    WHERE Cook_idCook = OLD.Cook_idCook
+    LIMIT 1;
+    
+    -- Call the stored procedure to delete and check cuisine
+    CALL Delete_Recipe_Has_Cook_And_Check_Cuisine(OLD.Cook_idCook, cuisine_id);
+END;
+//
+
+DELIMITER ;
+
+DELIMITER //
+
+CREATE PROCEDURE GenerateMultipleSeasons()
+BEGIN
+    DECLARE i INT DEFAULT 1;
+
+    -- Set a fixed seed for randomization
+    SET SESSION rand_seed1 = 1;
+    SET SESSION rand_seed2 = 1;
+
+    -- Call GenerateSeasonEpisodes() six times to generate data for six seasons
+    WHILE i <= 6 DO
+        CALL GenerateSeasonEpisodes();
+        SET i = i + 1;
+
+        -- Reset the seed for the next call
+        SET SESSION rand_seed1 = 1;
+        SET SESSION rand_seed2 = 1;
+    END WHILE;
+END //
+
 DELIMITER ;
