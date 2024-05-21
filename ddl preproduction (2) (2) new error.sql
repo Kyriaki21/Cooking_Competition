@@ -58,15 +58,15 @@ ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 CREATE TABLE Cooking_Competition.Recipe (
   idRecipe INT UNSIGNED NOT NULL AUTO_INCREMENT,
   title VARCHAR(200) NOT NULL,
-  description TEXT NOT NULL,
+  `description` TEXT NOT NULL,
   difficulty TINYINT NOT NULL,
   prep_time TINYINT NOT NULL,
   cook_time TINYINT NOT NULL,
   portions TINYINT NOT NULL,
-  total_calories INT NULL,
-  total_fat INT NULL,
-  total_protein INT NULL,
-  total_carbohydrate INT NULL,
+  total_calories DECIMAL(10,2) NULL,
+  total_fat DECIMAL(10,2) NULL,
+  total_protein DECIMAL(10,2) NULL,
+  total_carbohydrate DECIMAL(10,2) NULL,
   Cuisine_id INT UNSIGNED NOT NULL,
   Type_Meal INT UNSIGNED NOT NULL,
   syntagi ENUM('cooking', 'pastry') NOT NULL,
@@ -274,10 +274,10 @@ ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 CREATE TABLE `Cooking_Competition`.`Ingredients` (
   `idIngredients` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `Ingredient_name` VARCHAR(45) NOT NULL,
-  `fat` SMALLINT NULL,
-  `protein` SMALLINT NULL,
-  `carbohydrate` SMALLINT NULL,
-  `calories` SMALLINT NULL,
+  `fat` INT NULL,
+  `protein` INT NULL,
+  `carbohydrate` INT NULL,
+  `calories` INT NULL,
   `Food_Group_idFood_Group` INT UNSIGNED NOT NULL,
   `Measurement_Type` VARCHAR(45) NOT NULL,
   `Default_scale` TINYINT NOT NULL DEFAULT 100,
@@ -306,7 +306,7 @@ ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 CREATE TABLE `Cooking_Competition`.`Recipe_has_Ingredients` (
   `Recipe_idRecipe` INT UNSIGNED NOT NULL,
   `Ingredients_idIngredients` INT UNSIGNED NOT NULL,
-  `Quantity` SMALLINT NOT NULL,
+  `Quantity` DECIMAL(10,2) NOT NULL,
   `is_basic` TINYINT NOT NULL DEFAULT 0,
   `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`Recipe_idRecipe`, `Ingredients_idIngredients`),
@@ -454,57 +454,78 @@ CREATE TABLE `Cooking_Competition`.`Judge_Participant_Scores` (
 
 DELIMITER //
 
-CREATE PROCEDURE UpdateRecipeNutrition(
-    IN recipe_id INT, 
-    IN ingredient_id INT, 
-    IN operation CHAR(1) -- 'A' for add, 'S' for subtract
-)
+CREATE PROCEDURE CalculateRecipeNutrition()
 BEGIN
-    DECLARE servings INT DEFAULT 1;
-    DECLARE quantity DECIMAL(10,2);
-    DECLARE calories INT;
-    DECLARE fat INT;
-    DECLARE protein INT;
-    DECLARE carbohydrate INT;
+    DECLARE recipe_id INT;
+    DECLARE ing_calories DECIMAL(10,2);
+    DECLARE ing_fat DECIMAL(10,2);
+    DECLARE ing_protein DECIMAL(10,2);
+    DECLARE ing_carbohydrate DECIMAL(10,2);
+    DECLARE total_calories DECIMAL(10,2);
+    DECLARE total_fat DECIMAL(10,2);
+    DECLARE total_protein DECIMAL(10,2);
+    DECLARE total_carbohydrate DECIMAL(10,2);
 
-    -- Get the total number of servings for the recipe
-    SELECT portions INTO servings
-    FROM Recipe
-    WHERE idRecipe = recipe_id;
+    -- Declare cursor variables
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE recipe_cursor CURSOR FOR 
+        SELECT idRecipe FROM Cooking_Competition.Recipe;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
 
-    -- Get the quantity of the specific ingredient in the recipe
-    SELECT Quantity INTO quantity
-    FROM Recipe_has_Ingredients
-    WHERE Recipe_idRecipe = recipe_id AND Ingredients_idIngredients = ingredient_id;
+    -- Open the cursor
+    OPEN recipe_cursor;
 
-    -- Calculate the nutritional values for the specific ingredient
-    SELECT 
-        (calories / 100 * quantity) / servings AS ingredient_calories,
-        (fat / 100 * quantity) / servings AS ingredient_fat,
-        (protein / 100 * quantity) / servings AS ingredient_protein,
-        (carbohydrate / 100 * quantity) / servings AS ingredient_carbohydrate
-    INTO 
-        calories, fat, protein, carbohydrate
-    FROM Ingredients
-    WHERE idIngredients = ingredient_id;
+    -- Main loop to iterate through each recipe
+    main_loop: LOOP
+        -- Fetch recipe id
+        FETCH recipe_cursor INTO recipe_id;
 
-    -- Update the recipe's nutritional values
-    IF operation = 'A' THEN
-        UPDATE Recipe
-        SET total_calories = total_calories + calories,
-            total_fat = total_fat + fat,
-            total_protein = total_protein + protein,
-            total_carbohydrate = total_carbohydrate + carbohydrate
-        WHERE idRecipe = recipe_id;
-    ELSEIF operation = 'S' THEN
-        UPDATE Recipe
-        SET total_calories = total_calories - calories,
-            total_fat = total_fat - fat,
-            total_protein = total_protein - protein,
-            total_carbohydrate = total_carbohydrate - carbohydrate
-        WHERE idRecipe = recipe_id;
-    END IF;
-END //
+        -- Exit loop if no more recipes
+        IF done THEN
+            LEAVE main_loop;
+        END IF;
+
+        -- Reset total nutrition values
+        SET total_calories = 0;
+        SET total_fat = 0;
+        SET total_protein = 0;
+        SET total_carbohydrate = 0;
+
+        -- Retrieve ingredients and aggregate nutrition for the current recipe
+        SELECT 
+            SUM(i.calories * ri.Quantity / 100) AS total_calories,
+            SUM(i.fat * ri.Quantity / 100) AS total_fat,
+            SUM(i.protein * ri.Quantity / 100) AS total_protein,
+            SUM(i.carbohydrate * ri.Quantity / 100) AS total_carbohydrate
+        INTO 
+            ing_calories, ing_fat, ing_protein, ing_carbohydrate
+        FROM 
+            Cooking_Competition.Recipe_has_Ingredients ri
+        INNER JOIN 
+            Cooking_Competition.Ingredients i ON ri.Ingredients_idIngredients = i.idIngredients
+        WHERE 
+            ri.Recipe_idRecipe = recipe_id;
+
+        -- Set total nutrition values
+        SET total_calories = IFNULL(ing_calories, 0);
+        SET total_fat = IFNULL(ing_fat, 0);
+        SET total_protein = IFNULL(ing_protein, 0);
+        SET total_carbohydrate = IFNULL(ing_carbohydrate, 0);
+
+        -- Update Recipe table with total nutrition values
+        UPDATE Cooking_Competition.Recipe 
+        SET 
+            total_calories = total_calories, 
+            total_fat = total_fat, 
+            total_protein = total_protein, 
+            total_carbohydrate = total_carbohydrate 
+        WHERE 
+            idRecipe = recipe_id;
+    END LOOP;
+
+    -- Close recipe cursor
+    CLOSE recipe_cursor;
+END//
 
 DELIMITER ;
 
@@ -512,10 +533,10 @@ DELIMITER ;
 DELIMITER //
 
 CREATE TRIGGER AfterInsertRecipeIngredient
-BEFORE INSERT ON Recipe_has_Ingredients
+AFTER INSERT ON Recipe_has_Ingredients
 FOR EACH ROW
 BEGIN
-    CALL UpdateRecipeNutrition(NEW.Recipe_idRecipe, NEW.Ingredients_idIngredients, 'A');
+    CALL CalculateRecipeNutrition();
 END //
 
 DELIMITER ;
@@ -527,7 +548,7 @@ CREATE TRIGGER AfterDeleteRecipeIngredient
 AFTER DELETE ON Recipe_has_Ingredients
 FOR EACH ROW
 BEGIN
-    CALL UpdateRecipeNutrition(OLD.Recipe_idRecipe, OLD.Ingredients_idIngredients, 'S');
+    CALL CalculateRecipeNutrition();
 END //
 
 DELIMITER ;
@@ -539,40 +560,12 @@ CREATE TRIGGER BeforeUpdateIngredients
 BEFORE UPDATE ON Ingredients
 FOR EACH ROW
 BEGIN
-    DECLARE done INT DEFAULT FALSE;
-    DECLARE recipe_id INT;
-
-    -- Cursor to iterate over recipes that use this ingredient
-    DECLARE recipe_cursor CURSOR FOR 
-        SELECT DISTINCT Recipe_idRecipe
-        FROM Recipe_has_Ingredients
-        WHERE Ingredients_idIngredients = OLD.idIngredients;
-
-    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
-
-    -- Check if any of the nutritional values are being updated
-    IF NEW.fat != OLD.fat OR
+	IF NEW.fat != OLD.fat OR
        NEW.protein != OLD.protein OR
        NEW.carbohydrate != OLD.carbohydrate OR
        NEW.calories != OLD.calories THEN
-
-        OPEN recipe_cursor;
-        
-        read_loop: LOOP
-            FETCH recipe_cursor INTO recipe_id;
-            IF done THEN
-                LEAVE read_loop;
-            END IF;
-
-            -- Subtract old values
-            CALL UpdateRecipeNutrition(recipe_id, OLD.idIngredients, 'S');
-
-            -- Add new values
-            CALL UpdateRecipeNutrition(recipe_id, NEW.idIngredients, 'A');
-        END LOOP;
-
-        CLOSE recipe_cursor;
-    END IF;
+		CALL CalculateRecipeNutrition();
+	END IF;
 END //
 
 DELIMITER ;
@@ -587,8 +580,7 @@ BEGIN
     IF NEW.Ingredients_idIngredients != OLD.Ingredients_idIngredients OR
        NEW.Quantity != OLD.Quantity OR
        NEW.Recipe_idRecipe != OLD.Recipe_idRecipe THEN
-		CALL UpdateRecipeNutrition(OLD.Recipe_idRecipe, OLD.Ingredients_idIngredients, 'S');
-		CALL UpdateRecipeNutrition(NEW.Recipe_idRecipe, NEW.Ingredients_idIngredients, 'A');
+		CALL CalculateRecipeNutrition();
 	END IF;
 END //
 
@@ -1216,12 +1208,16 @@ SELECT
         END) AS judge_status_sum
 FROM
     Episode ep
-LEFT JOIN Episode_has_Participants ehp ON ep.idEpisode = ehp.Episode_idEpisode
-LEFT JOIN Cook c ON ehp.Cook_idCook = c.idCook
-LEFT JOIN Judge j ON j.Cook_idCook = c.idCook
+    LEFT JOIN Episode_has_Participants ehp ON ep.idEpisode = ehp.Episode_idEpisode
+    LEFT JOIN Cook c ON ehp.Cook_idCook = c.idCook
+    LEFT JOIN Episode_has_Judges ehj ON ep.idEpisode = ehj.Episode_idEpisode
+    LEFT JOIN Judge j ON ehj.Judge_idJudge = j.idJudge
+    LEFT JOIN Cook cj ON j.Cook_idCook = cj.idCook
 GROUP BY
     ep.idEpisode;
 
+
+    
 -- Create the procedure to select the episode with the lowest sum of status scores
 DELIMITER //
 
@@ -1495,85 +1491,27 @@ END;
 //
 DELIMITER ;
 
-
--- after cookhasrecipe
 DELIMITER //
 
-CREATE TRIGGER after_insert_recipe_has_cook
-AFTER INSERT ON Recipe_has_Cook
+CREATE TRIGGER before_insert_recipe_has_cook
+BEFORE INSERT ON Recipe_has_Cook
 FOR EACH ROW
 BEGIN
-    DECLARE cuisine_id INT;
     DECLARE cuisine_exists INT;
-
-    -- Find the Cuisine_id for the given recipe
-    SELECT Cuisine_id INTO cuisine_id
-    FROM Recipe
-    WHERE idRecipe = NEW.Recipe_idRecipe;
-
-    -- Check if the cook already has the cuisine of this recipe
+    
+    -- Check if the cook has the cuisine associated with the recipe
     SELECT COUNT(*) INTO cuisine_exists
     FROM Cook_has_Cuisine
-    WHERE Cook_idCook = NEW.Cook_idCook
-    AND Cuisine_idCuisine = cuisine_id;
-
-    -- If the cuisine doesn't exist for the cook, insert a new entry
+    WHERE Cook_idCook = NEW.Cook_idCook AND Cuisine_idCuisine = (
+        SELECT Cuisine_id
+        FROM Recipe
+        WHERE idRecipe = NEW.Recipe_idRecipe
+    );
+    
+    -- If the cook doesn't have the required cuisine, raise an error
     IF cuisine_exists = 0 THEN
-        INSERT INTO Cook_has_Cuisine (Cook_idCook, Cuisine_idCuisine) 
-        VALUES (NEW.Cook_idCook, cuisine_id);
-    END IF;
-END //
-
-DELIMITER ;
-
-
-
-
-
--- after update cookhasrecipe
-DELIMITER //
-CREATE TRIGGER after_cook_recipe_update
-AFTER UPDATE ON Recipe_has_Cook
-FOR EACH ROW
-BEGIN
-    DECLARE cuisine_count INT;
-
-    -- Count the number of recipes the cook has for the cuisine
-    SELECT COUNT(*) INTO cuisine_count
-    FROM Recipe_has_Cook rc
-    WHERE rc.Cook_idCook = NEW.Cook_idCook
-    AND rc.Cuisine_idCuisine = Cuisine_idCuisine;
-
-    -- If the count is zero, delete the entry from Cook_has_Cuisine
-    IF cuisine_count = 0 THEN
-        DELETE FROM Cook_has_Cuisine
-        WHERE Cook_idCook = NEW.Cook_idCook
-        AND Cuisine_idCuisine = Cuisine_idCuisine;
-    END IF;
-END;
-//
-DELIMITER ;
-
-
--- after delete cookhasrecipe
-DELIMITER //
-
-CREATE PROCEDURE Delete_Recipe_Has_Cook_And_Check_Cuisine (
-    IN p_Cook_id INT,
-    IN p_Cuisine_id INT
-)
-BEGIN
-    -- Delete from Recipe_has_Cook
-    DELETE FROM Recipe_has_Cook
-    WHERE Cook_idCook = p_Cook_id AND Cuisine_idCuisine = p_Cuisine_id;
-
-    -- Check if there are any remaining recipes with the same cuisine
-    IF NOT EXISTS (
-        SELECT 1 FROM Recipe_has_Cook WHERE Cuisine_idCuisine = p_Cuisine_id
-    ) THEN
-        -- Delete the entry from Cook_has_Cuisine
-        DELETE FROM Cook_has_Cuisine
-        WHERE Cook_idCook = p_Cook_id AND Cuisine_idCuisine = p_Cuisine_id;
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Cook does not have the required cuisine for this recipe';
     END IF;
 END;
 //
@@ -1581,26 +1519,6 @@ END;
 DELIMITER ;
 
 
-DELIMITER //
-
-CREATE TRIGGER after_delete_recipe_has_cook
-AFTER DELETE ON Recipe_has_Cook
-FOR EACH ROW
-BEGIN
-    DECLARE cuisine_id INT;
-    
-    -- Get the cuisine ID from the deleted row
-    SELECT Cuisine_idCuisine INTO cuisine_id
-    FROM Recipe_has_Cook
-    WHERE Cook_idCook = OLD.Cook_idCook
-    LIMIT 1;
-    
-    -- Call the stored procedure to delete and check cuisine
-    CALL Delete_Recipe_Has_Cook_And_Check_Cuisine(OLD.Cook_idCook, cuisine_id);
-END;
-//
-
-DELIMITER ;
 
 DELIMITER //
 
