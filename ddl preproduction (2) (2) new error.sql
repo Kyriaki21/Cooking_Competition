@@ -1557,3 +1557,68 @@ BEGIN
 END //
 
 DELIMITER ;
+
+
+-- 3.6 Top 3 label pairs
+DELIMITER //
+
+CREATE PROCEDURE GetTop3LabelPairs()
+BEGIN
+    -- Create a temporary table to store the label pairs and their counts
+    CREATE TEMPORARY TABLE IF NOT EXISTS label_pairs (
+        label1 VARCHAR(255),
+        label2 VARCHAR(255),
+        count INT
+    );
+
+    -- Insert the label pairs and their counts into the temporary table
+    INSERT INTO label_pairs (label1, label2, count)
+    SELECT 
+        l1.label_name AS label1,
+        l2.label_name AS label2,
+        COUNT(*) AS count
+    FROM 
+        Recipe_has_Label rhl1
+    JOIN 
+        Recipe_has_Label rhl2 ON rhl1.Recipe_idRecipe = rhl2.Recipe_idRecipe
+    JOIN 
+        Label l1 ON rhl1.Label_idLabel = l1.idLabel
+    JOIN 
+        Label l2 ON rhl2.Label_idLabel = l2.idLabel
+    WHERE 
+        l1.label_name < l2.label_name
+    GROUP BY 
+        l1.label_name, l2.label_name
+    ORDER BY 
+        count DESC;
+
+    -- Select the top 3 label pairs
+    SELECT 
+        label1,
+        label2,
+        count
+    FROM 
+        label_pairs
+    ORDER BY 
+        count DESC
+    LIMIT 3;
+
+    -- Drop the temporary table
+    DROP TEMPORARY TABLE IF EXISTS label_pairs;
+END //
+
+DELIMITER ;
+
+--------------------------------------------------------------------------------------------------------
+SELECT l1.Label_name AS label1, l2.Label_name AS label2, COUNT(*) AS episode_count
+FROM Cooking_Competition.Recipe_has_Label rhl1
+JOIN Cooking_Competition.Recipe_has_Label rhl2 ON rhl1.Recipe_idRecipe = rhl2.Recipe_idRecipe
+JOIN Cooking_Competition.Label l1 ON rhl1.Label_idLabel = l1.idLabel
+JOIN Cooking_Competition.Label l2 ON rhl2.Label_idLabel = l2.idLabel
+JOIN Cooking_Competition.Episode_has_Participants ehp ON ehp.Recipe_idRecipe = rhl1.Recipe_idRecipe
+JOIN Cooking_Competition.Episode e ON ehp.Episode_idEpisode = e.idEpisode
+WHERE l1.Label_name < l2.Label_name
+GROUP BY l1.Label_name, l2.Label_name
+ORDER BY episode_count DESC
+LIMIT 3;
+----------------------------------------------------------------------------------------------------------
