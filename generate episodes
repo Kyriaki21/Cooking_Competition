@@ -1,0 +1,84 @@
+DELIMITER //
+
+CREATE PROCEDURE CreateEpisodeParticipants(IN episode_id INT)
+BEGIN
+    DECLARE cuisine_count INT;
+    DECLARE cook_count INT;
+    DECLARE judge_count INT;
+
+    -- Temporary tables to hold the random selections
+    CREATE TEMPORARY TABLE IF NOT EXISTS TempSelectedCuisines (
+        idCuisine INT UNSIGNED
+    );
+
+    CREATE TEMPORARY TABLE IF NOT EXISTS TempSelectedCooks (
+        idCook INT UNSIGNED,
+        idCuisine INT UNSIGNED
+    );
+
+    CREATE TEMPORARY TABLE IF NOT EXISTS TempSelectedJudges (
+        idCook INT UNSIGNED
+    );
+
+    CREATE TEMPORARY TABLE IF NOT EXISTS TempSelectedRecipes (
+        idRecipe INT UNSIGNED,
+        idCook INT UNSIGNED
+    );
+
+    -- Select 10 random national cuisines
+    INSERT INTO TempSelectedCuisines (idCuisine)
+    SELECT idCuisine
+    FROM Cuisine
+    ORDER BY RAND()
+    LIMIT 10;
+
+    -- Select 10 representative cooks from each selected cuisine
+    INSERT INTO TempSelectedCooks (idCook, idCuisine)
+    SELECT c.idCook, cc.idCuisine
+    FROM Cook c
+    JOIN (
+        SELECT idCuisine
+        FROM TempSelectedCuisines
+    ) cc ON c.idCook IN (
+        SELECT Cook_idCook
+        FROM Cook_has_Cuisine
+        WHERE Cuisine_idCuisine = cc.idCuisine
+    )
+    ORDER BY RAND()
+    LIMIT 10;
+
+    -- Select 3 random judge cooks
+    INSERT INTO TempSelectedJudges (idCook)
+    SELECT idCook
+    FROM Cook
+    WHERE Status = 'Judge'
+    ORDER BY RAND()
+    LIMIT 3;
+
+    -- Select 1 random recipe from each selected national cuisine and assign it to a cook
+    INSERT INTO TempSelectedRecipes (idRecipe, idCook)
+    SELECT r.idRecipe, tc.idCook
+    FROM Recipe r
+    JOIN TempSelectedCooks tc ON r.Cuisine_id = tc.idCuisine
+    ORDER BY RAND()
+    LIMIT 10;
+
+    -- Insert the selected participants into Episode_has_Participants
+    INSERT INTO Episode_has_Participants (Episode_idEpisode, Cook_idCook, Recipe_idRecipe, Cuisine_idCuisine)
+    SELECT episode_id, tc.idCook, tr.idRecipe, tc.idCuisine
+    FROM TempSelectedCooks tc
+    JOIN TempSelectedRecipes tr ON tc.idCook = tr.idCook;
+
+    -- Insert the selected judges into Episode_has_Judges
+    INSERT INTO Episode_has_Judges (Episode_idEpisode, Judge_idJudge)
+    SELECT episode_id, tj.idCook
+    FROM TempSelectedJudges tj;
+
+    -- Cleanup
+    DROP TEMPORARY TABLE IF EXISTS TempSelectedCuisines;
+    DROP TEMPORARY TABLE IF EXISTS TempSelectedCooks;
+    DROP TEMPORARY TABLE IF EXISTS TempSelectedJudges;
+    DROP TEMPORARY TABLE IF EXISTS TempSelectedRecipes;
+END //
+
+DELIMITER ;
