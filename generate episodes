@@ -36,7 +36,7 @@ BEGIN
 
     -- Select 10 representative cooks from each selected cuisine with restriction
     INSERT INTO TempSelectedCooks (idCook, idCuisine)
-    SELECT c.idCook, cc.idCuisine
+    SELECT c.idCook, cc.Cuisine_idCuisine
     FROM Cook c
     JOIN Cook_has_Cuisine cc ON c.idCook = cc.Cook_idCook
     JOIN TempSelectedCuisines tc ON cc.Cuisine_idCuisine = tc.idCuisine
@@ -47,7 +47,7 @@ BEGIN
         HAVING COUNT(DISTINCT Episode_idEpisode) > 3
     )
     ORDER BY RAND()
-    LIMIT 10;
+    LIMIT 100; -- Adjusted to select 10 cooks per 10 cuisines
 
     -- Select 3 random judge cooks with restriction
     INSERT INTO TempSelectedJudges (idCook)
@@ -67,7 +67,7 @@ BEGIN
     INSERT INTO TempSelectedRecipes (idRecipe, idCook)
     SELECT r.idRecipe, tc.idCook
     FROM Recipe r
-    JOIN TempSelectedCooks tc ON r.Cuisine_id = tc.idCuisine
+    JOIN TempSelectedCooks tc ON r.Cuisine_id = tc.Cuisine_idCuisine
     WHERE r.idRecipe NOT IN (
         SELECT Recipe_idRecipe 
         FROM Episode_has_Participants 
@@ -79,7 +79,7 @@ BEGIN
 
     -- Insert the selected participants into Episode_has_Participants
     INSERT INTO Episode_has_Participants (Episode_idEpisode, Cook_idCook, Recipe_idRecipe, Cuisine_idCuisine)
-    SELECT episode_id, tc.idCook, tr.idRecipe, tc.idCuisine
+    SELECT episode_id, tc.idCook, tr.idRecipe, tc.Cuisine_idCuisine
     FROM TempSelectedCooks tc
     JOIN TempSelectedRecipes tr ON tc.idCook = tr.idCook;
 
