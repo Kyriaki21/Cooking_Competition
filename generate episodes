@@ -2,10 +2,6 @@ DELIMITER //
 
 CREATE PROCEDURE CreateEpisodeParticipants(IN episode_id INT)
 BEGIN
-    DECLARE cuisine_count INT;
-    DECLARE cook_count INT;
-    DECLARE judge_count INT;
-
     -- Temporary tables to hold the random selections
     CREATE TEMPORARY TABLE IF NOT EXISTS TempSelectedCuisines (
         idCuisine INT UNSIGNED
@@ -25,41 +21,59 @@ BEGIN
         idCook INT UNSIGNED
     );
 
-    -- Select 10 random national cuisines
+    -- Select 10 random national cuisines with restriction
     INSERT INTO TempSelectedCuisines (idCuisine)
     SELECT idCuisine
     FROM Cuisine
-    ORDER BY RAND()
-    LIMIT 10;
-
-    -- Select 10 representative cooks from each selected cuisine
-    INSERT INTO TempSelectedCooks (idCook, idCuisine)
-    SELECT c.idCook, cc.idCuisine
-    FROM Cook c
-    JOIN (
-        SELECT idCuisine
-        FROM TempSelectedCuisines
-    ) cc ON c.idCook IN (
-        SELECT Cook_idCook
-        FROM Cook_has_Cuisine
-        WHERE Cuisine_idCuisine = cc.idCuisine
+    WHERE idCuisine NOT IN (
+        SELECT Cuisine_idCuisine 
+        FROM Episode_has_Participants 
+        GROUP BY Cuisine_idCuisine 
+        HAVING COUNT(DISTINCT Episode_idEpisode) > 3
     )
     ORDER BY RAND()
     LIMIT 10;
 
-    -- Select 3 random judge cooks
+    -- Select 10 representative cooks from each selected cuisine with restriction
+    INSERT INTO TempSelectedCooks (idCook, idCuisine)
+    SELECT c.idCook, cc.idCuisine
+    FROM Cook c
+    JOIN Cook_has_Cuisine cc ON c.idCook = cc.Cook_idCook
+    JOIN TempSelectedCuisines tc ON cc.Cuisine_idCuisine = tc.idCuisine
+    WHERE c.idCook NOT IN (
+        SELECT Cook_idCook 
+        FROM Episode_has_Participants 
+        GROUP BY Cook_idCook 
+        HAVING COUNT(DISTINCT Episode_idEpisode) > 3
+    )
+    ORDER BY RAND()
+    LIMIT 10;
+
+    -- Select 3 random judge cooks with restriction
     INSERT INTO TempSelectedJudges (idCook)
     SELECT idCook
     FROM Cook
     WHERE Status = 'Judge'
+    AND idCook NOT IN (
+        SELECT Judge_idJudge 
+        FROM Episode_has_Judges 
+        GROUP BY Judge_idJudge 
+        HAVING COUNT(DISTINCT Episode_idEpisode) > 3
+    )
     ORDER BY RAND()
     LIMIT 3;
 
-    -- Select 1 random recipe from each selected national cuisine and assign it to a cook
+    -- Select 1 random recipe from each selected national cuisine with restriction and assign it to a cook
     INSERT INTO TempSelectedRecipes (idRecipe, idCook)
     SELECT r.idRecipe, tc.idCook
     FROM Recipe r
     JOIN TempSelectedCooks tc ON r.Cuisine_id = tc.idCuisine
+    WHERE r.idRecipe NOT IN (
+        SELECT Recipe_idRecipe 
+        FROM Episode_has_Participants 
+        GROUP BY Recipe_idRecipe 
+        HAVING COUNT(DISTINCT Episode_idEpisode) > 3
+    )
     ORDER BY RAND()
     LIMIT 10;
 
@@ -79,6 +93,30 @@ BEGIN
     DROP TEMPORARY TABLE IF EXISTS TempSelectedCooks;
     DROP TEMPORARY TABLE IF EXISTS TempSelectedJudges;
     DROP TEMPORARY TABLE IF EXISTS TempSelectedRecipes;
+END //
+
+DELIMITER ;
+
+DELIMITER //
+
+CREATE PROCEDURE GenerateSeason(IN season_number INT, IN num_episodes INT)
+BEGIN
+    DECLARE episode_counter INT DEFAULT 1;
+    DECLARE episode_id INT;
+
+    -- Loop to create the specified number of episodes
+    WHILE episode_counter <= num_episodes DO
+        -- Create a new episode
+        INSERT INTO Episode (Episode_number, Season_number)
+        VALUES (episode_counter, season_number);
+        SET episode_id = LAST_INSERT_ID();
+
+        -- Generate participants and judges for the episode
+        CALL CreateEpisodeParticipants(episode_id);
+
+        -- Increment the episode counter
+        SET episode_counter = episode_counter + 1;
+    END WHILE;
 END //
 
 DELIMITER ;
