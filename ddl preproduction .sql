@@ -1562,63 +1562,141 @@ DELIMITER ;
 -- 3.6 Top 3 label pairs
 DELIMITER //
 
-CREATE PROCEDURE GetTop3LabelPairs()
+CREATE PROCEDURE GetTopLabelPairs()
 BEGIN
-    -- Create a temporary table to store the label pairs and their counts
-    CREATE TEMPORARY TABLE IF NOT EXISTS label_pairs (
-        label1 VARCHAR(255),
-        label2 VARCHAR(255),
-        count INT
+    -- Create a temporary table to store label pairs and their counts
+    CREATE TEMPORARY TABLE IF NOT EXISTS TempLabelPairs (
+        label1 INT UNSIGNED,
+        label2 INT UNSIGNED,
+        pair_count INT
     );
 
-    -- Insert the label pairs and their counts into the temporary table
-    INSERT INTO label_pairs (label1, label2, count)
+    -- Insert label pairs and their counts into the temporary table
+    INSERT INTO TempLabelPairs (label1, label2, pair_count)
     SELECT 
-        l1.label_name AS label1,
-        l2.label_name AS label2,
-        COUNT(*) AS count
-    FROM 
+        rhl1.Label_idLabel AS label1,
+        rhl2.Label_idLabel AS label2,
+        COUNT(*) AS pair_count
+    FROM
         Recipe_has_Label rhl1
-    JOIN 
+    JOIN
         Recipe_has_Label rhl2 ON rhl1.Recipe_idRecipe = rhl2.Recipe_idRecipe
-    JOIN 
-        Label l1 ON rhl1.Label_idLabel = l1.idLabel
-    JOIN 
-        Label l2 ON rhl2.Label_idLabel = l2.idLabel
-    WHERE 
-        l1.label_name < l2.label_name
+    WHERE
+        rhl1.Label_idLabel < rhl2.Label_idLabel
     GROUP BY 
-        l1.label_name, l2.label_name
-    ORDER BY 
-        count DESC;
+        rhl1.Label_idLabel, rhl2.Label_idLabel;
 
     -- Select the top 3 label pairs
     SELECT 
-        label1,
-        label2,
-        count
-    FROM 
-        label_pairs
+        l1.Label_name AS Label1,
+        l2.Label_name AS Label2,
+        lp.pair_count
+    FROM
+        TempLabelPairs lp
+    JOIN
+        Label l1 ON lp.label1 = l1.idLabel
+    JOIN
+        Label l2 ON lp.label2 = l2.idLabel
     ORDER BY 
-        count DESC
+        lp.pair_count DESC
     LIMIT 3;
 
     -- Drop the temporary table
-    DROP TEMPORARY TABLE IF EXISTS label_pairs;
+    DROP TEMPORARY TABLE IF EXISTS TempLabelPairs;
 END //
 
 DELIMITER ;
-
---------------------------------------------------------------------------------------------------------
-SELECT l1.Label_name AS label1, l2.Label_name AS label2, COUNT(*) AS episode_count
-FROM Cooking_Competition.Recipe_has_Label rhl1
-JOIN Cooking_Competition.Recipe_has_Label rhl2 ON rhl1.Recipe_idRecipe = rhl2.Recipe_idRecipe
-JOIN Cooking_Competition.Label l1 ON rhl1.Label_idLabel = l1.idLabel
-JOIN Cooking_Competition.Label l2 ON rhl2.Label_idLabel = l2.idLabel
-JOIN Cooking_Competition.Episode_has_Participants ehp ON ehp.Recipe_idRecipe = rhl1.Recipe_idRecipe
-JOIN Cooking_Competition.Episode e ON ehp.Episode_idEpisode = e.idEpisode
-WHERE l1.Label_name < l2.Label_name
-GROUP BY l1.Label_name, l2.Label_name
-ORDER BY episode_count DESC
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+EXPLAIN SELECT 
+    l1.Label_name AS Label1,
+    l2.Label_name AS Label2,
+    lp.pair_count
+FROM
+    (SELECT 
+        rhl1.Label_idLabel AS label1,
+        rhl2.Label_idLabel AS label2,
+        COUNT(*) AS pair_count
+     FROM
+        Recipe_has_Label rhl1
+     JOIN
+        Recipe_has_Label rhl2 ON rhl1.Recipe_idRecipe = rhl2.Recipe_idRecipe
+     WHERE
+        rhl1.Label_idLabel < rhl2.Label_idLabel
+     GROUP BY 
+        rhl1.Label_idLabel, rhl2.Label_idLabel) AS lp
+JOIN
+    Label l1 ON lp.label1 = l1.idLabel
+JOIN
+    Label l2 ON lp.label2 = l2.idLabel
+ORDER BY 
+    lp.pair_count DESC
 LIMIT 3;
-----------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- 3.8 Most equipment in episode
+DELIMITER //
+
+CREATE PROCEDURE GetEpisodeWithMostEquipment()
+BEGIN
+    -- Create a temporary table to store episode equipment counts
+    CREATE TEMPORARY TABLE IF NOT EXISTS TempEpisodeEquipmentCounts (
+        Episode_idEpisode INT UNSIGNED,
+        equipment_count INT
+    );
+
+    -- Insert episode equipment counts into the temporary table
+    INSERT INTO TempEpisodeEquipmentCounts (Episode_idEpisode, equipment_count)
+    SELECT 
+        ep.idEpisode AS Episode_idEpisode,
+        COUNT(re.Equipment_idEquipment) AS equipment_count
+    FROM
+        Episode ep
+    JOIN
+        Episode_has_Participants ehp ON ep.idEpisode = ehp.Episode_idEpisode
+    JOIN
+        Recipe_has_Equipment re ON ehp.Recipe_idRecipe = re.Recipe_idRecipe
+    GROUP BY 
+        ep.idEpisode;
+
+    -- Select the episode with the most equipment
+    SELECT 
+        ep.idEpisode AS EpisodeID,
+        ep.Episode_number AS EpisodeNumber,
+        ep.Season_number AS SeasonNumber,
+        tec.equipment_count AS EquipmentCount
+    FROM
+        TempEpisodeEquipmentCounts tec
+    JOIN
+        Episode ep ON tec.Episode_idEpisode = ep.idEpisode
+    ORDER BY 
+        tec.equipment_count DESC
+    LIMIT 1;
+
+    -- Drop the temporary table
+    DROP TEMPORARY TABLE IF EXISTS TempEpisodeEquipmentCounts;
+END //
+
+DELIMITER ;
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+EXPLAIN SELECT 
+    ep.idEpisode AS EpisodeID,
+    ep.Episode_number AS EpisodeNumber,
+    ep.Season_number AS SeasonNumber,
+    tec.equipment_count AS EquipmentCount
+FROM
+    (SELECT 
+        ep.idEpisode AS Episode_idEpisode,
+        COUNT(re.Equipment_idEquipment) AS equipment_count
+     FROM
+        Episode ep
+     JOIN
+        Episode_has_Participants ehp ON ep.idEpisode = ehp.Episode_idEpisode
+     JOIN
+        Recipe_has_Equipment re ON ehp.Recipe_idRecipe = re.Recipe_idRecipe
+     GROUP BY 
+        ep.idEpisode) AS tec
+JOIN
+    Episode ep ON tec.Episode_idEpisode = ep.idEpisode
+ORDER BY 
+    tec.equipment_count DESC
+LIMIT 1;
+
