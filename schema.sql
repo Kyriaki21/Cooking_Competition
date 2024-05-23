@@ -413,30 +413,10 @@ CREATE TABLE `Cooking_Competition`.`Episode_has_Judges` (
     ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DELIMITER //
-
--- Trigger after assigning participants
-CREATE TRIGGER after_AssignParticipants_trigger AFTER INSERT ON Episode_has_Participants
-FOR EACH ROW
-BEGIN
-    INSERT INTO Judge_Participant_Scores (Episode_idEpisode, Judge_idJudge, Participant_id, Score)
-    VALUES (NEW.Episode_idEpisode, NULL, NEW.Participant_id, 0);
-END;
-
--- Trigger after assigning judges
-CREATE TRIGGER after_AssignJudges_trigger AFTER INSERT ON Episode_has_Judges
-FOR EACH ROW
-BEGIN
-    INSERT INTO Judge_Participant_Scores (Episode_idEpisode, Judge_idJudge, Score)
-    SELECT eps.Episode_idEpisode, eps.Judge_idJudge, 0
-    FROM Episode_has_Participants eps
-    WHERE eps.Episode_idEpisode = NEW.Episode_idEpisode;
-END;
-
 CREATE TABLE `Cooking_Competition`.`Judge_Participant_Scores` (
   `Episode_idEpisode` INT UNSIGNED NOT NULL,
-  `Judge_idJudge` INT UNSIGNED NOT NULL,
   `Participant_id` INT UNSIGNED NOT NULL,
+  `Judge_idJudge` INT UNSIGNED NOT NULL,
   `Score` TINYINT NULL CHECK (Score BETWEEN 1 AND 5),
   `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`Episode_idEpisode`, `Judge_idJudge`, `Participant_id`),
@@ -459,6 +439,7 @@ CREATE TABLE `Cooking_Competition`.`Judge_Participant_Scores` (
     ON DELETE RESTRICT
     ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 
 --
 -- Procedure to update the recipe's nutritional values
@@ -943,3 +924,8 @@ BEGIN
 END//
 
 DELIMITER ;
+
+
+
+
+
