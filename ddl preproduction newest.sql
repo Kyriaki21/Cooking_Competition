@@ -381,6 +381,9 @@ CREATE TABLE `Cooking_Competition`.`Episode_has_Participants` (
   INDEX `fk_Episode_Participant_Cook1_idx` (`Cook_idCook` ASC),
   INDEX `fk_Episode_Participant_Recipe1_idx` (`Recipe_idRecipe` ASC),
   INDEX `fk_Episode_Participant_Cuisine1_idx` (`Cuisine_idCuisine` ASC),
+  UNIQUE INDEX `unique_Episode_Cook` (`Episode_idEpisode`, `Cook_idCook`),
+  UNIQUE INDEX `unique_Episode_Cuisine` (`Episode_idEpisode`, `Cuisine_idCuisine`),
+  UNIQUE INDEX `unique_Episode_Recipe` (`Episode_idEpisode`, `Recipe_idRecipe`),
   CONSTRAINT `fk_Episode_Participant_Episode1`
     FOREIGN KEY (`Episode_idEpisode`)
     REFERENCES `Cooking_Competition`.`Episode` (`idEpisode`)
@@ -402,6 +405,7 @@ CREATE TABLE `Cooking_Competition`.`Episode_has_Participants` (
     ON DELETE RESTRICT
     ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 
 
 CREATE TABLE `Cooking_Competition`.`Episode_has_Judges` (
@@ -1236,12 +1240,18 @@ CREATE PROCEDURE GetRandomCuisine(
   OUT CuisineID INT,
   IN LastEpisodeCuisine1 INT,
   IN LastEpisodeCuisine2 INT,
-  IN LastEpisodeCuisine3 INT
+  IN LastEpisodeCuisine3 INT,
+  IN CurrentEpisodeID INT
 )
 BEGIN
   SELECT idCuisine INTO CuisineID
   FROM Cuisine
   WHERE idCuisine NOT IN (LastEpisodeCuisine1, LastEpisodeCuisine2, LastEpisodeCuisine3)
+    AND idCuisine NOT IN (
+      SELECT DISTINCT Cuisine_idCuisine
+      FROM Episode_has_Participants
+      WHERE Episode_idEpisode = CurrentEpisodeID
+    )
   ORDER BY RAND()
   LIMIT 1;
 
@@ -1249,30 +1259,24 @@ BEGIN
     -- Check if the selected cuisine has appeared in the last three episodes
     IF (CuisineID = LastEpisodeCuisine1 AND CuisineID = LastEpisodeCuisine2 AND CuisineID = LastEpisodeCuisine3) THEN
       -- Select another random cuisine if the selected cuisine has appeared in the last three episodes
-      CALL GetRandomCuisine(CuisineID, LastEpisodeCuisine1, LastEpisodeCuisine2, LastEpisodeCuisine3);
+      CALL GetRandomCuisine(CuisineID, LastEpisodeCuisine1, LastEpisodeCuisine2, LastEpisodeCuisine3, CurrentEpisodeID);
     END IF;
   END IF;
 END //
 
-
-DELIMITER ;
-
-DELIMITER //
 
 CREATE PROCEDURE GetRandomCookWithCuisine(
   OUT CookID INT,
   IN CuisineID INT,
   IN LastEpisodeID1 INT,
   IN LastEpisodeID2 INT,
-  IN LastEpisodeID3 INT
+  IN LastEpisodeID3 INT,
+  IN CurrentEpisodeID INT
 )
 BEGIN
-  SELECT 
-    idCook INTO CookID
-  FROM 
-    Cook
-  WHERE 
-    idCook NOT IN (
+  SELECT idCook INTO CookID
+  FROM Cook
+  WHERE idCook NOT IN (
       SELECT DISTINCT Cook_idCook 
       FROM Episode_has_Participants 
       WHERE Episode_idEpisode IN (LastEpisodeID1, LastEpisodeID2, LastEpisodeID3)
@@ -1287,6 +1291,11 @@ BEGIN
       FROM Episode_has_Judges 
       WHERE Episode_idEpisode IN (LastEpisodeID1, LastEpisodeID2, LastEpisodeID3)
     )
+    AND idCook NOT IN (
+      SELECT DISTINCT Cook_idCook
+      FROM Episode_has_Participants
+      WHERE Episode_idEpisode = CurrentEpisodeID
+    )
   ORDER BY RAND()
   LIMIT 1;
 
@@ -1294,17 +1303,11 @@ BEGIN
     -- Check if the selected cook has appeared in the last episode
     IF (CookID IN (SELECT DISTINCT Cook_idCook FROM Episode_has_Participants WHERE Episode_idEpisode = LastEpisodeID1)) THEN
       -- Select another random cook if the selected cook has appeared in the last episode
-      CALL GetRandomCookWithCuisine(CookID, CuisineID, LastEpisodeID1, LastEpisodeID2, LastEpisodeID3);
+      CALL GetRandomCookWithCuisine(CookID, CuisineID, LastEpisodeID1, LastEpisodeID2, LastEpisodeID3, CurrentEpisodeID);
     END IF;
   END IF;
 END //
 
-
-
-
-DELIMITER ;
-
-DELIMITER //
 
 CREATE PROCEDURE GetRandomRecipeForCookAndCuisine(
   OUT RecipeID INT,
@@ -1312,7 +1315,8 @@ CREATE PROCEDURE GetRandomRecipeForCookAndCuisine(
   IN CuisineID INT,
   IN LastEpisodeID1 INT,
   IN LastEpisodeID2 INT,
-  IN LastEpisodeID3 INT
+  IN LastEpisodeID3 INT,
+  IN CurrentEpisodeID INT
 )
 BEGIN
   SELECT rc.Recipe_idRecipe INTO RecipeID
@@ -1325,6 +1329,11 @@ BEGIN
       FROM Episode_has_Participants
       WHERE Episode_idEpisode IN (LastEpisodeID1, LastEpisodeID2, LastEpisodeID3)
     )
+    AND rc.Recipe_idRecipe NOT IN (
+      SELECT DISTINCT Recipe_idRecipe
+      FROM Episode_has_Participants
+      WHERE Episode_idEpisode = CurrentEpisodeID
+    )
   ORDER BY RAND()
   LIMIT 1;
 
@@ -1332,13 +1341,14 @@ BEGIN
     -- Check if the selected recipe has appeared in the last three episodes
     IF (RecipeID = LastEpisodeID1 AND RecipeID = LastEpisodeID2 AND RecipeID = LastEpisodeID3) THEN
       -- Select another random recipe if the selected recipe has appeared in the last three episodes
-      CALL GetRandomRecipeForCookAndCuisine(RecipeID, CookID, CuisineID, LastEpisodeID1, LastEpisodeID2, LastEpisodeID3);
+      CALL GetRandomRecipeForCookAndCuisine(RecipeID, CookID, CuisineID, LastEpisodeID1, LastEpisodeID2, LastEpisodeID3, CurrentEpisodeID);
     END IF;
   END IF;
 END //
 
-
 DELIMITER ;
+
+
 
 DELIMITER //
 
@@ -1396,13 +1406,13 @@ BEGIN
     -- Pick 10 cuisines, cooks, and recipes
     WHILE i <= 10 DO
       -- Call the procedure to get a random cuisine
-      CALL GetRandomCuisine(CuisineID, -1, -1, -1);
+      CALL GetRandomCuisine(CuisineID, -1, -1, -1, EpisodeNumber);
       
       -- Call the procedure to get a random cook for the cuisine
-      CALL GetRandomCookWithCuisine(CookID, CuisineID, -1, -1, -1);
+      CALL GetRandomCookWithCuisine(CookID, CuisineID, -1, -1, -1, EpisodeNumber);
       
       -- Call the procedure to get a random recipe for the cook and cuisine
-      CALL GetRandomRecipeForCookAndCuisine(RecipeID, CookID, CuisineID, -1, -1, -1);
+      CALL GetRandomRecipeForCookAndCuisine(RecipeID, CookID, CuisineID, -1, -1, -1, EpisodeNumber);
 
       -- Check if RecipeID is not NULL and CookID is not NULL
       IF RecipeID IS NOT NULL AND CookID IS NOT NULL THEN
@@ -1418,8 +1428,30 @@ BEGIN
   END WHILE;
 END //
 
+DELIMITER ;
+
+DELIMITER //
+
+CREATE PROCEDURE Generate100Entries()
+BEGIN
+  DECLARE entriesGenerated INT;
+  
+  -- Loop until 100 new entries are generated
+  REPEAT
+    -- Delete previously generated data
+    DELETE FROM Episode_has_Participants;
+    
+    -- Call the InsertEpisodeData procedure
+    CALL InsertEpisodeData(1);
+    
+    -- Count the number of entries generated
+    SELECT COUNT(*) INTO entriesGenerated FROM Episode_has_Participants;
+    
+  UNTIL entriesGenerated >= 100 END REPEAT;
+END //
 
 DELIMITER ;
+
 
 
 
