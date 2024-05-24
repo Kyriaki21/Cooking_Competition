@@ -16,6 +16,7 @@ CREATE TABLE `Cooking_Competition`.`Cuisine` (
   `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `Image` INT UNSIGNED NOT NULL,
    INDEX `fk_Cuisine_Image_idx` (`Image` ASC)  ,
+   INDEX `Search_Cuisine_idx` (`Cuisine` ASC)  ,
   CONSTRAINT `fk_Cuisine_Image`
     FOREIGN KEY (`Image`)
     REFERENCES `Cooking_Competition`.`Image` (`idImage`)
@@ -30,6 +31,7 @@ CREATE TABLE `Cooking_Competition`.`Type_Meal` (
   `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `Image` INT UNSIGNED NOT NULL,
    INDEX `fk_Type_Meal_Image_idx` (`Image` ASC)  ,
+   INDEX `Search_Type_Meal_idx` (`Type_Meal` ASC)  ,
   CONSTRAINT `fk_Type_Meal_Image`
     FOREIGN KEY (`Image`)
     REFERENCES `Cooking_Competition`.`Image` (`idImage`)
@@ -46,6 +48,8 @@ CREATE TABLE `Cooking_Competition`.`Food_Group` (
   `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `Image` INT UNSIGNED NOT NULL,
    INDEX `fk_Food_Group_Image_idx` (`Image` ASC)  ,
+   INDEX `Search_name_food_group_idx` (`name_food_group` ASC),
+   INDEX `Search_Recipe_Category_idx` (`Recipe_Category` ASC),
   CONSTRAINT `fk_Food_Group_Image`
     FOREIGN KEY (`Image`)
     REFERENCES `Cooking_Competition`.`Image` (`idImage`)
@@ -55,46 +59,48 @@ CREATE TABLE `Cooking_Competition`.`Food_Group` (
   UNIQUE INDEX `name_food_group_UNIQUE` (`name_food_group` ASC))
 ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE Cooking_Competition.Recipe (
-  idRecipe INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  title VARCHAR(200) NOT NULL,
+CREATE TABLE `Cooking_Competition`.`Recipe` (
+  `idRecipe` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `title` VARCHAR(200) NOT NULL,
   `description` TEXT NOT NULL,
-  difficulty TINYINT NOT NULL,
-  prep_time TINYINT NOT NULL,
-  cook_time TINYINT NOT NULL,
-  portions TINYINT NOT NULL,
-  total_calories DECIMAL(10,2) NULL,
-  total_fat DECIMAL(10,2) NULL,
-  total_protein DECIMAL(10,2) NULL,
-  total_carbohydrate DECIMAL(10,2) NULL,
-  Cuisine_id INT UNSIGNED NOT NULL,
-  Type_Meal INT UNSIGNED NOT NULL,
-  syntagi ENUM('cooking', 'pastry') NOT NULL,
-  last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  Image INT UNSIGNED NOT NULL,
-  PRIMARY KEY (idRecipe),
-  INDEX fk_Recipe_Image_idx (Image ASC),
-  CONSTRAINT fk_Recipe_Image
-    FOREIGN KEY (Image)
-    REFERENCES Cooking_Competition.Image (idImage)
+  `difficulty` TINYINT NOT NULL,
+  `prep_time` TINYINT NOT NULL,
+  `cook_time` TINYINT NOT NULL,
+  `portions` TINYINT NOT NULL,
+  `total_calories` DECIMAL(10,2) NULL,
+  `total_fat` DECIMAL(10,2) NULL,
+  `total_protein` DECIMAL(10,2) NULL,
+  `total_carbohydrate` DECIMAL(10,2) NULL,
+  `Cuisine_id` INT UNSIGNED NOT NULL,
+  `Type_Meal` INT UNSIGNED NOT NULL,
+  `syntagi` ENUM('cooking', 'pastry') NOT NULL,
+  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `Image` INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`idRecipe`),
+  INDEX `fk_Recipe_Image_idx` (`Image` ASC),
+  INDEX `Search_title_idx` (`title` ASC),
+  INDEX `Search_difficulty_idx` (`difficulty` ASC),
+  CONSTRAINT `fk_Recipe_Image`
+    FOREIGN KEY (`Image`)
+    REFERENCES `Cooking_Competition`.`Image` (`idImage`)
     ON DELETE RESTRICT
     ON UPDATE CASCADE,
-  INDEX fk_Recipe_Cuisine1_idx (Cuisine_id ASC),
-  INDEX fk_Recipe_Type_Meal1_idx (Type_Meal ASC),
-  CONSTRAINT fk_Recipe_Cuisine1
-    FOREIGN KEY (Cuisine_id)
-    REFERENCES Cooking_Competition.Cuisine (idCuisine)
+  INDEX `fk_Recipe_Cuisine1_idx` (`Cuisine_id` ASC),
+  INDEX `fk_Recipe_Type_Meal1_idx` (`Type_Meal` ASC),
+  CONSTRAINT `fk_Recipe_Cuisine1`
+    FOREIGN KEY (`Cuisine_id`)
+    REFERENCES `Cooking_Competition`.`Cuisine` (`idCuisine`)
     ON DELETE RESTRICT
     ON UPDATE CASCADE,
-  CONSTRAINT fk_Recipe_Type_Meal1
-    FOREIGN KEY (Type_Meal)
-    REFERENCES Cooking_Competition.Type_Meal (idType_Meal)
+  CONSTRAINT `fk_Recipe_Type_Meal1`
+    FOREIGN KEY (`Type_Meal`)
+    REFERENCES `Cooking_Competition`.`Type_Meal` (`idType_Meal`)
     ON DELETE RESTRICT
     ON UPDATE CASCADE,
-  CONSTRAINT range_dif CHECK (difficulty BETWEEN 1 AND 5),
-  CONSTRAINT prep_time_check CHECK (prep_time >= 0),
-  CONSTRAINT portions_check CHECK (portions > 0),
-  CONSTRAINT cook_time_check CHECK (cook_time >= 0)
+  CONSTRAINT `range_dif` CHECK (difficulty BETWEEN 1 AND 5),
+  CONSTRAINT `prep_time_check` CHECK (prep_time >= 0),
+  CONSTRAINT `portions_check` CHECK (portions > 0),
+  CONSTRAINT `cook_time_check` CHECK (cook_time >= 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `Cooking_Competition`.`Tips` (
@@ -119,6 +125,7 @@ CREATE TABLE `Cooking_Competition`.`Steps` (
   `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`idSteps`),
   INDEX `fk_Steps_Recipe1_idx` (`Recipe_idRecipe` ASC)  ,
+  INDEX `Seacrh_Step_number_idx` (`Step_number` ASC)  ,
   CONSTRAINT `fk_Steps_Recipe1`
     FOREIGN KEY (`Recipe_idRecipe`)
     REFERENCES `Cooking_Competition`.`Recipe` (`idRecipe`)
@@ -133,6 +140,7 @@ CREATE TABLE `Cooking_Competition`.`Concept` (
   `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `Image` INT UNSIGNED NOT NULL,
    INDEX `fk_Concept_Image_idx` (`Image` ASC)  ,
+   INDEX `Seacrh_Concept_name_idx` (`Concept_name` ASC)  ,
   CONSTRAINT `fk_Concept_Image`
     FOREIGN KEY (`Image`)
     REFERENCES `Cooking_Competition`.`Image` (`idImage`)
@@ -172,6 +180,10 @@ CREATE TABLE `Cooking_Competition`.`Cook` (
   `Status` ENUM('C cook', 'B cook', 'A cook', 'assistant head Chef', 'Chef') NOT NULL,
   `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `Image` INT UNSIGNED NOT NULL,
+   INDEX `Search_First_name_idx` (`first_name` ASC),
+   INDEX `Search_Last_name_idx` (`last_name` ASC),
+   INDEX `Search_Years_experience_idx` (`Years_experience` ASC),
+   INDEX `Search_Status_idx` (`Status` ASC),
    INDEX `fk_Cook_Image_idx` (`Image` ASC)  ,
   CONSTRAINT `fk_Cook_Image`
     FOREIGN KEY (`Image`)
@@ -241,6 +253,7 @@ CREATE TABLE  `Cooking_Competition`.`Equipment` (
   `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `Image` INT UNSIGNED NOT NULL,
    INDEX `fk_Equipment_Image_idx` (`Image` ASC)  ,
+   INDEX `Search_equip_name_idx` (`equip_name` ASC)  ,
   CONSTRAINT `fk_Equipment_Image`
     FOREIGN KEY (`Image`)
     REFERENCES `Cooking_Competition`.`Image` (`idImage`)
@@ -284,6 +297,7 @@ CREATE TABLE `Cooking_Competition`.`Ingredients` (
   `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `Image` INT UNSIGNED NOT NULL,
    INDEX `fk_Ingedient_Image_idx` (`Image` ASC)  ,
+   INDEX `Search_Ingredient_name_idx` (`Ingredient_name` ASC)  ,
   CONSTRAINT `fk_Ingedient_Image`
     FOREIGN KEY (`Image`)
     REFERENCES `Cooking_Competition`.`Image` (`idImage`)
@@ -353,7 +367,10 @@ CREATE TABLE `Cooking_Competition`.`Episode` (
   `Season_number` INT UNSIGNED NOT NULL,
   `winner_id` INT UNSIGNED NULL,
   `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`idEpisode`)
+  PRIMARY KEY (`idEpisode`),
+  INDEX `Search_Episode_number_idx` (`Episode_number` ASC),
+  INDEX `Search_Season_number_idx` (`Season_number` ASC),
+  INDEX `Search_Cook_Winner_idx` (`winner_id` ASC)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `Cooking_Competition`.`Episode_has_Participants` (
@@ -609,53 +626,94 @@ DELIMITER ;
 
 DELIMITER //
 
-CREATE PROCEDURE CalculateEpisodeWinner(IN episode_id INT)
+CREATE PROCEDURE CalculateEpisodeWinner(IN inputEpisodeID INT UNSIGNED)
 BEGIN
-    DECLARE max_score INT;
-    DECLARE winner_id INT;
-    DECLARE max_qualification INT;
-    DECLARE tie_winner_id INT;
+    DECLARE winner_cook_id INT UNSIGNED;
     
-    -- Calculate the maximum score given by the judges
-    SELECT MAX(Score) INTO max_score
-    FROM Episode_has_Participants
-    WHERE Episode_idEpisode = episode_id;
+    -- Create a temporary table to hold the possible winners
+    CREATE TEMPORARY TABLE TempWinners AS
+    SELECT 
+        ep.Cook_idCook,
+        SUM(jps.Score) AS TotalScore,
+        c.Status
+    FROM 
+        Judge_Participant_Scores jps
+    INNER JOIN 
+        Episode_has_Participants ep ON jps.Participant_id = ep.Participant_id
+    INNER JOIN 
+        Cook c ON ep.Cook_idCook = c.idCook
+    WHERE 
+        jps.Episode_idEpisode = inputEpisodeID
+    GROUP BY 
+        ep.Cook_idCook;
+
+    -- Determine the highest total score
+    SET @max_score = (SELECT MAX(TotalScore) FROM TempWinners);
     
-    -- Find the participant(s) with the maximum score
-    SELECT Cook_idCook INTO winner_id
-    FROM Episode_has_Participants
-    WHERE Episode_idEpisode = episode_id AND Score = max_score
-    LIMIT 1; -- If there's a tie, select only the first participant
-    
-    -- Check if there's a tie
-    IF (SELECT COUNT(*) FROM Episode_has_Participants WHERE Episode_idEpisode = episode_id AND Score = max_score) > 1 THEN
-        -- Find the participant(s) with the highest professional qualification
-        SELECT MAX(Years_experience) INTO max_qualification
-        FROM Cook
-        WHERE idCook IN (SELECT Cook_idCook FROM Episode_has_Participants WHERE Episode_idEpisode = episode_id AND Score = max_score);
-        
-        -- Find the participant(s) with the highest qualification
-        SELECT Cook_idCook INTO tie_winner_id
-        FROM Cook
-        WHERE idCook IN (SELECT Cook_idCook FROM Episode_has_Participants WHERE Episode_idEpisode = episode_id AND Score = max_score)
-        AND Years_experience = max_qualification
-        LIMIT 1; -- If there's still a tie, select only the first participant
-        
-        -- If there's still a tie, select the winner randomly
-        IF (SELECT COUNT(*) FROM Cook WHERE idCook IN (SELECT Cook_idCook FROM Episode_has_Participants WHERE Episode_idEpisode = episode_id AND Score = max_score AND Years_experience = max_qualification)) > 1 THEN
-            SET tie_winner_id = (SELECT Cook_idCook FROM Episode_has_Participants WHERE Episode_idEpisode = episode_id AND Score = max_score AND Years_experience = max_qualification LIMIT 1);
-        END IF;
-        
-        SET winner_id = tie_winner_id;
-    END IF;
-    
-    -- Update the episode table with the winner
+    -- Create another temporary table to hold cooks with the highest score
+    CREATE TEMPORARY TABLE TopScorers AS
+    SELECT * 
+    FROM TempWinners
+    WHERE TotalScore = @max_score;
+
+    -- Determine the highest status among top scorers
+    SET @max_status = (SELECT MIN(FIELD(Status, 'Chef', 'assistant head Chef', 'A cook', 'B cook', 'C cook')) FROM TopScorers);
+
+    -- Create another temporary table to hold cooks with the highest status
+    CREATE TEMPORARY TABLE FinalWinners AS
+    SELECT * 
+    FROM TopScorers
+    WHERE FIELD(Status, 'Chef', 'assistant head Chef', 'A cook', 'B cook', 'C cook') = @max_status;
+
+    -- Select a random winner from the final winners
+    SELECT Cook_idCook 
+    INTO winner_cook_id
+    FROM FinalWinners
+    ORDER BY RAND()
+    LIMIT 1;
+
+    -- Update the Episode table with the cook_id of the winner for the specified episode
     UPDATE Episode
-    SET winner_id = winner_id
-    WHERE idEpisode = episode_id;
+    SET winner_id = winner_cook_id
+    WHERE idEpisode = inputEpisodeID;
+
+    -- Clean up temporary tables
+    DROP TEMPORARY TABLE IF EXISTS TempWinners;
+    DROP TEMPORARY TABLE IF EXISTS TopScorers;
+    DROP TEMPORARY TABLE IF EXISTS FinalWinners;
 END //
 
 DELIMITER ;
+
+
+
+
+DELIMITER //
+
+CREATE TRIGGER AfterInsertJudgeParticipantScores
+AFTER INSERT ON Judge_Participant_Scores
+FOR EACH ROW
+BEGIN
+    -- Call the procedure to calculate the winner for the episode
+    CALL CalculateEpisodeWinner(NEW.Episode_idEpisode);
+END //
+
+DELIMITER ;
+
+DELIMITER //
+
+CREATE TRIGGER AfterUpdateJudgeParticipantScores
+AFTER UPDATE ON Judge_Participant_Scores
+FOR EACH ROW
+BEGIN
+    -- Call the procedure to calculate the winner for the episode
+    CALL CalculateEpisodeWinner(NEW.Episode_idEpisode);
+END //
+
+DELIMITER ;
+
+
+
 
 --
 -- Trigger to ensure steps are inserted in order
@@ -925,7 +983,441 @@ END//
 
 DELIMITER ;
 
+-- ----------------------------------------------------------------------------------------------------------------------
 
+-- 3.1. Average Rating (score) per cook and national cuisine
+CREATE VIEW CookScoresByCuisine AS
+    SELECT 
+        c.idCook,
+        c.first_name,
+        c.last_name,
+        cu.Cuisine,
+        AVG(jps.Score) AS avg_score
+    FROM 
+        Judge_Participant_Scores jps
+    INNER JOIN 
+        Episode_has_Participants ehp ON jps.Participant_id = ehp.Participant_id
+    INNER JOIN 
+        Cook c ON ehp.Cook_idCook = c.idCook
+    INNER JOIN 
+        Cuisine cu ON ehp.Cuisine_idCuisine = cu.idCuisine
+    GROUP BY 
+        c.idCook, cu.Cuisine
+    ORDER BY 
+        cu.Cuisine, avg_score DESC;
+
+DELIMITER //
+
+CREATE PROCEDURE AVG_SCORE_CUISine_COOK()
+BEGIN
+	SELECT * FROM CookScoresByCuisine;
+END //
+
+DELIMITER ;
+
+-- 3.2.a For a given National Cuisine the cooks belonging to it
+DELIMITER //
+
+CREATE PROCEDURE CheckCuisineAndCooks(IN cuisine_name VARCHAR(255))
+BEGIN
+    DECLARE cuisine_count INT;
+
+    -- Check if the cuisine exists
+    SELECT COUNT(*) INTO cuisine_count
+    FROM Cuisine
+    WHERE Cuisine = cuisine_name;
+
+    -- If the cuisine does not exist, output an error
+    IF cuisine_count = 0 THEN
+        SELECT 'Error: The cuisine does not exist';
+    ELSE
+        -- Check if there are any cooks for the given cuisine
+        IF (SELECT COUNT(*) FROM Cook c JOIN Cuisine cu ON c.Cuisine_idCuisine = cu.idCuisine WHERE cu.Cuisine = cuisine_name) = 0 THEN
+            SELECT 'There are no cooks for the given cuisine';
+        ELSE
+            -- Retrieve the cooks belonging to the given cuisine
+            SELECT 
+                c.idCook,
+                c.first_name,
+                c.last_name
+            FROM 
+                Cook c
+            JOIN 
+                Cuisine cu ON c.Cuisine_idCuisine = cu.idCuisine
+            WHERE 
+                cu.Cuisine = cuisine_name;
+        END IF;
+    END IF;
+END //
+
+DELIMITER ;
+
+-- 3.2.b For a given season, the cooks participated in episodes
+DELIMITER //
+
+CREATE PROCEDURE GetCooksBySeason(IN season_name VARCHAR(255))
+BEGIN
+    DECLARE season_count INT;
+    
+    -- Check if the given season exists
+    SELECT COUNT(*) INTO season_count FROM Season WHERE SeasonName = season_name;
+    
+    IF season_count = 0 THEN
+        -- Output an error if the season does not exist
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: Season does not exist';
+    ELSE
+        -- Retrieve cooks involved in the given season
+        SELECT 
+            c.idCook,
+            c.first_name,
+            c.last_name,
+            cu.Cuisine AS National_Cuisine,
+            COUNT(DISTINCT ehp.Episode_id) AS episodes_involved
+        FROM 
+            Cook c
+        LEFT JOIN 
+            Episode_has_Participants ehp ON c.idCook = ehp.Cook_idCook
+        LEFT JOIN 
+            Cuisine cu ON c.Cuisine_idCuisine = cu.idCuisine
+        WHERE 
+            ehp.Season = season_name
+        GROUP BY 
+            c.idCook, cu.Cuisine
+        HAVING 
+            episodes_involved > 0;
+    END IF;
+END //
+
+DELIMITER ;
+
+-- 3.3 The young cooks (age < 30 years) who have the most recipes
+CREATE VIEW CookRecipeCount AS
+SELECT 
+    c.idCook,
+    c.first_name,
+    c.last_name,
+    c.age,
+    COUNT(r.idRecipe) AS recipe_count
+FROM 
+    Cook c
+JOIN 
+    Episode_has_Participants ehp ON c.idCook = ehp.Cook_idCook
+JOIN 
+    Recipe r ON ehp.Recipe_idRecipe = r.idRecipe
+WHERE 
+    c.age < 30
+GROUP BY 
+    c.idCook
+ORDER BY 
+    recipe_count DESC;
+
+
+DELIMITER //
+
+CREATE PROCEDURE GetYoungCooksWithMostRecipes()
+BEGIN
+    SELECT * FROM CookRecipeCount;
+END //
+
+DELIMITER ;
+
+
+
+-- 3.4 Cooks who have never judged an episode
+CREATE OR REPLACE VIEW CooksNeverJudged AS
+SELECT 
+    c.idCook,
+    c.first_name,
+    c.last_name,
+    c.age
+FROM 
+    Cook c
+LEFT JOIN 
+    Episode_has_Judges ehj ON c.idCook = ehj.Cook_idCook
+WHERE 
+    ehj.Cook_idCook IS NULL;
+
+DELIMITER //
+
+CREATE PROCEDURE GetCooksNeverJudged()
+BEGIN
+    SELECT * FROM CooksNeverJudged;
+END //
+
+DELIMITER ;
+
+
+-- 3.5 Judges who have participated in the same number of episodes over a period of one year with
+CREATE OR REPLACE VIEW JudgesSameNumberOfEpisodes AS
+SELECT 
+    j.idJudge,
+    j.Cook_idCook,
+    COUNT(ej.Episode_idEpisode) AS num_episodes
+FROM 
+    Judge j
+INNER JOIN 
+    Episode_has_Judges ej ON j.idJudge = ej.Judge_idJudge
+INNER JOIN 
+    Episode e ON ej.Episode_idEpisode = e.idEpisode
+WHERE 
+    e.last_update >= DATE_SUB(CURRENT_DATE(), INTERVAL 1 YEAR)
+GROUP BY 
+    j.idJudge, j.Cook_idCook
+HAVING 
+    num_episodes > 3
+
+DELIMITER //
+
+CREATE PROCEDURE GetJudgesWithSameNumberOfEpisodes()
+BEGIN
+    SELECT * FROM JudgesSameNumberOfEpisodes;
+END //
+
+DELIMITER ;
+
+
+-- 3.7 All cooks who have participated at least 5 fewer times than the cook with the most episodes
+CREATE VIEW CooksWithFewerParticipations AS
+SELECT c.idCook, c.first_name, c.last_name
+FROM Cook c
+JOIN (
+    SELECT Cook_idCook, COUNT(*) AS max_participations
+    FROM Episode_has_Participants
+    GROUP BY Cook_idCook
+    ORDER BY max_participations DESC
+    LIMIT 1
+) AS max_episodes ON c.idCook <> max_episodes.Cook_idCook
+JOIN (
+    SELECT Cook_idCook, COUNT(*) AS num_participations
+    FROM Episode_has_Participants
+    GROUP BY Cook_idCook
+) AS cook_participations ON c.idCook = cook_participations.Cook_idCook
+WHERE max_episodes.max_participations - cook_participations.num_participations >= 5;
+
+DELIMITER //
+
+CREATE PROCEDURE CallCooksWithFewerParticipations()
+BEGIN
+    -- Selecting data from the view
+    SELECT *
+    FROM CooksWithFewerParticipations;
+END //
+
+DELIMITER ;
+
+    
+-- 3.9 List of average number of grams of carbohydrates in the competition per sezon
+CREATE VIEW AverageCarbohydratesPerSeason AS
+SELECT
+    e.Season_number,
+    AVG(i.carbohydrate) AS average_carbohydrates
+FROM
+    Episode e
+JOIN
+    Episode_has_Participants ep ON e.idEpisode = ep.Episode_idEpisode
+JOIN
+    Recipe r ON ep.Recipe_idRecipe = r.idRecipe
+JOIN
+    Recipe_has_Ingredients ri ON r.idRecipe = ri.Recipe_idRecipe
+JOIN
+    Ingredients i ON ri.Ingredients_idIngredients = i.idIngredients
+GROUP BY
+    e.Season_number;
+
+DELIMITER //
+
+DELIMITER //
+
+CREATE PROCEDURE CalculateAverageCarbohydratesPerSeason()
+BEGIN
+    SELECT * FROM AverageCarbohydratesPerSeason;
+END //
+
+DELIMITER ;
+
+
+-- 3.10 Cuisines have the same number of entries in competitions over two consecutive years, with at least 3 entries per year
+CREATE VIEW ConsecutiveYearCuisines AS
+SELECT 
+    cc1.idCuisine,
+    cc1.Cuisine,
+    COUNT(DISTINCT ep1.idEpisode) AS Entries_Year1,
+    COUNT(DISTINCT ep2.idEpisode) AS Entries_Year2
+FROM 
+    Cooking_Competition.Cuisine cc1
+JOIN 
+    Cooking_Competition.Recipe rec ON cc1.idCuisine = rec.Cuisine_id
+JOIN 
+    Cooking_Competition.Episode_has_Participants epp1 ON rec.idRecipe = epp1.Recipe_idRecipe
+JOIN 
+    Cooking_Competition.Episode ep1 ON epp1.Episode_idEpisode = ep1.idEpisode
+JOIN 
+    Cooking_Competition.Episode_has_Participants epp2 ON rec.idRecipe = epp2.Recipe_idRecipe
+JOIN 
+    Cooking_Competition.Episode ep2 ON epp2.Episode_idEpisode = ep2.idEpisode
+WHERE 
+    YEAR(ep1.last_update) = YEAR(ep2.last_update) - 1
+GROUP BY 
+    cc1.idCuisine
+HAVING 
+    Entries_Year1 >= 3 AND Entries_Year2 >= 3;
+
+
+DELIMITER //
+
+CREATE PROCEDURE GetConsecutiveYearCuisines()
+BEGIN
+    SELECT * FROM ConsecutiveYearCuisines;
+END//
+
+DELIMITER ;
+
+
+-- 3.11 Top 5 reviewers who have given the highest overall rating to a cook
+
+CREATE VIEW Top5JudgesTotalScoreView AS
+    SELECT 
+        (SELECT CONCAT_WS(' ', first_name, last_name) FROM Cook WHERE idCook = jp.Judge_idJudge) AS Judge_name,
+        (SELECT CONCAT_WS(' ', first_name, last_name) FROM Cook WHERE idCook = jp.Participant_id) AS Participant_name,
+        SUM(jp.Score) AS total_score
+    FROM 
+        Judge_Participant_Scores jp
+    GROUP BY 
+        Judge_name, Participant_name
+    ORDER BY 
+        total_score DESC
+    LIMIT 5;
+    
+DELIMITER //
+
+CREATE PROCEDURE CallTop5JudgesTotalScore()
+BEGIN
+    -- Select from the view to get the cuisines with the same number of entries over two consecutive years
+    SELECT * FROM Top5JudgesTotalScoreView ;
+END //
+
+DELIMITER ;
+
+-- 3.12  The most technically challenging, in terms of recipes, episode of the competition per year
+CREATE VIEW EpisodeStatusSum AS
+SELECT 
+    e.idEpisode,
+    SUM(CASE
+        WHEN c.Status = 'C cook' THEN 1
+        WHEN c.Status = 'B cook' THEN 2
+        WHEN c.Status = 'A cook' THEN 3
+        WHEN c.Status = 'assistant head Chef' THEN 4
+        WHEN c.Status = 'Chef' THEN 5
+        ELSE 0
+    END) AS sum_status
+FROM 
+    Episode e
+INNER JOIN
+    Episode_has_Participants ep ON e.idEpisode = ep.Episode_idEpisode
+INNER JOIN
+    Cook c ON ep.Cook_idCook = c.idCook
+GROUP BY 
+    e.idEpisode;
+
+DELIMITER //
+
+CREATE PROCEDURE FindLowestSumStatusEpisode()
+BEGIN
+    -- Select the episode with the lowest sum of status values
+    SELECT *
+    FROM EpisodeStatusSum
+    ORDER BY sum_status
+    LIMIT 1;
+END//
+
+DELIMITER ;
+
+CREATE OR REPLACE VIEW Episode_Sum_Status AS
+SELECT
+    ep.idEpisode,
+    SUM(CASE
+            WHEN c.Status = 'C cook' THEN 1
+            WHEN c.Status = 'B cook' THEN 2
+            WHEN c.Status = 'A cook' THEN 3
+            WHEN c.Status = 'assistant head Chef' THEN 4
+            WHEN c.Status = 'Chef' THEN 5
+            ELSE 0
+        END) AS cook_status_sum,
+    SUM(CASE
+            WHEN ehj.Cook_idCook IS NOT NULL THEN
+                CASE
+                    WHEN cj.Status = 'C cook' THEN 1
+                    WHEN cj.Status = 'B cook' THEN 2
+                    WHEN cj.Status = 'A cook' THEN 3
+                    WHEN cj.Status = 'assistant head Chef' THEN 4
+                    WHEN cj.Status = 'Chef' THEN 5
+                    ELSE 0
+                END
+            ELSE 0
+        END) AS judge_status_sum
+FROM
+    Episode ep
+    LEFT JOIN Episode_has_Participants ehp ON ep.idEpisode = ehp.Episode_idEpisode
+    LEFT JOIN Cook c ON ehp.Cook_idCook = c.idCook
+    LEFT JOIN Episode_has_Judges ehj ON ep.idEpisode = ehj.Episode_idEpisode
+    LEFT JOIN Cook cj ON ehj.Cook_idCook = cj.idCook
+GROUP BY
+    ep.idEpisode;
+
+DELIMITER //
+
+CREATE PROCEDURE LowestSumStatusEpisode()
+BEGIN
+    DECLARE min_sum INT;
+
+    -- Find the minimum sum of status scores
+    SELECT MIN(cook_status_sum + judge_status_sum)
+    INTO min_sum
+    FROM Episode_Sum_Status;
+
+    -- Select the episode with the lowest sum of status scores
+    SELECT idEpisode
+    FROM Episode_Sum_Status
+    WHERE (cook_status_sum + judge_status_sum) = min_sum;
+END //
+
+DELIMITER ;
+
+
+-- 3.14  Theme has appeared most often in the competition
+CREATE VIEW MostCommonConceptAllEpisodes AS
+SELECT Concept_name AS Most_Common_Concept
+FROM (
+    SELECT Concept_idConcept, COUNT(*) AS concept_count
+    FROM Recipe_has_Concept
+    JOIN Recipe ON Recipe_has_Concept.Recipe_idRecipe = Recipe.idRecipe
+    JOIN Episode_has_Participants ON Recipe.idRecipe = Episode_has_Participants.Recipe_idRecipe
+    JOIN Episode ON Episode_has_Participants.Episode_idEpisode = Episode.idEpisode
+    GROUP BY Concept_idConcept
+    ORDER BY concept_count DESC
+    LIMIT 1
+) AS most_common
+JOIN Concept ON most_common.Concept_idConcept = Concept.idConcept;
+
+DELIMITER //
+
+CREATE PROCEDURE GetMostCommonConcept()
+BEGIN
+	SELECT * FROM MostCommonConceptAllEpisodes;
+END //
+
+DELIMITER ;
+
+-- 3.15 Food groups that have never appeared in the competition
+CREATE VIEW UnusedFoodGroupsView AS
+    SELECT fg.*
+    FROM Food_Group fg
+    LEFT JOIN (
+        SELECT DISTINCT rhi.Ingredients_idIngredients, ig.Food_Group_idFood_Group
+        FROM Recipe_has_Ingredients rhi
+        JOIN Ingredients ig ON rhi.Ingredients_idIngredients = ig.idIngredients
+    ) rhi ON fg.idFood_Group = rhi.Food_Group_idFood_Group
+    WHERE rhi.Ingredients_idIngredients IS NULL;
 
 
 
