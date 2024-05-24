@@ -790,169 +790,7 @@ END //
 
 DELIMITER ;
 
-DELIMITER //
 
-CREATE PROCEDURE AssignParticipantsToEpisodes()
-BEGIN
-    DECLARE episode_id INT;
-    DECLARE cuisine_id INT;
-    DECLARE cook_id INT;
-    DECLARE recipe_id INT;
-    DECLARE done INT DEFAULT 0;
-
-    DECLARE cur_episodes CURSOR FOR SELECT idEpisode FROM Episode;
-    DECLARE cur_cuisines CURSOR FOR SELECT idCuisine FROM TempCuisines;
-    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
-
-    -- Temporary table for debugging
-    DROP TEMPORARY TABLE IF EXISTS DebugTemp;
-    CREATE TEMPORARY TABLE DebugTemp (
-        stage VARCHAR(50),
-        episode_id INT,
-        cuisine_id INT,
-        cook_id INT,
-        recipe_id INT,
-        status VARCHAR(50)
-    );
-
-    DROP TEMPORARY TABLE IF EXISTS TempCuisines;
-
-    -- Ensure we have cuisines to select from
-    CREATE TEMPORARY TABLE TempCuisines AS SELECT idCuisine FROM Cuisine ORDER BY RAND() LIMIT 10;
-
-    OPEN cur_episodes;
-    episode_loop: LOOP
-        FETCH cur_episodes INTO episode_id;
-        IF done THEN
-            SET done = 0;
-            LEAVE episode_loop;
-        END IF;
-
-        OPEN cur_cuisines;
-        cuisine_loop: LOOP
-            FETCH cur_cuisines INTO cuisine_id;
-            IF done THEN
-                SET done = 0;
-                LEAVE cuisine_loop;
-            END IF;
-
-            -- Select a cook for the current cuisine
-            SELECT Cook_idCook INTO cook_id FROM Cook_has_Cuisine
-            WHERE Cuisine_idCuisine = cuisine_id
-            AND Cook_idCook NOT IN (
-                SELECT Cook_idCook 
-                FROM Episode_has_Participants 
-                WHERE Episode_idEpisode = episode_id
-            )
-            ORDER BY RAND() LIMIT 1;
-
-            -- Ensure the cook has a recipe
-            SELECT idRecipe INTO recipe_id FROM Recipe
-            WHERE Cuisine_id = cuisine_id
-            AND idRecipe IN (
-                SELECT Recipe_idRecipe 
-                FROM Recipe_has_Cook 
-                WHERE Cook_idCook = cook_id
-            )
-            AND idRecipe NOT IN (
-                SELECT Recipe_idRecipe 
-                FROM Episode_has_Participants 
-                WHERE Episode_idEpisode = episode_id
-            )
-            ORDER BY RAND() LIMIT 1;
-
-            -- Insert participant into Episode_has_Participants
-            IF cook_id IS NOT NULL AND recipe_id IS NOT NULL THEN
-                INSERT INTO Episode_has_Participants (Episode_idEpisode, Cook_idCook, Recipe_idRecipe, Cuisine_idCuisine)
-                VALUES (episode_id, cook_id, recipe_id, cuisine_id);
-                
-                INSERT INTO DebugTemp (stage, episode_id, cuisine_id, cook_id, recipe_id, status)
-                VALUES ('Inserted', episode_id, cuisine_id, cook_id, recipe_id, 'Success');
-            ELSE
-                INSERT INTO DebugTemp (stage, episode_id, cuisine_id, cook_id, recipe_id, status)
-                VALUES ('Skipped', episode_id, cuisine_id, cook_id, recipe_id, 'Skipped');
-            END IF;
-        END LOOP;
-        CLOSE cur_cuisines;
-    END LOOP;
-    CLOSE cur_episodes;
-
-    -- Select debug information at the end
-    SELECT * FROM DebugTemp;
-END //
-
-DELIMITER ;
-
-DELIMITER //
-
-CREATE PROCEDURE AssignJudgesToEpisodes()
-BEGIN
-    DECLARE episode_id INT;
-    DECLARE judge_id INT;
-    DECLARE done INT DEFAULT 0;
-
-    DECLARE cur_episodes CURSOR FOR SELECT idEpisode FROM Episode;
-    DECLARE cur_judges CURSOR FOR SELECT idCook FROM TempJudges;
-    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
-
-    -- Temporary table for debugging
-    DROP TEMPORARY TABLE IF EXISTS DebugTempJudges;
-    CREATE TEMPORARY TABLE DebugTempJudges (
-        stage VARCHAR(50),
-        episode_id INT,
-        judge_id INT,
-        status VARCHAR(50)
-    );
-
-    DROP TEMPORARY TABLE IF EXISTS TempJudges;
-
-    OPEN cur_episodes;
-    episode_loop: LOOP
-        FETCH cur_episodes INTO episode_id;
-        IF done THEN
-            SET done = 0;
-            LEAVE episode_loop;
-        END IF;
-
-        DROP TEMPORARY TABLE IF EXISTS TempJudges;
-        CREATE TEMPORARY TABLE TempJudges AS 
-        SELECT idCook FROM Cook 
-        WHERE idCook NOT IN (
-            SELECT Cook_idCook 
-            FROM Episode_has_Participants 
-            WHERE Episode_idEpisode = episode_id
-        )
-        ORDER BY RAND() LIMIT 3;
-
-        OPEN cur_judges;
-        judge_loop: LOOP
-            FETCH cur_judges INTO judge_id;
-            IF done THEN
-                SET done = 0;
-                LEAVE judge_loop;
-            END IF;
-
-            -- Insert judge into Episode_has_Judges
-            IF judge_id IS NOT NULL THEN
-                INSERT INTO Episode_has_Judges (Episode_idEpisode, Cook_idCook)
-                VALUES (episode_id, judge_id);
-                
-                INSERT INTO DebugTempJudges (stage, episode_id, judge_id, status)
-                VALUES ('Inserted', episode_id, judge_id, 'Success');
-            ELSE
-                INSERT INTO DebugTempJudges (stage, episode_id, judge_id, status)
-                VALUES ('Skipped', episode_id, judge_id, 'Skipped');
-            END IF;
-        END LOOP;
-        CLOSE cur_judges;
-    END LOOP;
-    CLOSE cur_episodes;
-
-    -- Select debug information at the end
-    SELECT * FROM DebugTempJudges;
-END //
-
-DELIMITER ;
 -- ----------------------------------------------------------------------------------------------------------
 DELIMITER //
 
@@ -985,112 +823,122 @@ DELIMITER ;
 
 -- ----------------------------------------------------------------------------------------------------------------------
 
--- 3.1. Average Rating (score) per cook and national cuisine
-CREATE VIEW CookScoresByCuisine AS
-    SELECT 
-        c.idCook,
-        c.first_name,
-        c.last_name,
-        cu.Cuisine,
-        AVG(jps.Score) AS avg_score
-    FROM 
-        Judge_Participant_Scores jps
-    INNER JOIN 
-        Episode_has_Participants ehp ON jps.Participant_id = ehp.Participant_id
-    INNER JOIN 
-        Cook c ON ehp.Cook_idCook = c.idCook
-    INNER JOIN 
-        Cuisine cu ON ehp.Cuisine_idCuisine = cu.idCuisine
-    GROUP BY 
-        c.idCook, cu.Cuisine
-    ORDER BY 
-        cu.Cuisine, avg_score DESC;
+-- 3.1. Average Rating (score) per cook and national cuisine (check)
+CREATE OR REPLACE VIEW AverageScorePerCook AS
+SELECT 
+    c.idCook,
+    c.first_name,
+    c.last_name,
+    AVG(jps.Score) AS avg_score
+FROM 
+    Judge_Participant_Scores jps
+INNER JOIN 
+    Episode_has_Participants ehp ON jps.Participant_id = ehp.Participant_id
+INNER JOIN 
+    Cook c ON ehp.Cook_idCook = c.idCook
+GROUP BY 
+    c.idCook
+ORDER BY 
+    avg_score DESC;
+    
+-- and national cuisine (check)
+CREATE OR REPLACE VIEW AverageScorePerCuisine AS
+SELECT 
+    cu.idCuisine,
+    cu.Cuisine,
+    AVG(jps.Score) AS avg_score
+FROM 
+    Judge_Participant_Scores jps
+INNER JOIN 
+    Episode_has_Participants ehp ON jps.Participant_id = ehp.Participant_id
+INNER JOIN 
+    Cuisine cu ON ehp.Cuisine_idCuisine = cu.idCuisine
+GROUP BY 
+    cu.idCuisine
+ORDER BY 
+    avg_score DESC;
+
 
 DELIMITER //
 
-CREATE PROCEDURE AVG_SCORE_CUISine_COOK()
+CREATE PROCEDURE AVG_SCORE_CUISINE_COOK()
 BEGIN
-	SELECT * FROM CookScoresByCuisine;
+	SELECT * FROM AverageScorePerCook;
+    SELECT * FROM AverageScorePerCuisine;
 END //
 
 DELIMITER ;
 
--- 3.2.a For a given National Cuisine the cooks belonging to it
+-- 3.2.a For a given National Cuisine the cooks belonging to it (check)
 DELIMITER //
 
 CREATE PROCEDURE CheckCuisineAndCooks(IN cuisine_name VARCHAR(255))
 BEGIN
     DECLARE cuisine_count INT;
 
-    -- Check if the cuisine exists
-    SELECT COUNT(*) INTO cuisine_count
-    FROM Cuisine
-    WHERE Cuisine = cuisine_name;
-
-    -- If the cuisine does not exist, output an error
-    IF cuisine_count = 0 THEN
-        SELECT 'Error: The cuisine does not exist';
-    ELSE
-        -- Check if there are any cooks for the given cuisine
-        IF (SELECT COUNT(*) FROM Cook c JOIN Cuisine cu ON c.Cuisine_idCuisine = cu.idCuisine WHERE cu.Cuisine = cuisine_name) = 0 THEN
-            SELECT 'There are no cooks for the given cuisine';
-        ELSE
-            -- Retrieve the cooks belonging to the given cuisine
-            SELECT 
-                c.idCook,
-                c.first_name,
-                c.last_name
-            FROM 
-                Cook c
-            JOIN 
-                Cuisine cu ON c.Cuisine_idCuisine = cu.idCuisine
-            WHERE 
-                cu.Cuisine = cuisine_name;
-        END IF;
-    END IF;
+	IF (SELECT COUNT(*)
+		FROM Cook c
+		JOIN Cook_has_Cuisine chc ON c.idCook = chc.Cook_idCook
+		JOIN Cuisine cu ON chc.Cuisine_idCuisine = cu.idCuisine
+		WHERE cu.Cuisine = cuisine_name) = 0 THEN
+		SELECT 'There are no cooks for the given cuisine' AS message;
+	ELSE
+		-- Retrieve the cooks belonging to the given cuisine
+		SELECT 
+			c.idCook,
+			c.first_name,
+			c.last_name
+		FROM 
+			Cook c
+		JOIN 
+			Cook_has_Cuisine chc ON c.idCook = chc.Cook_idCook
+		JOIN 
+			Cuisine cu ON chc.Cuisine_idCuisine = cu.idCuisine
+		WHERE 
+			cu.Cuisine = cuisine_name;
+	END IF;
 END //
 
 DELIMITER ;
 
--- 3.2.b For a given season, the cooks participated in episodes
+
+
+-- 3.2.b For a given season, the cooks participated in episodes (check)
 DELIMITER //
 
-CREATE PROCEDURE GetCooksBySeason(IN season_name VARCHAR(255))
+CREATE PROCEDURE GetCooksBySeason(IN season_number INT)
 BEGIN
-    DECLARE season_count INT;
-    
-    -- Check if the given season exists
-    SELECT COUNT(*) INTO season_count FROM Season WHERE SeasonName = season_name;
-    
-    IF season_count = 0 THEN
-        -- Output an error if the season does not exist
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: Season does not exist';
-    ELSE
+    DECLARE season_exists INT;
+
         -- Retrieve cooks involved in the given season
         SELECT 
             c.idCook,
             c.first_name,
             c.last_name,
             cu.Cuisine AS National_Cuisine,
-            COUNT(DISTINCT ehp.Episode_id) AS episodes_involved
+            COUNT(DISTINCT ehp.Episode_idEpisode) AS episodes_involved
         FROM 
             Cook c
         LEFT JOIN 
             Episode_has_Participants ehp ON c.idCook = ehp.Cook_idCook
         LEFT JOIN 
-            Cuisine cu ON c.Cuisine_idCuisine = cu.idCuisine
+            Episode ep ON ehp.Episode_idEpisode = ep.idEpisode
+        LEFT JOIN 
+            Cuisine cu ON ehp.Cuisine_idCuisine = cu.idCuisine
         WHERE 
-            ehp.Season = season_name
+            ep.Season_number = season_number
         GROUP BY 
             c.idCook, cu.Cuisine
         HAVING 
             episodes_involved > 0;
-    END IF;
 END //
 
 DELIMITER ;
 
--- 3.3 The young cooks (age < 30 years) who have the most recipes
+
+
+
+-- 3.3 The young cooks (age < 30 years) who have the most recipes (check)
 CREATE VIEW CookRecipeCount AS
 SELECT 
     c.idCook,
@@ -1116,26 +964,32 @@ DELIMITER //
 
 CREATE PROCEDURE GetYoungCooksWithMostRecipes()
 BEGIN
-    SELECT * FROM CookRecipeCount;
+    DECLARE max_recipe_count INT;
+
+    -- Find the maximum recipe count
+    SELECT MAX(recipe_count) INTO max_recipe_count FROM CookRecipeCount;
+
+    -- Retrieve the cooks with the maximum recipe count
+    SELECT * FROM CookRecipeCount WHERE recipe_count = max_recipe_count;
 END //
 
 DELIMITER ;
 
 
+-- 3.4 Cooks who have never judged an episode (check)
+CREATE VIEW CooksNeverJudged AS
+	SELECT 
+		c.idCook,
+		c.first_name,
+		c.last_name,
+		c.age
+	FROM 
+		Cook c
+	LEFT JOIN 
+		Episode_has_Judges ehj ON c.idCook = ehj.Cook_idCook
+	WHERE 
+		ehj.Cook_idCook IS NULL;
 
--- 3.4 Cooks who have never judged an episode
-CREATE OR REPLACE VIEW CooksNeverJudged AS
-SELECT 
-    c.idCook,
-    c.first_name,
-    c.last_name,
-    c.age
-FROM 
-    Cook c
-LEFT JOIN 
-    Episode_has_Judges ehj ON c.idCook = ehj.Cook_idCook
-WHERE 
-    ehj.Cook_idCook IS NULL;
 
 DELIMITER //
 
@@ -1146,37 +1000,40 @@ END //
 
 DELIMITER ;
 
+-- 3.5 Judges who have participated in the same number of episodes over a period of one year with (check)
+CREATE VIEW JudgesSameNumberOfEpisodes AS
+	SELECT 
+		ej.Cook_idCook AS idJudge,
+		ej.Cook_idCook,
+		COUNT(ej.Episode_idEpisode) AS num_episodes
+	FROM 
+		Episode_has_Judges ej
+	INNER JOIN 
+		Episode e ON ej.Episode_idEpisode = e.idEpisode
+	WHERE 
+		e.last_update >= DATE_SUB(CURRENT_DATE(), INTERVAL 1 YEAR)
+	GROUP BY 
+		ej.Cook_idCook
+	HAVING 
+		num_episodes >= 3;
 
--- 3.5 Judges who have participated in the same number of episodes over a period of one year with
-CREATE OR REPLACE VIEW JudgesSameNumberOfEpisodes AS
-SELECT 
-    j.idJudge,
-    j.Cook_idCook,
-    COUNT(ej.Episode_idEpisode) AS num_episodes
-FROM 
-    Judge j
-INNER JOIN 
-    Episode_has_Judges ej ON j.idJudge = ej.Judge_idJudge
-INNER JOIN 
-    Episode e ON ej.Episode_idEpisode = e.idEpisode
-WHERE 
-    e.last_update >= DATE_SUB(CURRENT_DATE(), INTERVAL 1 YEAR)
-GROUP BY 
-    j.idJudge, j.Cook_idCook
-HAVING 
-    num_episodes > 3
+
+
 
 DELIMITER //
 
-CREATE PROCEDURE GetJudgesWithSameNumberOfEpisodes()
+CREATE PROCEDURE JudgesWithSameNumberOfEpisodes()
 BEGIN
-    SELECT * FROM JudgesSameNumberOfEpisodes;
+    SELECT *
+    FROM JudgesSameNumberOfEpisodes
+    ORDER BY num_episodes DESC;
 END //
 
 DELIMITER ;
 
 
--- 3.7 All cooks who have participated at least 5 fewer times than the cook with the most episodes
+
+-- 3.7 All cooks who have participated at least 5 fewer times than the cook with the most episodes(check)
 CREATE VIEW CooksWithFewerParticipations AS
 SELECT c.idCook, c.first_name, c.last_name
 FROM Cook c
@@ -1194,6 +1051,8 @@ JOIN (
 ) AS cook_participations ON c.idCook = cook_participations.Cook_idCook
 WHERE max_episodes.max_participations - cook_participations.num_participations >= 5;
 
+	
+
 DELIMITER //
 
 CREATE PROCEDURE CallCooksWithFewerParticipations()
@@ -1206,7 +1065,7 @@ END //
 DELIMITER ;
 
     
--- 3.9 List of average number of grams of carbohydrates in the competition per sezon
+-- 3.9 List of average number of grams of carbohydrates in the competition per sezon(check)
 CREATE VIEW AverageCarbohydratesPerSeason AS
 SELECT
     e.Season_number,
@@ -1224,7 +1083,7 @@ JOIN
 GROUP BY
     e.Season_number;
 
-DELIMITER //
+
 
 DELIMITER //
 
@@ -1236,44 +1095,43 @@ END //
 DELIMITER ;
 
 
--- 3.10 Cuisines have the same number of entries in competitions over two consecutive years, with at least 3 entries per year
-CREATE VIEW ConsecutiveYearCuisines AS
-SELECT 
-    cc1.idCuisine,
-    cc1.Cuisine,
-    COUNT(DISTINCT ep1.idEpisode) AS Entries_Year1,
-    COUNT(DISTINCT ep2.idEpisode) AS Entries_Year2
-FROM 
-    Cooking_Competition.Cuisine cc1
-JOIN 
-    Cooking_Competition.Recipe rec ON cc1.idCuisine = rec.Cuisine_id
-JOIN 
-    Cooking_Competition.Episode_has_Participants epp1 ON rec.idRecipe = epp1.Recipe_idRecipe
-JOIN 
-    Cooking_Competition.Episode ep1 ON epp1.Episode_idEpisode = ep1.idEpisode
-JOIN 
-    Cooking_Competition.Episode_has_Participants epp2 ON rec.idRecipe = epp2.Recipe_idRecipe
-JOIN 
-    Cooking_Competition.Episode ep2 ON epp2.Episode_idEpisode = ep2.idEpisode
-WHERE 
-    YEAR(ep1.last_update) = YEAR(ep2.last_update) - 1
-GROUP BY 
-    cc1.idCuisine
-HAVING 
-    Entries_Year1 >= 3 AND Entries_Year2 >= 3;
 
-
+-- 3.10 Cuisines have the same number of entries in competitions over two consecutive years, with at least 3 entries per year(check)
 DELIMITER //
 
-CREATE PROCEDURE GetConsecutiveYearCuisines()
+CREATE PROCEDURE FindCuisinesWithConsistentAppearance()
 BEGIN
-    SELECT * FROM ConsecutiveYearCuisines;
-END//
+    -- Create a temporary table to store the counts of cuisine appearances in each season
+    CREATE TEMPORARY TABLE CuisineAppearanceCounts (
+        Cuisine_id INT UNSIGNED,
+        Season_number INT UNSIGNED,
+        Appearances INT,
+        PRIMARY KEY (Cuisine_id, Season_number)
+    );
+
+    -- Insert the counts of cuisine appearances in each season into the temporary table
+    INSERT INTO CuisineAppearanceCounts
+    SELECT ehp.Cuisine_idCuisine, e.Season_number, COUNT(*) AS Appearances
+    FROM Episode_has_Participants ehp
+    JOIN Episode e ON ehp.Episode_idEpisode = e.idEpisode
+    GROUP BY ehp.Cuisine_idCuisine, e.Season_number;
+
+    -- Select cuisines that appear the same number of times in all seasons with at least three appearances in each season
+    SELECT Cuisine_id
+    FROM CuisineAppearanceCounts
+    GROUP BY Cuisine_id
+    HAVING COUNT(DISTINCT Season_number) = (SELECT COUNT(DISTINCT Season_number) FROM Episode)
+    AND MIN(Appearances) >= 3;
+
+    -- Drop the temporary table
+    DROP TEMPORARY TABLE IF EXISTS CuisineAppearanceCounts;
+END //
 
 DELIMITER ;
 
 
--- 3.11 Top 5 reviewers who have given the highest overall rating to a cook
+
+-- 3.11 Top 5 reviewers who have given the highest overall rating to a cook(check?)
 
 CREATE VIEW Top5JudgesTotalScoreView AS
     SELECT 
@@ -1288,6 +1146,7 @@ CREATE VIEW Top5JudgesTotalScoreView AS
         total_score DESC
     LIMIT 5;
     
+
 DELIMITER //
 
 CREATE PROCEDURE CallTop5JudgesTotalScore()
@@ -1298,39 +1157,32 @@ END //
 
 DELIMITER ;
 
--- 3.12  The most technically challenging, in terms of recipes, episode of the competition per year
-CREATE VIEW EpisodeStatusSum AS
-SELECT 
-    e.idEpisode,
-    SUM(CASE
-        WHEN c.Status = 'C cook' THEN 1
-        WHEN c.Status = 'B cook' THEN 2
-        WHEN c.Status = 'A cook' THEN 3
-        WHEN c.Status = 'assistant head Chef' THEN 4
-        WHEN c.Status = 'Chef' THEN 5
-        ELSE 0
-    END) AS sum_status
-FROM 
-    Episode e
-INNER JOIN
-    Episode_has_Participants ep ON e.idEpisode = ep.Episode_idEpisode
-INNER JOIN
-    Cook c ON ep.Cook_idCook = c.idCook
-GROUP BY 
-    e.idEpisode;
+-- 3.12 (check)
+CREATE VIEW MostDifficultEpisodePerSeason AS
+SELECT
+    ep.Season_number,
+    ep.idEpisode,
+    SUM(r.difficulty) AS total_difficulty
+FROM
+    Episode ep
+    INNER JOIN Episode_has_Participants ehp ON ep.idEpisode = ehp.Episode_idEpisode
+    INNER JOIN Recipe r ON ehp.Recipe_idRecipe = r.idRecipe
+GROUP BY
+    ep.Season_number, ep.idEpisode;
 
 DELIMITER //
 
-CREATE PROCEDURE FindLowestSumStatusEpisode()
+CREATE PROCEDURE GetMostDifficultEpisodes()
 BEGIN
-    -- Select the episode with the lowest sum of status values
-    SELECT *
-    FROM EpisodeStatusSum
-    ORDER BY sum_status
-    LIMIT 1;
-END//
+    SELECT * FROM MostDifficultEpisodePerSeason ORDER BY 
+        total_difficulty DESC
+        LIMIT 1;
+END //
 
 DELIMITER ;
+
+
+-- 3.13 (check)
 
 CREATE OR REPLACE VIEW Episode_Sum_Status AS
 SELECT
@@ -1344,7 +1196,7 @@ SELECT
             ELSE 0
         END) AS cook_status_sum,
     SUM(CASE
-            WHEN ehj.Cook_idCook IS NOT NULL THEN
+            WHEN ehj.Judge_idJudge IS NOT NULL THEN
                 CASE
                     WHEN cj.Status = 'C cook' THEN 1
                     WHEN cj.Status = 'B cook' THEN 2
@@ -1360,9 +1212,12 @@ FROM
     LEFT JOIN Episode_has_Participants ehp ON ep.idEpisode = ehp.Episode_idEpisode
     LEFT JOIN Cook c ON ehp.Cook_idCook = c.idCook
     LEFT JOIN Episode_has_Judges ehj ON ep.idEpisode = ehj.Episode_idEpisode
-    LEFT JOIN Cook cj ON ehj.Cook_idCook = cj.idCook
+    LEFT JOIN Cook cj ON ehj.Judge_idJudge = cj.idCook
 GROUP BY
     ep.idEpisode;
+
+
+
 
 DELIMITER //
 
@@ -1384,7 +1239,7 @@ END //
 DELIMITER ;
 
 
--- 3.14  Theme has appeared most often in the competition
+-- 3.14  Theme has appeared most often in the competition(check)
 CREATE VIEW MostCommonConceptAllEpisodes AS
 SELECT Concept_name AS Most_Common_Concept
 FROM (
@@ -1399,6 +1254,8 @@ FROM (
 ) AS most_common
 JOIN Concept ON most_common.Concept_idConcept = Concept.idConcept;
 
+DELIMITER ;
+
 DELIMITER //
 
 CREATE PROCEDURE GetMostCommonConcept()
@@ -1408,16 +1265,77 @@ END //
 
 DELIMITER ;
 
--- 3.15 Food groups that have never appeared in the competition
+-- 3.15 (check)
 CREATE VIEW UnusedFoodGroupsView AS
     SELECT fg.*
     FROM Food_Group fg
     LEFT JOIN (
-        SELECT DISTINCT rhi.Ingredients_idIngredients, ig.Food_Group_idFood_Group
+        SELECT DISTINCT ig.Food_Group_idFood_Group
         FROM Recipe_has_Ingredients rhi
         JOIN Ingredients ig ON rhi.Ingredients_idIngredients = ig.idIngredients
+        JOIN Episode_has_Participants ehp ON rhi.Recipe_idRecipe = ehp.Recipe_idRecipe
     ) rhi ON fg.idFood_Group = rhi.Food_Group_idFood_Group
-    WHERE rhi.Ingredients_idIngredients IS NULL;
+    WHERE rhi.Food_Group_idFood_Group IS NULL;
+    
+DELIMITER //
+
+CREATE PROCEDURE GetUnusedFoodGroups()
+BEGIN
+	SELECT * FROM UnusedFoodGroupsView;
+END //
+
+DELIMITER ;
+
+-- 3.6
+DELIMITER //
+
+CREATE PROCEDURE FindTopLabelPairs()
+BEGIN
+    SELECT 
+        lh1.Label_idLabel AS label1_id,
+        lh2.Label_idLabel AS label2_id,
+        COUNT(*) AS pair_count
+    FROM 
+        Recipe_has_Label lh1
+    INNER JOIN 
+        Recipe_has_Label lh2 ON lh1.Recipe_idRecipe = lh2.Recipe_idRecipe
+                              AND lh1.Label_idLabel < lh2.Label_idLabel
+    GROUP BY 
+        lh1.Label_idLabel, lh2.Label_idLabel
+    ORDER BY 
+        pair_count DESC
+    LIMIT 3;
+END //
+
+DELIMITER ;
+
+
+
+-- 3.8
+
+DELIMITER //
+
+CREATE PROCEDURE FindEpisodeWithMostEquipmentUsed()
+BEGIN
+    SELECT 
+        e.idEpisode,
+        e.Episode_number,
+        e.Season_number,
+        COUNT(rhe.Equipment_idEquipment) AS total_equipment_used
+    FROM 
+        Episode e
+    INNER JOIN 
+        Episode_has_Participants ehp ON e.idEpisode = ehp.Episode_idEpisode
+    INNER JOIN 
+        Recipe_has_Equipment rhe ON ehp.Recipe_idRecipe = rhe.Recipe_idRecipe
+    GROUP BY 
+        e.idEpisode
+    ORDER BY 
+        total_equipment_used DESC
+    LIMIT 1;
+END //
+
+DELIMITER ;
 
 
 
