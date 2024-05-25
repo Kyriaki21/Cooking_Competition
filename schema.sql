@@ -2,6 +2,14 @@ DROP SCHEMA IF EXISTS Cooking_Competition;
 CREATE SCHEMA Cooking_Competition;
 USE Cooking_Competition;
 
+CREATE TABLE Cooking_Competition.`Admin` (
+  `idAdmin` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `username` VARCHAR(55) NOT NULL,
+  `password` VARCHAR(12) NOT NULL,
+  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (idAdmin))
+  ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE `Cooking_Competition`.`Image` (
   `idImage` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `Description` TEXT NOT NULL,
@@ -192,6 +200,22 @@ CREATE TABLE `Cooking_Competition`.`Cook` (
     ON UPDATE CASCADE,
   PRIMARY KEY (`idCook`))
 ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE Cooking_Competition.`User` (
+  idUser INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  username VARCHAR(55) NOT NULL,
+  `password` VARCHAR(12) NOT NULL,
+  Cook_idCook INT UNSIGNED NOT NULL,
+  last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (idUser),
+  INDEX fk_Cook_User_Cook1_idx (Cook_idCook ASC),
+  CONSTRAINT fk_Cook_User_Cuisine1
+      FOREIGN KEY (Cook_idCook)
+      REFERENCES Cooking_Competition.Cook (idCook)
+      ON DELETE RESTRICT
+      ON UPDATE CASCADE)
+  ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 
 CREATE TABLE `Cooking_Competition`.`Label` (
   `idLabel` INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -725,59 +749,218 @@ END //
 
 DELIMITER ;
 
+-- -------------------------------------------------------------------------------------------------------
+-- View to show only recipes assigned to a cook
+CREATE VIEW CookAssignedRecipes AS
+SELECT 
+    r.idRecipe,
+    r.title,
+    r.description,
+    r.difficulty,
+    r.prep_time,
+    r.cook_time,
+    r.portions,
+    r.total_calories,
+    r.total_fat,
+    r.total_protein,
+    r.total_carbohydrate,
+    r.Cuisine_id,
+    r.Type_Meal,
+    r.syntagi,
+    r.last_update,
+    r.Image,
+    ep.Cook_idCook
+FROM 
+    Recipe r
+JOIN 
+    Episode_has_Participants ep ON r.idRecipe = ep.Recipe_idRecipe;
 
+-- View to show personal details of a cook
+CREATE VIEW CookPersonalDetails AS
+SELECT 
+    idCook,
+    first_name,
+    last_name,
+    phone_number,
+    birth_date,
+    age,
+    Years_experience,
+    Status,
+    last_update,
+    Image
+FROM 
+    Cook;
+-- Procedure to update recipes assigned to a cook
 DELIMITER //
 
-CREATE PROCEDURE CreateSeasonsEpisodes(IN num_seasons INT)
+CREATE PROCEDURE UpdateAssignedRecipe(
+    IN username VARCHAR(45),
+    IN recipe_id INT,
+    IN new_title VARCHAR(200),
+    IN new_description TEXT,
+    IN new_difficulty TINYINT,
+    IN new_prep_time TINYINT,
+    IN new_cook_time TINYINT,
+    IN new_portions TINYINT,
+    IN new_total_calories DECIMAL(10,2),
+    IN new_total_fat DECIMAL(10,2),
+    IN new_total_protein DECIMAL(10,2),
+    IN new_total_carbohydrate DECIMAL(10,2),
+    IN new_Cuisine_id INT,
+    IN new_Type_Meal INT,
+    IN new_syntagi ENUM('cooking', 'pastry'),
+    IN new_Image INT
+)
 BEGIN
-    DECLARE season_no INT DEFAULT 1;
-    DECLARE episode_no INT DEFAULT 1;
+    DECLARE cook_id INT;
+    DECLARE is_assigned INT;
 
-    WHILE season_no <= num_seasons DO
-        SET episode_no = 1;
-        WHILE episode_no <= 10 DO
-            -- Insert Episode
-            INSERT INTO Episode (Episode_number, Season_number) VALUES (episode_no, season_no);
-            SET episode_no = episode_no + 1;
-        END WHILE;
-        SET season_no = season_no + 1;
-    END WHILE;
+    -- Get the cook_id from the Users and Cook tables
+    SELECT c.idCook
+    INTO cook_id
+    FROM Users u
+    INNER JOIN Cook c ON u.idUser = c.User_idUser
+    WHERE u.username = username;
+
+    -- Check if the cook is assigned to the recipe
+    SELECT COUNT(*)
+    INTO is_assigned
+    FROM Episode_has_Participants
+    WHERE Cook_idCook = cook_id AND Recipe_idRecipe = recipe_id;
+
+    IF is_assigned = 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cook not assigned to this recipe';
+    ELSE
+        UPDATE Recipe
+        SET 
+            title = new_title,
+            description = new_description,
+            difficulty = new_difficulty,
+            prep_time = new_prep_time,
+            cook_time = new_cook_time,
+            portions = new_portions,
+            total_calories = new_total_calories,
+            total_fat = new_total_fat,
+            total_protein = new_total_protein,
+            total_carbohydrate = new_total_carbohydrate,
+            Cuisine_id = new_Cuisine_id,
+            Type_Meal = new_Type_Meal,
+            syntagi = new_syntagi,
+            Image = new_Image,
+            last_update = CURRENT_TIMESTAMP
+        WHERE idRecipe = recipe_id;
+    END IF;
 END //
 
 DELIMITER ;
 
-
--- ----------------------------------------------------------------------------------------------------------
 DELIMITER //
 
-CREATE PROCEDURE FillScoresWithRandomNumbers()
+CREATE PROCEDURE UpdateCookDetails(
+    IN username VARCHAR(45),
+    IN new_first_name VARCHAR(45),
+    IN new_last_name VARCHAR(45),
+    IN new_phone_number VARCHAR(15),
+    IN new_birth_date DATE,
+    IN new_age INT,
+    IN new_Years_experience INT,
+    IN new_Status ENUM('C cook', 'B cook', 'A cook', 'assistant head Chef', 'Chef'),
+    IN new_Image INT
+)
 BEGIN
-    DECLARE done INT DEFAULT FALSE;
-    DECLARE episode_id INT;
-    DECLARE judge_id INT;
-    DECLARE participant_id INT;
-    DECLARE cur CURSOR FOR SELECT Episode_idEpisode, Judge_idJudge, Participant_id FROM Judge_Participant_Scores;
-    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
-    
-    OPEN cur;
-    read_loop: LOOP
-        FETCH cur INTO episode_id, judge_id, participant_id;
-        IF done THEN
-            LEAVE read_loop;
-        END IF;
-        
-        UPDATE Judge_Participant_Scores 
-        SET Score = FLOOR(1 + RAND() * 5) 
-        WHERE Episode_idEpisode = episode_id 
-        AND Judge_idJudge = judge_id 
-        AND Participant_id = participant_id;
-    END LOOP;
-    CLOSE cur;
-END//
+    DECLARE cook_id INT;
+
+    -- Get the cook_id from the Users and Cook tables
+    SELECT c.idCook
+    INTO cook_id
+    FROM Users u
+    INNER JOIN Cook c ON u.idUser = c.User_idUser
+    WHERE u.username = username;
+
+    -- Update the cook's details
+    UPDATE Cook
+    SET 
+        first_name = new_first_name,
+        last_name = new_last_name,
+        phone_number = new_phone_number,
+        birth_date = new_birth_date,
+        age = new_age,
+        Years_experience = new_Years_experience,
+        Status = new_Status,
+        Image = new_Image,
+        last_update = CURRENT_TIMESTAMP
+    WHERE idCook = cook_id;
+END //
 
 DELIMITER ;
 
+DELIMITER //
 
+CREATE PROCEDURE AddAdminUser(
+    IN username VARCHAR(45),
+    IN user_password VARCHAR(45)
+)
+BEGIN
+    -- Create the admin user
+    SET @query = CONCAT('CREATE USER ''', username, '''@''localhost'' IDENTIFIED BY ''', user_password, ''';');
+    PREPARE stmt FROM @query;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
 
+    -- Grant all privileges to the admin user
+    SET @query = CONCAT('GRANT ALL PRIVILEGES ON *.* TO ''', username, '''@''localhost'' WITH GRANT OPTION;');
+    PREPARE stmt FROM @query;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
 
+    -- Reload the privileges
+    FLUSH PRIVILEGES;
 
+    -- Insert into Users table with the role 'administrator'
+    INSERT INTO `Admin` (username, password, role) VALUES (username, user_password, 'administrator');
+END //
+
+DELIMITER ;
+
+DELIMITER //
+
+CREATE PROCEDURE AddCookUser(
+    IN username VARCHAR(45),
+    IN user_password VARCHAR(45),
+    IN cook_id INT
+)
+BEGIN
+    -- Create the user
+    SET @query = CONCAT('CREATE USER \'', username, '\'@\'localhost\' IDENTIFIED BY \'', user_password, '\';');
+    PREPARE stmt FROM @query;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+
+    -- Grant privileges to the cook user for the views
+    SET @query = CONCAT('GRANT SELECT, UPDATE ON Cooking_Competition.CookAssignedRecipes TO \'', username, '\'@\'localhost\';');
+    PREPARE stmt FROM @query;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+
+    SET @query = CONCAT('GRANT SELECT, UPDATE ON Cooking_Competition.CookPersonalDetails TO \'', username, '\'@\'localhost\';');
+    PREPARE stmt FROM @query;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+
+    -- Grant execution privileges for the stored procedures
+    SET @query = CONCAT('GRANT EXECUTE ON PROCEDURE Cooking_Competition.UpdateAssignedRecipe TO \'', username, '\'@\'localhost\';');
+    PREPARE stmt FROM @query;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+
+    SET @query = CONCAT('GRANT EXECUTE ON PROCEDURE Cooking_Competition.UpdateCookDetails TO \'', username, '\'@\'localhost\';');
+    PREPARE stmt FROM @query;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+
+    -- Reload the privileges
+    FLUSH PRIVILEGES;
+    INSERT INTO User (username , password, Cook_idCook  ) VALUES (username , user_password, cook_id );
+END //
+
+DELIMITER ;
