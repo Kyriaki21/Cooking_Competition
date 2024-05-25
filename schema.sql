@@ -274,9 +274,9 @@ CREATE TABLE `Cooking_Competition`.`Recipe_has_Equipment` (
   `Quantity` TINYINT NOT NULL,
   `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`Recipe_idRecipe`, `Equipment_idEquipment`),
-  INDEX `fk_Recipe_has_Equipment_Equipment1_idx` (`Equipment_idEquipment` ASC)  ,
-  INDEX `fk_Recipe_has_Equipment_Recipe1_idx` (`Recipe_idRecipe` ASC)  ,
-  CONSTRAINT unique_rec_label UNIQUE (Recipe_idRecipe,Equipment_idEquipment),
+  INDEX `fk_Recipe_has_Equipment_Equipment1_idx` (`Equipment_idEquipment` ASC),
+  INDEX `fk_Recipe_has_Equipment_Recipe1_idx` (`Recipe_idRecipe` ASC),
+  CONSTRAINT unique_rec_label UNIQUE (`Recipe_idRecipe`, `Equipment_idEquipment`),
   CONSTRAINT `fk_Recipe_has_Equipment_Recipe1`
     FOREIGN KEY (`Recipe_idRecipe`)
     REFERENCES `Cooking_Competition`.`Recipe` (`idRecipe`)
@@ -286,8 +286,8 @@ CREATE TABLE `Cooking_Competition`.`Recipe_has_Equipment` (
     FOREIGN KEY (`Equipment_idEquipment`)
     REFERENCES `Cooking_Competition`.`Equipment` (`idEquipment`)
     ON DELETE RESTRICT
-    ON UPDATE CASCADE)
-ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `Cooking_Competition`.`Ingredients` (
   `idIngredients` INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -414,6 +414,7 @@ CREATE TABLE `Cooking_Competition`.`Episode_has_Participants` (
     ON DELETE RESTRICT
     ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 
 CREATE TABLE `Cooking_Competition`.`Episode_has_Judges` (
   `Episode_idEpisode` INT UNSIGNED NOT NULL,
