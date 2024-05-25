@@ -1,4 +1,5 @@
 -- ----------------------------------------------------------------------------------------------------------------------
+USE Cooking_Competition;
 
 -- 3.1. Average Rating (score) per cook and national cuisine (check)
 CREATE OR REPLACE VIEW AverageScorePerCook AS
