@@ -1,200 +1,129 @@
-import mysql.connector
 import random
+import mysql.connector
+from mysql.connector import Error
+from datetime import datetime
 
-# Establishing the connection to the database
-db = mysql.connector.connect(
-    host="localhost",
-    user="root",  # replace with your MySQL username
-    password="ccbcd668",  # replace with your MySQL password
-    database="Cooking_Competition"
-)
+# Database connection
+def create_connection():
+    return mysql.connector.connect(
+        host='localhost',
+        user='root',
+        password='',
+        database='Cooking_Competition'
+    )
 
-cursor = db.cursor()
+# Fetch data from the database
+def fetch_data(cursor):
+    cursor.execute("SELECT idCook FROM Cook")
+    cooks = [row[0] for row in cursor.fetchall()]
 
-def assign_participants_to_episodes():
-    print("Starting to assign participants to episodes")
-    cursor.execute("DROP TEMPORARY TABLE IF EXISTS DebugTemp")
-    cursor.execute("""
-        CREATE TEMPORARY TABLE DebugTemp (
-            stage VARCHAR(50),
-            episode_id INT,
-            cuisine_id INT,
-            cook_id INT,
-            recipe_id INT,
-            status VARCHAR(50)
-        )
-    """)
+    cursor.execute("SELECT idCuisine FROM Cuisine")
+    cuisines = [row[0] for row in cursor.fetchall()]
 
-    cursor.execute("SELECT idEpisode FROM Episode ORDER BY idEpisode")
-    episodes = cursor.fetchall()
-    print(f"Fetched {len(episodes)} episodes")
+    cursor.execute("SELECT idRecipe, Cuisine_id FROM Recipe")
+    recipes = cursor.fetchall()
 
-    for (episode_id,) in episodes:
-        cursor.execute("DROP TEMPORARY TABLE IF EXISTS TempCuisines")
-        cursor.execute("CREATE TEMPORARY TABLE TempCuisines AS SELECT idCuisine FROM Cuisine ORDER BY RAND() LIMIT 10")
-        
-        while True:
-            cursor.execute("SELECT COUNT(*) FROM Episode_has_Participants WHERE Episode_idEpisode = %s", (episode_id,))
-            participant_count = cursor.fetchone()[0]
+    return cooks, cuisines, recipes
 
-            if participant_count >= 10:
-                print(f"Episode {episode_id} already has 10 participants.")
-                break
+# Insert data into Episode table
+def insert_episode(cursor, episode_number, season_number):
+    cursor.execute("INSERT INTO Episode (Episode_number, Season_number, last_update) VALUES (%s, %s, %s)", 
+                   (episode_number, season_number, datetime.now()))
+    return cursor.lastrowid
 
-            cursor.execute("SELECT idCuisine FROM TempCuisines")
-            cuisines = cursor.fetchall()
-            print(f"Fetched {len(cuisines)} cuisines for episode {episode_id}")
+# Insert participants and judges
+def insert_participants_and_judges(cursor, episode_id, participants, judges, recipes, selected_cuisines):
+    for participant, cuisine in zip(participants, selected_cuisines):
+        recipe = random.choice([r for r in recipes if r[1] == cuisine])
+        cursor.execute("INSERT INTO Episode_has_Participants (Episode_idEpisode, Cook_idCook, Recipe_idRecipe, Cuisine_idCuisine, last_update) VALUES (%s, %s, %s, %s, %s)", 
+                       (episode_id, participant, recipe[0], cuisine, datetime.now()))
 
-            for (cuisine_id,) in cuisines:
-                cursor.execute("""
-                    SELECT Cook_idCook FROM Cook_has_Cuisine
-                    WHERE Cuisine_idCuisine = %s
-                    AND Cook_idCook NOT IN (
-                        SELECT Cook_idCook FROM Episode_has_Participants WHERE Episode_idEpisode = %s
-                    )
-                    AND Cook_idCook NOT IN (
-                        SELECT Cook_idCook FROM Episode_has_Judges WHERE Episode_idEpisode = %s
-                    )
-                    AND Cook_idCook NOT IN (
-                        SELECT Cook_idCook FROM (
-                            SELECT Cook_idCook FROM Episode_has_Participants WHERE Episode_idEpisode != %s ORDER BY Episode_idEpisode DESC LIMIT 3
-                        ) AS RecentEpisodes
-                    )
-                    ORDER BY RAND() LIMIT 1
-                """, (cuisine_id, episode_id, episode_id, episode_id))
-                cook = cursor.fetchone()
+    for judge in judges:
+        cursor.execute("INSERT INTO Episode_has_Judges (Episode_idEpisode, Cook_idCook, last_update) VALUES (%s, %s, %s)", 
+                       (episode_id, judge, datetime.now()))
 
-                if cook:
-                    cook_id = cook[0]
-                    cursor.execute("""
-                        SELECT idRecipe FROM Recipe
-                        WHERE Cuisine_id = %s
-                        AND idRecipe IN (
-                            SELECT Recipe_idRecipe FROM Recipe_has_Cook WHERE Cook_idCook = %s
-                        )
-                        AND idRecipe NOT IN (
-                            SELECT Recipe_idRecipe FROM Episode_has_Participants WHERE Episode_idEpisode = %s
-                        )
-                        AND idRecipe NOT IN (
-                            SELECT Recipe_idRecipe FROM (
-                                SELECT Recipe_idRecipe FROM Episode_has_Participants WHERE Episode_idEpisode != %s ORDER BY Episode_idEpisode DESC LIMIT 3
-                            ) AS RecentRecipes
-                        )
-                        ORDER BY RAND() LIMIT 1
-                    """, (cuisine_id, cook_id, episode_id, episode_id))
-                    recipe = cursor.fetchone()
+# Check and update consecutive appearances
+def can_participate(entity_dict, entity_id, current_episode, max_consecutive_episodes=3):
+    if entity_id not in entity_dict:
+        entity_dict[entity_id] = []
+    if len(entity_dict[entity_id]) < max_consecutive_episodes:
+        return True
+    return (current_episode - entity_dict[entity_id][-max_consecutive_episodes]) > max_consecutive_episodes
 
-                    if recipe:
-                        recipe_id = recipe[0]
+def update_participation(entity_dict, entity_id, current_episode):
+    if entity_id not in entity_dict:
+        entity_dict[entity_id] = []
+    entity_dict[entity_id].append(current_episode)
+    if len(entity_dict[entity_id]) > 3:
+        entity_dict[entity_id].pop(0)
 
-                        # Check for duplicates before inserting
-                        cursor.execute("""
-                            SELECT COUNT(*) FROM Episode_has_Participants
-                            WHERE Episode_idEpisode = %s AND Cuisine_idCuisine = %s
-                        """, (episode_id, cuisine_id))
-                        cuisine_duplicate = cursor.fetchone()[0]
+# Main function
+def main(seasons_count):
+    try:
+        connection = create_connection()
+        cursor = connection.cursor()
 
-                        if cuisine_duplicate == 0:
-                            cursor.execute("""
-                                INSERT INTO Episode_has_Participants (Episode_idEpisode, Cook_idCook, Recipe_idRecipe, Cuisine_idCuisine)
-                                VALUES (%s, %s, %s, %s)
-                            """, (episode_id, cook_id, recipe_id, cuisine_id))
-                            cursor.execute("""
-                                INSERT INTO DebugTemp (stage, episode_id, cuisine_id, cook_id, recipe_id, status)
-                                VALUES ('Inserted', %s, %s, %s, %s, 'Success')
-                            """, (episode_id, cuisine_id, cook_id, recipe_id))
-                            print(f"Inserted participant: episode {episode_id}, cuisine {cuisine_id}, cook {cook_id}, recipe {recipe_id}")
-                        else:
-                            cursor.execute("""
-                                INSERT INTO DebugTemp (stage, episode_id, cuisine_id, cook_id, recipe_id, status)
-                                VALUES ('Skipped', %s, %s, %s, %s, 'Duplicate')
-                            """, (episode_id, cuisine_id, cook_id, recipe_id))
-                            print(f"Skipped participant: episode {episode_id}, cuisine {cuisine_id} (duplicate)")
-                    else:
-                        cursor.execute("""
-                            INSERT INTO DebugTemp (stage, episode_id, cuisine_id, cook_id, recipe_id, status)
-                            VALUES ('Skipped', %s, %s, %s, NULL, 'NoRecipe')
-                        """, (episode_id, cuisine_id, cook_id))
-                        print(f"Skipped participant: episode {episode_id}, cuisine {cuisine_id}, cook {cook_id} (no recipe)")
-                else:
-                    cursor.execute("""
-                        INSERT INTO DebugTemp (stage, episode_id, cuisine_id, cook_id, recipe_id, status)
-                        VALUES ('Skipped', %s, %s, NULL, NULL, 'NoCook')
-                    """, (episode_id, cuisine_id))
-                    print(f"Skipped participant: episode {episode_id}, cuisine {cuisine_id} (no cook)")
+        cooks, cuisines, recipes = fetch_data(cursor)
 
-    cursor.execute("SELECT * FROM DebugTemp")
-    debug_info = cursor.fetchall()
-    for row in debug_info:
-        print(row)
+        if len(cuisines) < 10:
+            raise ValueError("Not enough cuisines in the database to create episodes")
 
-def assign_judges_to_episodes():
-    print("Starting to assign judges to episodes")
-    cursor.execute("DROP TEMPORARY TABLE IF EXISTS DebugTempJudges")
-    cursor.execute("""
-        CREATE TEMPORARY TABLE DebugTempJudges (
-            stage VARCHAR(50),
-            episode_id INT,
-            judge_id INT,
-            status VARCHAR(50)
-        )
-    """)
+        cook_appearance = {}
+        cuisine_appearance = {}
+        recipe_appearance = {}
 
-    cursor.execute("SELECT idEpisode FROM Episode ORDER BY idEpisode")
-    episodes = cursor.fetchall()
-    print(f"Fetched {len(episodes)} episodes")
+        for season in range(1, seasons_count + 1):
+            for episode in range(1, 11):
+                episode_id = insert_episode(cursor, episode, season)
 
-    for (episode_id,) in episodes:
-        while True:
-            cursor.execute("SELECT COUNT(*) FROM Episode_has_Judges WHERE Episode_idEpisode = %s", (episode_id,))
-            judge_count = cursor.fetchone()[0]
+                selected_cuisines = set()
+                while len(selected_cuisines) < 10:
+                    candidate_cuisines = [c for c in cuisines if can_participate(cuisine_appearance, c, episode)]
+                    if not candidate_cuisines:
+                        # Loosen the constraint to fill the episode
+                        candidate_cuisines = cuisines
+                    cuisine = random.choice(candidate_cuisines)
+                    selected_cuisines.add(cuisine)
+                    update_participation(cuisine_appearance, cuisine, episode)
 
-            if judge_count >= 3:
-                print(f"Episode {episode_id} already has 3 judges.")
-                break
+                participants = []
+                judges = []
+                used_cooks = set()  # Keep track of used cooks in the episode
 
-            cursor.execute("SELECT idCook FROM Cook")
-            all_judges = cursor.fetchall()
+                for cuisine in selected_cuisines:
+                    possible_participants = [cook for cook in cooks if cook not in used_cooks and can_participate(cook_appearance, cook, episode)]
+                    if not possible_participants:
+                        # Loosen the constraint to fill the episode
+                        possible_participants = [cook for cook in cooks if cook not in used_cooks]
+                    participant = random.choice(possible_participants)
+                    participants.append(participant)
+                    used_cooks.add(participant)
+                    update_participation(cook_appearance, participant, episode)
 
-            eligible_judges = []
-            for (judge_id,) in all_judges:
-                cursor.execute("""
-                    SELECT COUNT(*) FROM Episode_has_Participants WHERE Episode_idEpisode = %s AND Cook_idCook = %s
-                """, (episode_id, judge_id))
-                if cursor.fetchone()[0] == 0:
-                    cursor.execute("""
-                        SELECT COUNT(*) FROM Episode_has_Judges WHERE Episode_idEpisode = %s AND Cook_idCook = %s
-                    """, (episode_id, judge_id))
-                    if cursor.fetchone()[0] == 0:
-                        eligible_judges.append(judge_id)
+                possible_judges = [cook for cook in cooks if cook not in used_cooks and can_participate(cook_appearance, cook, episode)]
+                if len(possible_judges) < 3:
+                    # Loosen the constraint to fill the episode
+                    possible_judges = [cook for cook in cooks if cook not in used_cooks]
+                judges = random.sample(possible_judges, 3)
+                for judge in judges:
+                    used_cooks.add(judge)
+                    update_participation(cook_appearance, judge, episode)
 
-            if not eligible_judges:
-                print(f"No eligible judges found for episode {episode_id}")
-                break
+                insert_participants_and_judges(cursor, episode_id, participants, judges, recipes, list(selected_cuisines))
 
-            selected_judge = random.choice(eligible_judges)
-            cursor.execute("""
-                INSERT INTO Episode_has_Judges (Episode_idEpisode, Cook_idCook)
-                VALUES (%s, %s)
-            """, (episode_id, selected_judge))
-            cursor.execute("""
-                INSERT INTO DebugTempJudges (stage, episode_id, judge_id, status)
-                VALUES ('Inserted', %s, %s, 'Success')
-            """, (episode_id, selected_judge))
-            print(f"Inserted judge: episode {episode_id}, judge {selected_judge}")
+        connection.commit()
+        print("Data inserted successfully")
 
-    cursor.execute("SELECT * FROM DebugTempJudges")
-    debug_info = cursor.fetchall()
-    for row in debug_info:
-        print(row)
+    except Error as e:
+        print(f"Error: {e}")
+        if connection:
+            connection.rollback()
+    except ValueError as ve:
+        print(f"ValueError: {ve}")
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
 
-# Call the functions to assign participants and judges
-assign_participants_to_episodes()
-assign_judges_to_episodes()
-
-# Commit the changes to the database
-db.commit()
-
-# Close the cursor and the connection
-cursor.close()
-db.close()
+if __name__ == "__main__":
+    main(6)  # Example: Create 6 seasons
