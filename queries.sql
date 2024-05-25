@@ -504,6 +504,21 @@ END //
 
 DELIMITER ;
 
+EXPLAIN
+SELECT 
+    lh1.Label_idLabel AS label1_id,
+    lh2.Label_idLabel AS label2_id,
+    COUNT(*) AS pair_count
+FROM 
+    Recipe_has_Label lh1
+INNER JOIN 
+    Recipe_has_Label lh2 ON lh1.Recipe_idRecipe = lh2.Recipe_idRecipe
+                          AND lh1.Label_idLabel < lh2.Label_idLabel
+GROUP BY 
+    lh1.Label_idLabel, lh2.Label_idLabel
+ORDER BY 
+    pair_count DESC
+LIMIT 3;
 
 
 -- 3.8
@@ -549,3 +564,36 @@ BEGIN
 END //
 
 DELIMITER ;
+
+EXPLAIN
+SELECT 
+    MAX(equipment_count) INTO max_equipment_used
+FROM (
+    SELECT 
+        COUNT(rhe.Equipment_idEquipment) AS equipment_count
+    FROM 
+        Episode e FORCE INDEX (PRIMARY)
+    INNER JOIN 
+        Episode_has_Participants ehp FORCE INDEX (idx_Episode_idEpisode) ON e.idEpisode = ehp.Episode_idEpisode
+    INNER JOIN 
+        Recipe_has_Equipment rhe FORCE INDEX (idx_Recipe_idRecipe) ON ehp.Recipe_idRecipe = rhe.Recipe_idRecipe
+    GROUP BY 
+        e.idEpisode
+) AS EquipmentCounts;
+
+EXPLAIN
+SELECT 
+    e.idEpisode,
+    e.Episode_number,
+    e.Season_number,
+    COUNT(rhe.Equipment_idEquipment) AS total_equipment_used
+FROM 
+    Episode e FORCE INDEX (PRIMARY)
+INNER JOIN 
+    Episode_has_Participants ehp FORCE INDEX (idx_Episode_idEpisode) ON e.idEpisode = ehp.Episode_idEpisode
+INNER JOIN 
+    Recipe_has_Equipment rhe FORCE INDEX (idx_Recipe_idRecipe) ON ehp.Recipe_idRecipe = rhe.Recipe_idRecipe
+GROUP BY 
+    e.idEpisode
+HAVING 
+    total_equipment_used = max_equipment_used;
