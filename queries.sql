@@ -16,7 +16,7 @@ INNER JOIN
 GROUP BY 
     c.idCook
 ORDER BY 
-    avg_score DESC;
+    idCook ASC;
     
 -- and national cuisine (check)
 CREATE OR REPLACE VIEW AverageScorePerCuisine AS
@@ -33,7 +33,7 @@ INNER JOIN
 GROUP BY 
     cu.idCuisine
 ORDER BY 
-    avg_score DESC;
+    idCuisine ASC;
 
 
 DELIMITER //
@@ -85,10 +85,9 @@ DELIMITER //
 
 CREATE PROCEDURE GetCooksBySeason(IN season_number INT)
 BEGIN
-    DECLARE season_exists INT;
 
         -- Retrieve cooks involved in the given season
-        SELECT 
+        SELECT DISTINCT
             c.idCook,
             c.first_name,
             c.last_name,
@@ -179,20 +178,24 @@ DELIMITER ;
 
 -- 3.5 Judges who have participated in the same number of episodes over a period of one year with (check)
 CREATE VIEW JudgesSameNumberOfEpisodes AS
-	SELECT 
-		ej.Cook_idCook AS idJudge,
-		ej.Cook_idCook,
-		COUNT(ej.Episode_idEpisode) AS num_episodes
-	FROM 
-		Episode_has_Judges ej
-	INNER JOIN 
-		Episode e ON ej.Episode_idEpisode = e.idEpisode
-	WHERE 
-		e.last_update >= DATE_SUB(CURRENT_DATE(), INTERVAL 1 YEAR)
-	GROUP BY 
-		ej.Cook_idCook
-	HAVING 
-		num_episodes >= 3;
+    SELECT 
+        ej.Cook_idCook AS idJudge,
+        c.first_name,
+        c.last_name,
+        COUNT(ej.Episode_idEpisode) AS num_episodes
+    FROM 
+        Episode_has_Judges ej
+    INNER JOIN 
+        Episode e ON ej.Episode_idEpisode = e.idEpisode
+    INNER JOIN 
+        Cook c ON ej.Cook_idCook = c.idCook
+    WHERE 
+        e.last_update >= DATE_SUB(CURRENT_DATE(), INTERVAL 1 YEAR)
+    GROUP BY 
+        ej.Cook_idCook, c.first_name, c.last_name
+    HAVING 
+        num_episodes >= 3;
+
 
 
 
@@ -308,7 +311,7 @@ DELIMITER ;
 
 
 
--- 3.11 Top 5 reviewers who have given the highest overall rating to a cook(check?)
+-- 3.11 Top 5 reviewers who have given the highest overall rating to a cook(need to redo)
 
 CREATE VIEW Top5JudgesTotalScoreView AS
     SELECT 
@@ -351,12 +354,20 @@ DELIMITER //
 
 CREATE PROCEDURE GetMostDifficultEpisodes()
 BEGIN
-    SELECT * FROM MostDifficultEpisodePerSeason ORDER BY 
-        total_difficulty DESC
-        LIMIT 1;
+    DECLARE max_difficulty INT;
+
+    -- Find the maximum total difficulty
+    SELECT MAX(total_difficulty) INTO max_difficulty
+    FROM MostDifficultEpisodePerSeason;
+
+    -- Select all episodes with the maximum total difficulty
+    SELECT *
+    FROM MostDifficultEpisodePerSeason
+    WHERE total_difficulty = max_difficulty;
 END //
 
 DELIMITER ;
+
 
 
 -- 3.13 (check)
@@ -494,6 +505,25 @@ DELIMITER //
 
 CREATE PROCEDURE FindEpisodeWithMostEquipmentUsed()
 BEGIN
+    DECLARE max_equipment_used INT;
+
+    -- Find the maximum total equipment used
+    SELECT 
+        MAX(equipment_count) INTO max_equipment_used
+    FROM (
+        SELECT 
+            COUNT(rhe.Equipment_idEquipment) AS equipment_count
+        FROM 
+            Episode e
+        INNER JOIN 
+            Episode_has_Participants ehp ON e.idEpisode = ehp.Episode_idEpisode
+        INNER JOIN 
+            Recipe_has_Equipment rhe ON ehp.Recipe_idRecipe = rhe.Recipe_idRecipe
+        GROUP BY 
+            e.idEpisode
+    ) AS EquipmentCounts;
+
+    -- Select all episodes with the maximum total equipment used
     SELECT 
         e.idEpisode,
         e.Episode_number,
@@ -507,9 +537,8 @@ BEGIN
         Recipe_has_Equipment rhe ON ehp.Recipe_idRecipe = rhe.Recipe_idRecipe
     GROUP BY 
         e.idEpisode
-    ORDER BY 
-        total_equipment_used DESC
-    LIMIT 1;
+    HAVING 
+        total_equipment_used = max_equipment_used;
 END //
 
 DELIMITER ;
