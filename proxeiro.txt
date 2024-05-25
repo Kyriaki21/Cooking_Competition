@@ -1,0 +1,176 @@
+-- Δημιουργία του πίνακα για τους ρόλους
+CREATE TABLE `Cooking_Competition`.`Role` (
+  `idRole` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `role_name` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`idRole`),
+  UNIQUE INDEX `role_name_UNIQUE` (`role_name` ASC))
+ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Δημιουργία του πίνακα για τους χρήστες
+CREATE TABLE `Cooking_Competition`.`User` (
+  `idUser` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `username` VARCHAR(45) NOT NULL,
+  `password` VARCHAR(255) NOT NULL,
+  `first_name` VARCHAR(45) NOT NULL,
+  `last_name` VARCHAR(45) NOT NULL,
+  `email` VARCHAR(100) NOT NULL,
+  `role_id` INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`idUser`),
+  UNIQUE INDEX `username_UNIQUE` (`username` ASC),
+  CONSTRAINT `fk_User_Role`
+    FOREIGN KEY (`role_id`)
+    REFERENCES `Cooking_Competition`.`Role` (`idRole`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE)
+ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Προσθήκη προκαθορισμένων ρόλων
+INSERT INTO `Cooking_Competition`.`Role` (role_name) VALUES ('Admin'), ('Cook');
+
+-- Δημιουργία του πίνακα δικαιωμάτων (Privileges)
+CREATE TABLE `Cooking_Competition`.`Privilege` (
+  `idPrivilege` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `privilege_name` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`idPrivilege`),
+  UNIQUE INDEX `privilege_name_UNIQUE` (`privilege_name` ASC))
+ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Προσθήκη προκαθορισμένων δικαιωμάτων
+INSERT INTO `Cooking_Competition`.`Privilege` (privilege_name) VALUES 
+('Manage Users'),
+('Manage Recipes'),
+('Manage Own Recipes'),
+('Manage Personal Info'),
+('Backup Database'),
+('Restore Database');
+
+-- Δημιουργία πίνακα που συνδέει ρόλους με δικαιώματα
+CREATE TABLE `Cooking_Competition`.`Role_has_Privilege` (
+  `Role_idRole` INT UNSIGNED NOT NULL,
+  `Privilege_idPrivilege` INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`Role_idRole`, `Privilege_idPrivilege`),
+  CONSTRAINT `fk_Role_has_Privilege_Role`
+    FOREIGN KEY (`Role_idRole`)
+    REFERENCES `Cooking_Competition`.`Role` (`idRole`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_Role_has_Privilege_Privilege`
+    FOREIGN KEY (`Privilege_idPrivilege`)
+    REFERENCES `Cooking_Competition`.`Privilege` (`idPrivilege`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE)
+ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Συσχετισμός δικαιωμάτων με τους ρόλους (παράδειγμα)
+INSERT INTO `Cooking_Competition`.`Role_has_Privilege` (Role_idRole, Privilege_idPrivilege) VALUES
+((SELECT idRole FROM Role WHERE role_name = 'Admin'), (SELECT idPrivilege FROM Privilege WHERE privilege_name = 'Manage Users')),
+((SELECT idRole FROM Role WHERE role_name = 'Admin'), (SELECT idPrivilege FROM Privilege WHERE privilege_name = 'Manage Recipes')),
+((SELECT idRole FROM Role WHERE role_name = 'Admin'), (SELECT idPrivilege FROM Privilege WHERE privilege_name = 'Backup Database')),
+((SELECT idRole FROM Role WHERE role_name = 'Admin'), (SELECT idPrivilege FROM Privilege WHERE privilege_name = 'Restore Database')),
+((SELECT idRole FROM Role WHERE role_name = 'Cook'), (SELECT idPrivilege FROM Privilege WHERE privilege_name = 'Manage Own Recipes')),
+((SELECT idRole FROM Role WHERE role_name = 'Cook'), (SELECT idPrivilege FROM Privilege WHERE privilege_name = 'Manage Personal Info'));
+
+mysqldump -u [username] -p [database_name] > [backup_file].sql
+
+mysql -u [username] -p [database_name] < [backup_file].sql
+
+
+DELIMITER //
+
+CREATE PROCEDURE create_admin_user(IN username VARCHAR(255), IN password VARCHAR(255))
+BEGIN
+    -- Create the admin user
+    CREATE USER username@localhost IDENTIFIED BY password;
+
+    -- Grant necessary privileges
+    GRANT SELECT, LOCK TABLES, RELOAD, FILE, PROCESS, SUPER, REPLICATION CLIENT ON *.* TO username@localhost;
+
+    -- Flush privileges to apply changes
+    FLUSH PRIVILEGES;
+END //
+
+DELIMITER ;
+
+-- Grant SELECT, INSERT, UPDATE, DELETE privileges on Recipe table
+GRANT SELECT, INSERT, UPDATE, DELETE ON Cooking_Competition.Recipe TO 'cook_username'@'localhost';
+
+-- Implement Row-Level Security using WHERE clauses
+-- Example for SELECT operation:
+SELECT * FROM Cooking_Competition.Recipe 
+WHERE (Cuisine_id IN (SELECT Cuisine_idCuisine FROM Cooking_Competition.Cook_has_Cuisine WHERE Cook_idCook = current_cook_id)) OR (Cook_id = current_cook_id);
+
+
+
+DELIMITER //
+
+CREATE PROCEDURE `User_Login` (
+    IN p_username VARCHAR(255),
+    IN p_password VARCHAR(255),
+    OUT p_user_id INT,
+    OUT p_role ENUM('Admin', 'Cook', 'Other') -- Modify roles as needed
+)
+BEGIN
+    DECLARE user_role ENUM('Admin', 'Cook', 'Other');
+    DECLARE user_id INT;
+
+    -- Check if username and password match
+    SELECT idCook, Status INTO user_id, user_role
+    FROM Cooking_Competition.Cook
+    WHERE first_name = p_username AND last_name = p_password;
+
+    IF user_id IS NOT NULL THEN
+        SET p_user_id = user_id;
+        SET p_role = user_role;
+    ELSE
+        -- Invalid username or password
+        SET p_user_id = NULL;
+        SET p_role = NULL;
+    END IF;
+END //
+
+DELIMITER ;
+
+
+DELIMITER //
+
+CREATE PROCEDURE `Backup_Database` (
+    IN p_backup_path VARCHAR(255) -- Path where the backup file will be stored
+)
+BEGIN
+    DECLARE backup_file_name VARCHAR(255);
+    
+    -- Generate a timestamp to include in the backup file name
+    SET backup_file_name = CONCAT(p_backup_path, '/backup_', DATE_FORMAT(NOW(), '%Y%m%d_%H%i%s'), '.sql');
+    
+    -- Execute mysqldump command to backup the database
+    SET @cmd = CONCAT('mysqldump --user=', USER(), ' --password=', @@session.password, ' ', DATABASE(), ' > ', backup_file_name);
+    PREPARE stmt FROM @cmd;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+    
+    -- Output backup file path
+    SELECT backup_file_name AS 'Backup_File_Path';
+END //
+
+DELIMITER ;
+
+
+DELIMITER //
+
+CREATE PROCEDURE `Restore_Database` (
+    IN p_backup_file VARCHAR(255) -- Path to the backup file
+)
+BEGIN
+    DECLARE cmd VARCHAR(1000);
+
+    -- Construct the command to restore the database
+    SET cmd = CONCAT('mysql --user=', USER(), ' --password=', @@session.password, ' ', DATABASE(), ' < ', p_backup_file);
+
+    -- Execute the command
+    CALL mysql_shell(cmd);
+
+END //
+
+DELIMITER ;
+
+
