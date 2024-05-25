@@ -311,28 +311,35 @@ DELIMITER ;
 
 
 
--- 3.11 Top 5 reviewers who have given the highest overall rating to a cook(need to redo)
+-- 3.11 Top 5 reviewers who have given the highest overall rating to a cook(check)
 
-CREATE VIEW Top5JudgesTotalScoreView AS
-    SELECT 
-        (SELECT CONCAT_WS(' ', first_name, last_name) FROM Cook WHERE idCook = jp.Judge_idJudge) AS Judge_name,
-        (SELECT CONCAT_WS(' ', first_name, last_name) FROM Cook WHERE idCook = jp.Participant_id) AS Participant_name,
-        SUM(jp.Score) AS total_score
-    FROM 
-        Judge_Participant_Scores jp
-    GROUP BY 
-        Judge_name, Participant_name
-    ORDER BY 
-        total_score DESC
-    LIMIT 5;
+CREATE VIEW Top5JudgesByTotalScore AS
+SELECT 
+    js.Judge_idJudge,
+    epj.Cook_idCook,
+    c.first_name AS cook_first_name,
+    c.last_name AS cook_last_name,
+    SUM(js.Score) AS total_score
+FROM 
+    Judge_Participant_Scores js
+INNER JOIN 
+    Episode_has_Judges epj ON js.Judge_idJudge = epj.Judge_idJudge
+INNER JOIN 
+    Cook c ON epj.Cook_idCook = c.idCook
+GROUP BY 
+    js.Judge_idJudge, epj.Cook_idCook
+ORDER BY 
+    total_score DESC
+LIMIT 5;
+
     
 
 DELIMITER //
 
-CREATE PROCEDURE CallTop5JudgesTotalScore()
+CREATE PROCEDURE CallTop5JudgesByTotalScore()
 BEGIN
     -- Select from the view to get the cuisines with the same number of entries over two consecutive years
-    SELECT * FROM Top5JudgesTotalScoreView ;
+    SELECT * FROM Top5JudgesByTotalScore ;
 END //
 
 DELIMITER ;
