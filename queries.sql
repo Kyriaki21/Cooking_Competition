@@ -1,4 +1,3 @@
--- ----------------------------------------------------------------------------------------------------------------------
 USE Cooking_Competition;
 
 -- 3.1. Average Rating (score) per cook and national cuisine (check)
@@ -568,33 +567,12 @@ DELIMITER ;
 
 EXPLAIN
 SELECT 
-    MAX(equipment_count) INTO max_equipment_used
-FROM (
-    SELECT 
-        COUNT(rhe.Equipment_idEquipment) AS equipment_count
-    FROM 
-        Episode e FORCE INDEX (PRIMARY)
-    INNER JOIN 
-        Episode_has_Participants ehp FORCE INDEX (idx_Episode_idEpisode) ON e.idEpisode = ehp.Episode_idEpisode
-    INNER JOIN 
-        Recipe_has_Equipment rhe FORCE INDEX (idx_Recipe_idRecipe) ON ehp.Recipe_idRecipe = rhe.Recipe_idRecipe
-    GROUP BY 
-        e.idEpisode
-) AS EquipmentCounts;
-
-EXPLAIN
-SELECT 
-    e.idEpisode,
-    e.Episode_number,
-    e.Season_number,
-    COUNT(rhe.Equipment_idEquipment) AS total_equipment_used
+    COUNT(rhe.Equipment_idEquipment) AS equipment_count
 FROM 
     Episode e FORCE INDEX (PRIMARY)
 INNER JOIN 
-    Episode_has_Participants ehp FORCE INDEX (idx_Episode_idEpisode) ON e.idEpisode = ehp.Episode_idEpisode
+    Episode_has_Participants ehp FORCE INDEX (fk_Episode_Participant_Episode1_idx) ON e.idEpisode = ehp.Episode_idEpisode
 INNER JOIN 
-    Recipe_has_Equipment rhe FORCE INDEX (idx_Recipe_idRecipe) ON ehp.Recipe_idRecipe = rhe.Recipe_idRecipe
+    Recipe_has_Equipment rhe FORCE INDEX (fk_Recipe_has_Equipment_Recipe1_idx) ON ehp.Recipe_idRecipe = rhe.Recipe_idRecipe
 GROUP BY 
-    e.idEpisode
-HAVING 
-    total_equipment_used = max_equipment_used;
+    e.idEpisode;
