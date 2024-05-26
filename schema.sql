@@ -2,25 +2,18 @@ DROP SCHEMA IF EXISTS Cooking_Competition;
 CREATE SCHEMA Cooking_Competition;
 USE Cooking_Competition;
 
-CREATE TABLE Cooking_Competition.`Admin` (
-  `idAdmin` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `username` VARCHAR(55) NOT NULL,
-  `password` VARCHAR(12) NOT NULL,
-  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (idAdmin))
-  ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
 CREATE TABLE `Cooking_Competition`.`Image` (
   `idImage` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `Description` TEXT NOT NULL,
   `URL` VARCHAR(255) NOT NULL,
   `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`idImage`))
+  PRIMARY KEY (`idImage`)
+  )
   ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `Cooking_Competition`.`Cuisine` (
   `idCuisine` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `Cuisine` VARCHAR(45) NULL,
+  `Cuisine` VARCHAR(45) NULL UNIQUE,
   `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `Image` INT UNSIGNED NOT NULL,
    INDEX `fk_Cuisine_Image_idx` (`Image` ASC)  ,
@@ -30,7 +23,8 @@ CREATE TABLE `Cooking_Competition`.`Cuisine` (
     REFERENCES `Cooking_Competition`.`Image` (`idImage`)
     ON DELETE RESTRICT
     ON UPDATE CASCADE,
-  PRIMARY KEY (`idCuisine`))
+  PRIMARY KEY (`idCuisine`)
+  )
 ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 	
 CREATE TABLE `Cooking_Competition`.`Type_Meal` (
@@ -45,7 +39,8 @@ CREATE TABLE `Cooking_Competition`.`Type_Meal` (
     REFERENCES `Cooking_Competition`.`Image` (`idImage`)
     ON DELETE RESTRICT
     ON UPDATE CASCADE,
-  PRIMARY KEY (`idType_Meal`))
+  PRIMARY KEY (`idType_Meal`)
+  )
 ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `Cooking_Competition`.`Food_Group` (
@@ -111,184 +106,6 @@ CREATE TABLE `Cooking_Competition`.`Recipe` (
   CONSTRAINT `cook_time_check` CHECK (cook_time >= 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE `Cooking_Competition`.`Tips` (
-  `idTips` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `Tip_description` TEXT NOT NULL,
-  `Recipe_idRecipe` INT UNSIGNED NOT NULL,
-  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`idTips`),
-  INDEX `fk_Tips_Recipe1_idx` (`Recipe_idRecipe` ASC)  ,
-  CONSTRAINT `fk_Tips_Recipe1`
-    FOREIGN KEY (`Recipe_idRecipe`)
-    REFERENCES `Cooking_Competition`.`Recipe` (`idRecipe`)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE)
-ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `Cooking_Competition`.`Steps` (
-  `idSteps` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `Step_number` TINYINT NOT NULL,
-  `Step_description` TEXT NOT NULL,
-  `Recipe_idRecipe` INT UNSIGNED NOT NULL,
-  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`idSteps`),
-  INDEX `fk_Steps_Recipe1_idx` (`Recipe_idRecipe` ASC)  ,
-  INDEX `Seacrh_Step_number_idx` (`Step_number` ASC)  ,
-  CONSTRAINT `fk_Steps_Recipe1`
-    FOREIGN KEY (`Recipe_idRecipe`)
-    REFERENCES `Cooking_Competition`.`Recipe` (`idRecipe`)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE)
-ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `Cooking_Competition`.`Concept` (
-  `idConcept` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `Concept_name` VARCHAR(255) NOT NULL,
-  `Concept_description` TEXT DEFAULT NULL,
-  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `Image` INT UNSIGNED NOT NULL,
-   INDEX `fk_Concept_Image_idx` (`Image` ASC)  ,
-   INDEX `Seacrh_Concept_name_idx` (`Concept_name` ASC)  ,
-  CONSTRAINT `fk_Concept_Image`
-    FOREIGN KEY (`Image`)
-    REFERENCES `Cooking_Competition`.`Image` (`idImage`)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE,
-  PRIMARY KEY (`idConcept`))
-ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE  `Cooking_Competition`.`Recipe_has_Concept` (
-  `Recipe_idRecipe` INT UNSIGNED NOT NULL,
-  `Concept_idConcept` INT UNSIGNED NOT NULL,
-  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`Recipe_idRecipe`, `Concept_idConcept`),
-  INDEX `fk_Recipe_has_Concept_Concept1_idx` (`Concept_idConcept` ASC)  ,
-  INDEX `fk_Recipe_has_Concept_Recipe1_idx` (`Recipe_idRecipe` ASC)  ,
-  CONSTRAINT unique_rec_concept UNIQUE (Recipe_idRecipe,Concept_idConcept),
-  CONSTRAINT `fk_Recipe_has_Concept_Recipe1`
-    FOREIGN KEY (`Recipe_idRecipe`)
-    REFERENCES `Cooking_Competition`.`Recipe` (`idRecipe`)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE,
-  CONSTRAINT `fk_Recipe_has_Concept_Concept1`
-    FOREIGN KEY (`Concept_idConcept`)
-    REFERENCES `Cooking_Competition`.`Concept` (`idConcept`)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE)
-ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `Cooking_Competition`.`Cook` (
-  `idCook` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `first_name` VARCHAR(45) NOT NULL,
-  `last_name` VARCHAR(45) NOT NULL,
-  `phone_number` VARCHAR(15) NOT NULL,
-  `birth_date` DATE NOT NULL,
-  `age` INT NOT NULL,
-  `Years_experience` INT NOT NULL,
-  `Status` ENUM('C cook', 'B cook', 'A cook', 'assistant head Chef', 'Chef') NOT NULL,
-  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `Image` INT UNSIGNED NOT NULL,
-   INDEX `Search_First_name_idx` (`first_name` ASC),
-   INDEX `Search_Last_name_idx` (`last_name` ASC),
-   INDEX `Search_Years_experience_idx` (`Years_experience` ASC),
-   INDEX `Search_Status_idx` (`Status` ASC),
-   INDEX `fk_Cook_Image_idx` (`Image` ASC)  ,
-  CONSTRAINT `fk_Cook_Image`
-    FOREIGN KEY (`Image`)
-    REFERENCES `Cooking_Competition`.`Image` (`idImage`)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE,
-  PRIMARY KEY (`idCook`))
-ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE Cooking_Competition.`User` (
-  idUser INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  username VARCHAR(55) NOT NULL,
-  `password` VARCHAR(12) NOT NULL,
-  Cook_idCook INT UNSIGNED NOT NULL,
-  last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (idUser),
-  INDEX fk_Cook_User_Cook1_idx (Cook_idCook ASC),
-  CONSTRAINT fk_Cook_User_Cuisine1
-      FOREIGN KEY (Cook_idCook)
-      REFERENCES Cooking_Competition.Cook (idCook)
-      ON DELETE RESTRICT
-      ON UPDATE CASCADE)
-  ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-
-CREATE TABLE `Cooking_Competition`.`Label` (
-  `idLabel` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `Label_name` VARCHAR(45) NULL,
-  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `Image` INT UNSIGNED NOT NULL,
-  PRIMARY KEY (`idLabel`),
-  UNIQUE INDEX `Label_name_UNIQUE` (`Label_name` ASC),
-  INDEX `fk_Label_Image_idx` (`Image` ASC),
-  CONSTRAINT `fk_Label_Image`
-    FOREIGN KEY (`Image`)
-    REFERENCES `Cooking_Competition`.`Image` (`idImage`)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `Cooking_Competition`.`Recipe_has_Label` (
-  `Recipe_idRecipe` INT UNSIGNED NOT NULL,
-  `Label_idLabel` INT UNSIGNED NOT NULL,
-  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`Recipe_idRecipe`, `Label_idLabel`),
-  INDEX `fk_Recipe_has_Label_Label1_idx` (`Label_idLabel` ASC),
-  INDEX `fk_Recipe_has_Label_Recipe1_idx` (`Recipe_idRecipe` ASC),
-  CONSTRAINT `fk_Recipe_has_Label_Recipe1`
-    FOREIGN KEY (`Recipe_idRecipe`)
-    REFERENCES `Cooking_Competition`.`Recipe` (`idRecipe`)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE,
-  CONSTRAINT `fk_Recipe_has_Label_Label1`
-    FOREIGN KEY (`Label_idLabel`)
-    REFERENCES `Cooking_Competition`.`Label` (`idLabel`)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE  `Cooking_Competition`.`Equipment` (
-  `idEquipment` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `equip_name` VARCHAR(45) NOT NULL,
-  `equip_use` TEXT NOT NULL,
-  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `Image` INT UNSIGNED NOT NULL,
-   INDEX `fk_Equipment_Image_idx` (`Image` ASC)  ,
-   INDEX `Search_equip_name_idx` (`equip_name` ASC)  ,
-  CONSTRAINT `fk_Equipment_Image`
-    FOREIGN KEY (`Image`)
-    REFERENCES `Cooking_Competition`.`Image` (`idImage`)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE,
-  PRIMARY KEY (`idEquipment`),
-  UNIQUE INDEX `equip_name_UNIQUE` (`equip_name` ASC)  )
-ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `Cooking_Competition`.`Recipe_has_Equipment` (
-  `Recipe_idRecipe` INT UNSIGNED NOT NULL,
-  `Equipment_idEquipment` INT UNSIGNED NOT NULL,
-  `Quantity` TINYINT NOT NULL,
-  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`Recipe_idRecipe`, `Equipment_idEquipment`),
-  INDEX `fk_Recipe_has_Equipment_Equipment1_idx` (`Equipment_idEquipment` ASC),
-  INDEX `fk_Recipe_has_Equipment_Recipe1_idx` (`Recipe_idRecipe` ASC),
-  CONSTRAINT unique_rec_label UNIQUE (`Recipe_idRecipe`, `Equipment_idEquipment`),
-  CONSTRAINT `fk_Recipe_has_Equipment_Recipe1`
-    FOREIGN KEY (`Recipe_idRecipe`)
-    REFERENCES `Cooking_Competition`.`Recipe` (`idRecipe`)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE,
-  CONSTRAINT `fk_Recipe_has_Equipment_Equipment1`
-    FOREIGN KEY (`Equipment_idEquipment`)
-    REFERENCES `Cooking_Competition`.`Equipment` (`idEquipment`)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
 CREATE TABLE `Cooking_Competition`.`Ingredients` (
   `idIngredients` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `Ingredient_name` VARCHAR(45) NOT NULL,
@@ -345,124 +162,6 @@ CREATE TABLE `Cooking_Competition`.`Recipe_has_Ingredients` (
     ON DELETE RESTRICT
     ON UPDATE CASCADE)
 ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE  `Cooking_Competition`.`Cook_has_Cuisine` (
-  `Cook_idCook` INT UNSIGNED NOT NULL,
-  `Cuisine_idCuisine` INT UNSIGNED NOT NULL,
-  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`Cook_idCook`, `Cuisine_idCuisine`),
-  INDEX `fk_Cook_Cuisine_Cuisine1_idx` (`Cuisine_idCuisine` ASC),
-  INDEX `fk_Cook_Cuisine_Cook1_idx` (`Cook_idCook` ASC),
-  CONSTRAINT `unique_rec_concept` UNIQUE (`Cook_idCook`, `Cuisine_idCuisine`),
-  CONSTRAINT `fk_Cook_Cuisine_Cook1`
-    FOREIGN KEY (`Cook_idCook`)
-    REFERENCES `Cooking_Competition`.`Cook` (`idCook`)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE,
-  CONSTRAINT `fk_Cook_Cuisine_Cuisine1`
-    FOREIGN KEY (`Cuisine_idCuisine`)
-    REFERENCES `Cooking_Competition`.`Cuisine` (`idCuisine`)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE)
-ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `Cooking_Competition`.`Episode` (
-  `idEpisode` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `Episode_number` INT NOT NULL,
-  `Season_number` INT UNSIGNED NOT NULL,
-  `winner_id` INT UNSIGNED NULL,
-  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`idEpisode`),
-  INDEX `Search_Episode_number_idx` (`Episode_number` ASC),
-  INDEX `Search_Season_number_idx` (`Season_number` ASC),
-  INDEX `Search_Cook_Winner_idx` (`winner_id` ASC)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `Cooking_Competition`.`Episode_has_Participants` (
-  `Participant_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `Episode_idEpisode` INT UNSIGNED NOT NULL,
-  `Cook_idCook` INT UNSIGNED NOT NULL,
-  `Recipe_idRecipe` INT UNSIGNED NOT NULL,
-  `Cuisine_idCuisine` INT UNSIGNED NOT NULL,
-  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`Participant_id`),
-  INDEX `fk_Episode_Participant_Episode1_idx` (`Episode_idEpisode` ASC),
-  INDEX `fk_Episode_Participant_Cook1_idx` (`Cook_idCook` ASC),
-  INDEX `fk_Episode_Participant_Recipe1_idx` (`Recipe_idRecipe` ASC),
-  INDEX `fk_Episode_Participant_Cuisine1_idx` (`Cuisine_idCuisine` ASC),
-  UNIQUE INDEX `unique_Episode_Cook` (`Episode_idEpisode`, `Cook_idCook`),
-  UNIQUE INDEX `unique_Episode_Cuisine` (`Episode_idEpisode`, `Cuisine_idCuisine`),
-  UNIQUE INDEX `unique_Episode_Recipe` (`Episode_idEpisode`, `Recipe_idRecipe`),
-  CONSTRAINT `fk_Episode_Participant_Episode1`
-    FOREIGN KEY (`Episode_idEpisode`)
-    REFERENCES `Cooking_Competition`.`Episode` (`idEpisode`)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE,
-  CONSTRAINT `fk_Episode_Participant_Cook1`
-    FOREIGN KEY (`Cook_idCook`)
-    REFERENCES `Cooking_Competition`.`Cook` (`idCook`)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE,
-  CONSTRAINT `fk_Episode_Participant_Recipe1`
-    FOREIGN KEY (`Recipe_idRecipe`)
-    REFERENCES `Cooking_Competition`.`Recipe` (`idRecipe`)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE,
-  CONSTRAINT `fk_Episode_Participant_Cuisine1`
-    FOREIGN KEY (`Cuisine_idCuisine`)
-    REFERENCES `Cooking_Competition`.`Cuisine` (`idCuisine`)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-
-CREATE TABLE `Cooking_Competition`.`Episode_has_Judges` (
-  `Episode_idEpisode` INT UNSIGNED NOT NULL,
-  `Judge_idJudge` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `Cook_idCook` INT UNSIGNED NOT NULL,
-  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`Judge_idJudge`),
-  INDEX `fk_Episode_Judge_Episode1_idx` (`Episode_idEpisode` ASC),
-  INDEX `fk_Episode_Judge_Cook1_idx` (`Cook_idCook` ASC),
-  CONSTRAINT `fk_Episode_Judge_Episode1`
-    FOREIGN KEY (`Episode_idEpisode`)
-    REFERENCES `Cooking_Competition`.`Episode` (`idEpisode`)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE,
-  CONSTRAINT `fk_Episode_Judge_Cook1`
-    FOREIGN KEY (`Cook_idCook`)
-    REFERENCES `Cooking_Competition`.`Cook` (`idCook`)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `Cooking_Competition`.`Judge_Participant_Scores` (
-  `Episode_idEpisode` INT UNSIGNED NOT NULL,
-  `Participant_id` INT UNSIGNED NOT NULL,
-  `Judge_idJudge` INT UNSIGNED NOT NULL,
-  `Score` TINYINT NULL CHECK (Score BETWEEN 1 AND 5),
-  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`Episode_idEpisode`, `Judge_idJudge`, `Participant_id`),
-  INDEX `fk_Judge_Participant_Scores_Episode1_idx` (`Episode_idEpisode` ASC),
-  INDEX `fk_Judge_Participant_Scores_Judge1_idx` (`Judge_idJudge` ASC),
-  INDEX `fk_Judge_Participant_Scores_Participant1_idx` (`Participant_id` ASC),
-  CONSTRAINT `fk_Judge_Participant_Scores_Episode1`
-    FOREIGN KEY (`Episode_idEpisode`)
-    REFERENCES `Cooking_Competition`.`Episode` (`idEpisode`)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE,
-  CONSTRAINT `fk_Judge_Participant_Scores_Judge1`
-    FOREIGN KEY (`Judge_idJudge`)
-    REFERENCES `Cooking_Competition`.`Episode_has_Judges` (`Judge_idJudge`)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE,
-  CONSTRAINT `fk_Judge_Participant_Scores_Participant1`
-    FOREIGN KEY (`Participant_id`)
-    REFERENCES `Cooking_Competition`.`Episode_has_Participants` (`Participant_id`)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
 
 --
 -- Procedure to update the recipe's nutritional values
@@ -602,6 +301,19 @@ END //
 
 DELIMITER ;
 
+CREATE TABLE `Cooking_Competition`.`Tips` (
+  `idTips` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `Tip_description` TEXT NOT NULL,
+  `Recipe_idRecipe` INT UNSIGNED NOT NULL,
+  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`idTips`),
+  INDEX `fk_Tips_Recipe1_idx` (`Recipe_idRecipe` ASC)  ,
+  CONSTRAINT `fk_Tips_Recipe1`
+    FOREIGN KEY (`Recipe_idRecipe`)
+    REFERENCES `Cooking_Competition`.`Recipe` (`idRecipe`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE)
+ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 -- Trigger to limit the number of tips per recipe checked
 
 DELIMITER //
@@ -623,6 +335,302 @@ BEGIN
         SET MESSAGE_TEXT = 'A recipe cannot have more than 3 tips';
     END IF;
 END//
+
+DELIMITER ;
+
+CREATE TABLE `Cooking_Competition`.`Steps` (
+  `idSteps` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `Step_number` TINYINT NOT NULL,
+  `Step_description` TEXT NOT NULL,
+  `Recipe_idRecipe` INT UNSIGNED NOT NULL,
+  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`idSteps`),
+  INDEX `fk_Steps_Recipe1_idx` (`Recipe_idRecipe` ASC)  ,
+  INDEX `Seacrh_Step_number_idx` (`Step_number` ASC)  ,
+  CONSTRAINT `fk_Steps_Recipe1`
+    FOREIGN KEY (`Recipe_idRecipe`)
+    REFERENCES `Cooking_Competition`.`Recipe` (`idRecipe`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE)
+ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Trigger to ensure steps are inserted in order
+--
+
+DELIMITER //
+
+CREATE TRIGGER BeforeInsertStep
+BEFORE INSERT ON Steps
+FOR EACH ROW
+BEGIN
+    DECLARE prevStep TINYINT;
+
+    -- Find the step number of the previous step for the given recipe
+    SELECT Step_number 
+    INTO prevStep 
+    FROM Steps 
+    WHERE Recipe_idRecipe = NEW.Recipe_idRecipe 
+    ORDER BY Step_number DESC 
+    LIMIT 1;
+
+    -- If the previous step exists and the new step number is not consecutive, raise an error
+    IF prevStep IS NOT NULL AND NEW.Step_number != prevStep + 1 THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Previous step does not exist or step numbers are not consecutive for this recipe. Please insert the steps for this recipe in the correct order.';
+    END IF;
+END //
+
+DELIMITER ;
+
+CREATE TABLE  `Cooking_Competition`.`Equipment` (
+  `idEquipment` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `equip_name` VARCHAR(45) NOT NULL,
+  `equip_use` TEXT NOT NULL,
+  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `Image` INT UNSIGNED NOT NULL,
+   INDEX `fk_Equipment_Image_idx` (`Image` ASC)  ,
+   INDEX `Search_equip_name_idx` (`equip_name` ASC)  ,
+  CONSTRAINT `fk_Equipment_Image`
+    FOREIGN KEY (`Image`)
+    REFERENCES `Cooking_Competition`.`Image` (`idImage`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
+  PRIMARY KEY (`idEquipment`),
+  UNIQUE INDEX `equip_name_UNIQUE` (`equip_name` ASC)  )
+ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `Cooking_Competition`.`Recipe_has_Equipment` (
+  `Recipe_idRecipe` INT UNSIGNED NOT NULL,
+  `Equipment_idEquipment` INT UNSIGNED NOT NULL,
+  `Quantity` TINYINT NOT NULL,
+  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`Recipe_idRecipe`, `Equipment_idEquipment`),
+  INDEX `fk_Recipe_has_Equipment_Equipment1_idx` (`Equipment_idEquipment` ASC),
+  INDEX `fk_Recipe_has_Equipment_Recipe1_idx` (`Recipe_idRecipe` ASC),
+  CONSTRAINT unique_rec_label UNIQUE (`Recipe_idRecipe`, `Equipment_idEquipment`),
+  CONSTRAINT `fk_Recipe_has_Equipment_Recipe1`
+    FOREIGN KEY (`Recipe_idRecipe`)
+    REFERENCES `Cooking_Competition`.`Recipe` (`idRecipe`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_Recipe_has_Equipment_Equipment1`
+    FOREIGN KEY (`Equipment_idEquipment`)
+    REFERENCES `Cooking_Competition`.`Equipment` (`idEquipment`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `Cooking_Competition`.`Concept` (
+  `idConcept` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `Concept_name` VARCHAR(255) NOT NULL,
+  `Concept_description` TEXT DEFAULT NULL,
+  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `Image` INT UNSIGNED NOT NULL,
+   INDEX `fk_Concept_Image_idx` (`Image` ASC)  ,
+   INDEX `Seacrh_Concept_name_idx` (`Concept_name` ASC)  ,
+  CONSTRAINT `fk_Concept_Image`
+    FOREIGN KEY (`Image`)
+    REFERENCES `Cooking_Competition`.`Image` (`idImage`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
+  PRIMARY KEY (`idConcept`))
+ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE  `Cooking_Competition`.`Recipe_has_Concept` (
+  `Recipe_idRecipe` INT UNSIGNED NOT NULL,
+  `Concept_idConcept` INT UNSIGNED NOT NULL,
+  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`Recipe_idRecipe`, `Concept_idConcept`),
+  INDEX `fk_Recipe_has_Concept_Concept1_idx` (`Concept_idConcept` ASC)  ,
+  INDEX `fk_Recipe_has_Concept_Recipe1_idx` (`Recipe_idRecipe` ASC)  ,
+  CONSTRAINT unique_rec_concept UNIQUE (Recipe_idRecipe,Concept_idConcept),
+  CONSTRAINT `fk_Recipe_has_Concept_Recipe1`
+    FOREIGN KEY (`Recipe_idRecipe`)
+    REFERENCES `Cooking_Competition`.`Recipe` (`idRecipe`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_Recipe_has_Concept_Concept1`
+    FOREIGN KEY (`Concept_idConcept`)
+    REFERENCES `Cooking_Competition`.`Concept` (`idConcept`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE)
+ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `Cooking_Competition`.`Label` (
+  `idLabel` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `Label_name` VARCHAR(45) NULL,
+  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `Image` INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`idLabel`),
+  UNIQUE INDEX `Label_name_UNIQUE` (`Label_name` ASC),
+  INDEX `fk_Label_Image_idx` (`Image` ASC),
+  CONSTRAINT `fk_Label_Image`
+    FOREIGN KEY (`Image`)
+    REFERENCES `Cooking_Competition`.`Image` (`idImage`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `Cooking_Competition`.`Recipe_has_Label` (
+  `Recipe_idRecipe` INT UNSIGNED NOT NULL,
+  `Label_idLabel` INT UNSIGNED NOT NULL,
+  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`Recipe_idRecipe`, `Label_idLabel`),
+  INDEX `fk_Recipe_has_Label_Label1_idx` (`Label_idLabel` ASC),
+  INDEX `fk_Recipe_has_Label_Recipe1_idx` (`Recipe_idRecipe` ASC),
+  CONSTRAINT `fk_Recipe_has_Label_Recipe1`
+    FOREIGN KEY (`Recipe_idRecipe`)
+    REFERENCES `Cooking_Competition`.`Recipe` (`idRecipe`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_Recipe_has_Label_Label1`
+    FOREIGN KEY (`Label_idLabel`)
+    REFERENCES `Cooking_Competition`.`Label` (`idLabel`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `Cooking_Competition`.`Cook` (
+  `idCook` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `first_name` VARCHAR(45) NOT NULL,
+  `last_name` VARCHAR(45) NOT NULL,
+  `phone_number` VARCHAR(15) NOT NULL,
+  `birth_date` DATE NOT NULL,
+  `age` INT NOT NULL,
+  `Years_experience` INT NOT NULL,
+  `Status` ENUM('C cook', 'B cook', 'A cook', 'assistant head Chef', 'Chef') NOT NULL,
+  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `Image` INT UNSIGNED NOT NULL,
+   INDEX `Search_First_name_idx` (`first_name` ASC),
+   INDEX `Search_Last_name_idx` (`last_name` ASC),
+   INDEX `Search_Years_experience_idx` (`Years_experience` ASC),
+   INDEX `Search_Status_idx` (`Status` ASC),
+   INDEX `fk_Cook_Image_idx` (`Image` ASC)  ,
+  CONSTRAINT `fk_Cook_Image`
+    FOREIGN KEY (`Image`)
+    REFERENCES `Cooking_Competition`.`Image` (`idImage`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
+  PRIMARY KEY (`idCook`))
+ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE  `Cooking_Competition`.`Cook_has_Cuisine` (
+  `Cook_idCook` INT UNSIGNED NOT NULL,
+  `Cuisine_idCuisine` INT UNSIGNED NOT NULL,
+  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`Cook_idCook`, `Cuisine_idCuisine`),
+  INDEX `fk_Cook_Cuisine_Cuisine1_idx` (`Cuisine_idCuisine` ASC),
+  INDEX `fk_Cook_Cuisine_Cook1_idx` (`Cook_idCook` ASC),
+  CONSTRAINT `unique_rec_concept` UNIQUE (`Cook_idCook`, `Cuisine_idCuisine`),
+  CONSTRAINT `fk_Cook_Cuisine_Cook1`
+    FOREIGN KEY (`Cook_idCook`)
+    REFERENCES `Cooking_Competition`.`Cook` (`idCook`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_Cook_Cuisine_Cuisine1`
+    FOREIGN KEY (`Cuisine_idCuisine`)
+    REFERENCES `Cooking_Competition`.`Cuisine` (`idCuisine`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE)
+ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `Cooking_Competition`.`Episode` (
+  `idEpisode` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `Episode_number` INT NOT NULL,
+  `Season_number` INT UNSIGNED NOT NULL,
+  `winner_id` INT UNSIGNED NULL,
+  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`idEpisode`),
+  INDEX `Search_Episode_number_idx` (`Episode_number` ASC),
+  INDEX `Search_Season_number_idx` (`Season_number` ASC),
+  INDEX `Search_Cook_Winner_idx` (`winner_id` ASC)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `Cooking_Competition`.`Episode_has_Participants` (
+  `Participant_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `Episode_idEpisode` INT UNSIGNED NOT NULL,
+  `Cook_idCook` INT UNSIGNED NOT NULL,
+  `Recipe_idRecipe` INT UNSIGNED NOT NULL,
+  `Cuisine_idCuisine` INT UNSIGNED NOT NULL,
+  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`Participant_id`),
+  INDEX `fk_Episode_Participant_Episode1_idx` (`Episode_idEpisode` ASC),
+  INDEX `fk_Episode_Participant_Cook1_idx` (`Cook_idCook` ASC),
+  INDEX `fk_Episode_Participant_Recipe1_idx` (`Recipe_idRecipe` ASC),
+  INDEX `fk_Episode_Participant_Cuisine1_idx` (`Cuisine_idCuisine` ASC),
+  UNIQUE INDEX `unique_Episode_Cook` (`Episode_idEpisode`, `Cook_idCook`),
+  UNIQUE INDEX `unique_Episode_Cuisine` (`Episode_idEpisode`, `Cuisine_idCuisine`),
+  UNIQUE INDEX `unique_Episode_Recipe` (`Episode_idEpisode`, `Recipe_idRecipe`),
+  CONSTRAINT `fk_Episode_Participant_Episode1`
+    FOREIGN KEY (`Episode_idEpisode`)
+    REFERENCES `Cooking_Competition`.`Episode` (`idEpisode`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_Episode_Participant_Cook1`
+    FOREIGN KEY (`Cook_idCook`)
+    REFERENCES `Cooking_Competition`.`Cook` (`idCook`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_Episode_Participant_Recipe1`
+    FOREIGN KEY (`Recipe_idRecipe`)
+    REFERENCES `Cooking_Competition`.`Recipe` (`idRecipe`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_Episode_Participant_Cuisine1`
+    FOREIGN KEY (`Cuisine_idCuisine`)
+    REFERENCES `Cooking_Competition`.`Cuisine` (`idCuisine`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+CREATE TABLE `Cooking_Competition`.`Episode_has_Judges` (
+  `Episode_idEpisode` INT UNSIGNED NOT NULL,
+  `Judge_idJudge` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `Cook_idCook` INT UNSIGNED NOT NULL,
+  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`Judge_idJudge`),
+  INDEX `fk_Episode_Judge_Episode1_idx` (`Episode_idEpisode` ASC),
+  INDEX `fk_Episode_Judge_Cook1_idx` (`Cook_idCook` ASC),
+  CONSTRAINT `fk_Episode_Judge_Episode1`
+    FOREIGN KEY (`Episode_idEpisode`)
+    REFERENCES `Cooking_Competition`.`Episode` (`idEpisode`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_Episode_Judge_Cook1`
+    FOREIGN KEY (`Cook_idCook`)
+    REFERENCES `Cooking_Competition`.`Cook` (`idCook`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `Cooking_Competition`.`Judge_Participant_Scores` (
+  `Episode_idEpisode` INT UNSIGNED NOT NULL,
+  `Participant_id` INT UNSIGNED NOT NULL,
+  `Judge_idJudge` INT UNSIGNED NOT NULL,
+  `Score` TINYINT NULL CHECK (Score BETWEEN 1 AND 5),
+  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`Episode_idEpisode`, `Judge_idJudge`, `Participant_id`),
+  INDEX `fk_Judge_Participant_Scores_Episode1_idx` (`Episode_idEpisode` ASC),
+  INDEX `fk_Judge_Participant_Scores_Judge1_idx` (`Judge_idJudge` ASC),
+  INDEX `fk_Judge_Participant_Scores_Participant1_idx` (`Participant_id` ASC),
+  CONSTRAINT `fk_Judge_Participant_Scores_Episode1`
+    FOREIGN KEY (`Episode_idEpisode`)
+    REFERENCES `Cooking_Competition`.`Episode` (`idEpisode`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_Judge_Participant_Scores_Judge1`
+    FOREIGN KEY (`Judge_idJudge`)
+    REFERENCES `Cooking_Competition`.`Episode_has_Judges` (`Judge_idJudge`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_Judge_Participant_Scores_Participant1`
+    FOREIGN KEY (`Participant_id`)
+    REFERENCES `Cooking_Competition`.`Episode_has_Participants` (`Participant_id`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 DELIMITER ;
 
@@ -691,9 +699,6 @@ END //
 
 DELIMITER ;
 
-
-
-
 DELIMITER //
 
 CREATE TRIGGER AfterInsertJudgeParticipantScores
@@ -718,40 +723,31 @@ END //
 
 DELIMITER ;
 
-
-
-
---
--- Trigger to ensure steps are inserted in order
---
-
-DELIMITER //
-
-CREATE TRIGGER BeforeInsertStep
-BEFORE INSERT ON Steps
-FOR EACH ROW
-BEGIN
-    DECLARE prevStep TINYINT;
-
-    -- Find the step number of the previous step for the given recipe
-    SELECT Step_number 
-    INTO prevStep 
-    FROM Steps 
-    WHERE Recipe_idRecipe = NEW.Recipe_idRecipe 
-    ORDER BY Step_number DESC 
-    LIMIT 1;
-
-    -- If the previous step exists and the new step number is not consecutive, raise an error
-    IF prevStep IS NOT NULL AND NEW.Step_number != prevStep + 1 THEN
-        SIGNAL SQLSTATE '45000' 
-        SET MESSAGE_TEXT = 'Previous step does not exist or step numbers are not consecutive for this recipe. Please insert the steps for this recipe in the correct order.';
-    END IF;
-END //
-
-DELIMITER ;
+CREATE TABLE `Cooking_Competition`.`Admin` (
+  `idAdmin` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `username` VARCHAR(55) NOT NULL,
+  `password` VARCHAR(12) NOT NULL,
+  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (idAdmin))
+  ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  
+  CREATE TABLE Cooking_Competition.`User` (
+  `idUser` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `username` VARCHAR(55) NOT NULL,
+  `password` VARCHAR(12) NOT NULL,
+  `Cook_idCook` INT UNSIGNED NOT NULL,
+  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`idUser`),
+  INDEX `k_Cook_User_Cook1_idx` (`Cook_idCook` ASC),
+  CONSTRAINT `k_Cook_User_Cuisine1`
+      FOREIGN KEY (`Cook_idCook`)
+      REFERENCES `Cooking_Competition`.`Cook` (`idCook`)
+      ON DELETE RESTRICT
+      ON UPDATE CASCADE)
+  ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- -------------------------------------------------------------------------------------------------------
--- View to show only recipes assigned to a cook
+-- View to show only recipes assigned to a cook	
 CREATE VIEW CookAssignedRecipes AS
 SELECT 
     r.idRecipe,
