@@ -314,6 +314,7 @@ CREATE TABLE `Cooking_Competition`.`Tips` (
     ON DELETE RESTRICT
     ON UPDATE CASCADE)
 ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- Trigger to limit the number of tips per recipe checked
 
 DELIMITER //
@@ -408,7 +409,7 @@ CREATE TABLE `Cooking_Competition`.`Recipe_has_Equipment` (
   PRIMARY KEY (`Recipe_idRecipe`, `Equipment_idEquipment`),
   INDEX `fk_Recipe_has_Equipment_Equipment1_idx` (`Equipment_idEquipment` ASC),
   INDEX `fk_Recipe_has_Equipment_Recipe1_idx` (`Recipe_idRecipe` ASC),
-  CONSTRAINT unique_rec_label UNIQUE (`Recipe_idRecipe`, `Equipment_idEquipment`),
+  CONSTRAINT `unique_rec_equip` UNIQUE (`Recipe_idRecipe`, `Equipment_idEquipment`),
   CONSTRAINT `fk_Recipe_has_Equipment_Recipe1`
     FOREIGN KEY (`Recipe_idRecipe`)
     REFERENCES `Cooking_Competition`.`Recipe` (`idRecipe`)
