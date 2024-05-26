@@ -429,7 +429,7 @@ CREATE TABLE `Cooking_Competition`.`Concept` (
   `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `Image` INT UNSIGNED NOT NULL,
    INDEX `fk_Concept_Image_idx` (`Image` ASC)  ,
-   INDEX `Seacrh_Concept_name_idx` (`Concept_name` ASC)  ,
+   UNIQUE INDEX `Concept_name_UNIQUE` (`Concept_name` ASC),
   CONSTRAINT `fk_Concept_Image`
     FOREIGN KEY (`Image`)
     REFERENCES `Cooking_Competition`.`Image` (`idImage`)
