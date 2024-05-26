@@ -505,10 +505,11 @@ CREATE TABLE `Cooking_Competition`.`Cook` (
   `Image` INT UNSIGNED NOT NULL,
    INDEX `Search_First_name_idx` (`first_name` ASC),
    INDEX `Search_Last_name_idx` (`last_name` ASC),
-   INDEX `Search_Years_experience_idx` (`Years_experience` ASC),
    INDEX `Search_Status_idx` (`Status` ASC),
    INDEX `fk_Cook_Image_idx` (`Image` ASC)  ,
-  CONSTRAINT `fk_Cook_Image`
+   CONSTRAINT `age_check` CHECK (age > 0),
+   CONSTRAINT `Years_experience_check` CHECK (Years_experience > 0),
+   CONSTRAINT `fk_Cook_Image`
     FOREIGN KEY (`Image`)
     REFERENCES `Cooking_Competition`.`Image` (`idImage`)
     ON DELETE RESTRICT
@@ -523,7 +524,7 @@ CREATE TABLE  `Cooking_Competition`.`Cook_has_Cuisine` (
   PRIMARY KEY (`Cook_idCook`, `Cuisine_idCuisine`),
   INDEX `fk_Cook_Cuisine_Cuisine1_idx` (`Cuisine_idCuisine` ASC),
   INDEX `fk_Cook_Cuisine_Cook1_idx` (`Cook_idCook` ASC),
-  CONSTRAINT `unique_rec_concept` UNIQUE (`Cook_idCook`, `Cuisine_idCuisine`),
+  CONSTRAINT `unique_cook_cuisine` UNIQUE (`Cook_idCook`, `Cuisine_idCuisine`),
   CONSTRAINT `fk_Cook_Cuisine_Cook1`
     FOREIGN KEY (`Cook_idCook`)
     REFERENCES `Cooking_Competition`.`Cook` (`idCook`)
@@ -746,6 +747,34 @@ CREATE TABLE `Cooking_Competition`.`Admin` (
       ON DELETE RESTRICT
       ON UPDATE CASCADE)
   ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  
+  DELIMITER //
+
+CREATE PROCEDURE AddAdminUser(
+    IN username VARCHAR(45),
+    IN user_password VARCHAR(45)
+)
+BEGIN
+    -- Create the admin user
+    SET @query = CONCAT('CREATE USER ''', username, '''@''localhost'' IDENTIFIED BY ''', user_password, ''';');
+    PREPARE stmt FROM @query;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+
+    -- Grant all privileges to the admin user
+    SET @query = CONCAT('GRANT ALL PRIVILEGES ON *.* TO ''', username, '''@''localhost'' WITH GRANT OPTION;');
+    PREPARE stmt FROM @query;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+
+    -- Reload the privileges
+    FLUSH PRIVILEGES;
+
+    -- Insert into Users table with the role 'administrator'
+    INSERT INTO `Admin` (username, password, role) VALUES (username, user_password, 'administrator');
+END //
+
+DELIMITER ;
 
 -- -------------------------------------------------------------------------------------------------------
 -- View to show only recipes assigned to a cook	
@@ -894,34 +923,6 @@ DELIMITER ;
 
 DELIMITER //
 
-CREATE PROCEDURE AddAdminUser(
-    IN username VARCHAR(45),
-    IN user_password VARCHAR(45)
-)
-BEGIN
-    -- Create the admin user
-    SET @query = CONCAT('CREATE USER ''', username, '''@''localhost'' IDENTIFIED BY ''', user_password, ''';');
-    PREPARE stmt FROM @query;
-    EXECUTE stmt;
-    DEALLOCATE PREPARE stmt;
-
-    -- Grant all privileges to the admin user
-    SET @query = CONCAT('GRANT ALL PRIVILEGES ON *.* TO ''', username, '''@''localhost'' WITH GRANT OPTION;');
-    PREPARE stmt FROM @query;
-    EXECUTE stmt;
-    DEALLOCATE PREPARE stmt;
-
-    -- Reload the privileges
-    FLUSH PRIVILEGES;
-
-    -- Insert into Users table with the role 'administrator'
-    INSERT INTO `Admin` (username, password, role) VALUES (username, user_password, 'administrator');
-END //
-
-DELIMITER ;
-
-DELIMITER //
-
 CREATE PROCEDURE AddCookUser(
     IN username VARCHAR(45),
     IN user_password VARCHAR(45),
@@ -952,6 +953,36 @@ BEGIN
     DEALLOCATE PREPARE stmt;
 
     SET @query = CONCAT('GRANT EXECUTE ON PROCEDURE Cooking_Competition.UpdateCookDetails TO \'', username, '\'@\'localhost\';');
+    PREPARE stmt FROM @query;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+        -- Grant INSERT privileges on the specified tables
+    SET @query = CONCAT('GRANT INSERT ON Cooking_Competition.Recipe TO \'', username, '\'@\'localhost\';');
+    PREPARE stmt FROM @query;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+
+    SET @query = CONCAT('GRANT INSERT ON Cooking_Competition.Recipe_has_Concept TO \'', username, '\'@\'localhost\';');
+    PREPARE stmt FROM @query;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+
+    SET @query = CONCAT('GRANT INSERT ON Cooking_Competition.Recipe_has_Label TO \'', username, '\'@\'localhost\';');
+    PREPARE stmt FROM @query;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+
+    SET @query = CONCAT('GRANT INSERT ON Cooking_Competition.Recipe_has_Equipment TO \'', username, '\'@\'localhost\';');
+    PREPARE stmt FROM @query;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+
+    SET @query = CONCAT('GRANT INSERT ON Cooking_Competition.Tips TO \'', username, '\'@\'localhost\';');
+    PREPARE stmt FROM @query;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+
+    SET @query = CONCAT('GRANT INSERT ON Cooking_Competition.Steps TO \'', username, '\'@\'localhost\';');
     PREPARE stmt FROM @query;
     EXECUTE stmt;
     DEALLOCATE PREPARE stmt;
